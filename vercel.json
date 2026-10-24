@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/kds", "destination": "/public/kds.html" },
+    { "source": "/kds.html", "destination": "/public/kds.html" },
     { "source": "/assets/(.*)", "destination": "/public/assets/$1" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ]
