@@ -638,6 +638,7 @@ function bindEventHandlers() {
   tableSelectorBtn?.addEventListener('click', openTableModal);
   menuTableSwitcherTag?.addEventListener('click', openTableModal);
   heroTableHint?.addEventListener('click', openTableModal);
+  document.getElementById('heroTableChangeBtn')?.addEventListener('click', openTableModal);
 
   closeTableModalBtn?.addEventListener('click', () => {
     tableModalBackdrop.classList.remove('is-open');

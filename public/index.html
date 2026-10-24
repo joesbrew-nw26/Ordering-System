@@ -7,26 +7,31 @@
   <meta name="description" content="Joe's Brew (Estd 2006). Blissful artisan coffee, tea, snacks, and house specials. Order directly to the ground floor kitchen from your table.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="vintage-glass-theme">
 
-  <!-- Ambient Vintage Cafe Glows -->
+  <!-- Ambient Radiant Glassmorphism Background Orbs -->
   <div class="ambient-glow glow-gold"></div>
+  <div class="ambient-glow glow-amber"></div>
   <div class="ambient-glow glow-espresso"></div>
-  <div class="vintage-grain-overlay"></div>
+  <div class="ambient-glow glow-center"></div>
 
-  <!-- Top Glassmorphism Navigation Bar -->
-  <header class="vintage-navbar" id="vintageNavbar">
+  <!-- Top Glass Navigation Bar -->
+  <header class="glass-navbar" id="glassNavbar">
     <div class="nav-container">
       <div class="nav-brand-group" id="navHomeLink" role="button" tabindex="0">
-        <div class="nav-logo-crest">
-          <img src="/assets/logo.jpg" alt="Joe's Brew Emblem" class="crest-img">
+        <!-- Uncropped Full Logo Badge -->
+        <div class="nav-logo-badge">
+          <img src="/assets/logo.jpg" alt="Joe's Brew Logo" class="brand-logo-img">
         </div>
         <div class="nav-brand-titles">
-          <span class="nav-brand-name">Joe's Brew</span>
-          <span class="nav-brand-sub">ESTD 2006 • BLISSFUL COFFEE</span>
+          <div class="nav-title-row">
+            <span class="nav-brand-name">Joe's Brew</span>
+            <span class="nav-estd-chip">ESTD 2006</span>
+          </div>
+          <span class="nav-brand-sub">Blissful Coffee • In-House Ordering</span>
         </div>
       </div>
 
@@ -38,9 +43,7 @@
       <div class="nav-actions">
         <!-- Table Location Badge -->
         <button class="glass-pill-btn table-pill-btn" id="tableSelectorBtn" title="Change Table">
-          <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 6h16M4 12h16M4 18h16M6 6v12M18 6v12"/>
-          </svg>
+          <span class="table-dot"></span>
           <span id="currentTableNavText">Top-04 (Upstairs)</span>
           <span class="pill-chevron">▾</span>
         </button>
@@ -61,64 +64,82 @@
   </header>
 
   <!-- =========================================================================
-       VIEW 1: THE CAFE'S HOMEPAGE (Heritage, Atmosphere & Specials Showcase)
+       VIEW 1: THE CAFE'S HOMEPAGE (Atmospheric Glass Hero & Curated Specials)
        ========================================================================= -->
   <section class="page-view active" id="cafeHomeView">
     <!-- Hero Showcase Section -->
-    <div class="vintage-hero">
-      <div class="hero-glass-card">
-        <div class="hero-emblem-wrap">
-          <img src="/assets/logo.jpg" alt="Joe's Brew Estd 2006" class="hero-emblem">
-          <div class="emblem-halo"></div>
+    <div class="glass-hero-container">
+      <div class="hero-acrylic-card">
+        <!-- Full Uncropped Logo Pedestal -->
+        <div class="hero-logo-pedestal">
+          <div class="logo-inner-frame">
+            <img src="/assets/logo.jpg" alt="Joe's Brew Full Official Emblem" class="hero-full-logo" id="heroFullLogo">
+          </div>
+          <div class="pedestal-reflection"></div>
         </div>
 
-        <div class="hero-vintage-badge">
-          <span class="star-sep">✦</span>
-          <span>ESTD 2006 • HANDCRAFTED IN-HOUSE</span>
-          <span class="star-sep">✦</span>
+        <div class="hero-header-badge">
+          <span class="sparkle">✦</span>
+          <span>ESTD 2006 • PHYSICAL CAFE TABLE ORDERING</span>
+          <span class="sparkle">✦</span>
         </div>
 
-        <h1 class="hero-vintage-title">Joe's Brew</h1>
-        <p class="hero-vintage-tagline">Blissful Coffee, Warm Conversations & Classic Eats</p>
+        <h1 class="hero-main-title">Joe's Brew</h1>
+        <p class="hero-main-tagline">Blissful Coffee, Warm Conversations & Fresh Kitchen Eats</p>
 
-        <p class="hero-description">
-          Spanning two stories of cozy heritage charm. Whether you're relaxing upstairs or on the ground floor, your table orders and service calls route instantly to our kitchen without walking downstairs.
+        <p class="hero-main-description">
+          Welcome to Joe's Brew. Spanning two cozy stories of cafe seating, our in-house ordering system routes your orders directly from upstairs and ground tables straight to the ground-floor kitchen in real time.
         </p>
 
-        <!-- Physical Seating Highlight -->
-        <div class="heritage-features-grid">
-          <div class="feature-glass-pill">
-            <span class="feature-icon">🏛️</span>
-            <div>
-              <strong>Two-Story Café</strong>
-              <small>Ground & Upstairs Seating</small>
-            </div>
+        <!-- Dynamic Seating & Kitchen Live Bar -->
+        <div class="hero-location-banner">
+          <div class="loc-badge-group">
+            <span class="loc-pin">📍</span>
+            <span class="loc-text">You are seated at:</span>
+            <button class="loc-table-chip" id="heroTableChangeBtn" title="Change Table">
+              <strong id="heroTableHint">Top-04 (Upstairs)</strong>
+              <span class="chip-edit">✎ Change</span>
+            </button>
           </div>
-          <div class="feature-glass-pill">
-            <span class="feature-icon">⚡</span>
-            <div>
-              <strong>Zero Friction</strong>
-              <small>Instant Real-Time Kitchen Sync</small>
-            </div>
-          </div>
-          <div class="feature-glass-pill">
-            <span class="feature-icon">☕</span>
-            <div>
-              <strong>Original 2006 Recipe</strong>
-              <small>Signature Roast & Bun Milkella</small>
-            </div>
+          <div class="kitchen-live-pill">
+            <span class="pulse-emerald"></span>
+            <span>Ground Kitchen Live</span>
           </div>
         </div>
 
         <!-- THE PROMINENT BIG "ORDER NOW" BUTTON -->
-        <div class="hero-cta-wrap">
-          <button class="btn-order-now-gold" id="heroOrderNowBtn">
-            <span class="btn-shine"></span>
-            <span class="btn-label">ORDER NOW</span>
-            <span class="btn-arrow">➔</span>
+        <div class="hero-cta-section">
+          <button class="btn-order-now-master" id="heroOrderNowBtn">
+            <span class="btn-ambient-glow"></span>
+            <span class="btn-sheen-sweep"></span>
+            <span class="btn-text">ORDER NOW</span>
+            <span class="btn-icon-arrow">➔</span>
           </button>
-          <div class="cta-table-hint">
-            Ordering for: <strong id="heroTableHint">Table Top-04 (Upstairs)</strong> • Tap to change
+          <span class="cta-micro-copy">Instant zero-wait order • Fast UPI & Counter pay</span>
+        </div>
+
+        <!-- Glass Pillars Grid -->
+        <div class="hero-pillars-grid">
+          <div class="pillar-glass-box">
+            <span class="pillar-icon">🏛️</span>
+            <div class="pillar-content">
+              <strong>Two-Story Café</strong>
+              <small>Ground & Upstairs Seating</small>
+            </div>
+          </div>
+          <div class="pillar-glass-box">
+            <span class="pillar-icon">⚡</span>
+            <div class="pillar-content">
+              <strong>Zero Friction</strong>
+              <small>No climbing downstairs to order</small>
+            </div>
+          </div>
+          <div class="pillar-glass-box">
+            <span class="pillar-icon">☕</span>
+            <div class="pillar-content">
+              <strong>Original 2006 Brews</strong>
+              <small>Filter Coffee & Bun Milkella</small>
+            </div>
           </div>
         </div>
       </div>
@@ -126,44 +147,48 @@
 
     <!-- Curated House Specials Showcase Section -->
     <section class="specials-showcase-section">
-      <div class="section-title-wrap">
-        <div class="vintage-filigree-divider">
-          <span class="divider-line"></span>
-          <span class="divider-star">✦ ★ ✦</span>
-          <span class="divider-line"></span>
+      <div class="specials-header-wrap">
+        <div class="glass-divider-ornament">
+          <span class="line"></span>
+          <span class="gem">★ HOUSE SPECIALS ★</span>
+          <span class="line"></span>
         </div>
-        <h2 class="section-vintage-title">Chef's House Specials</h2>
-        <p class="section-subtitle">Our most cherished creations, starred on our physical menu since 2006</p>
+        <h2 class="specials-heading">Signature Creations</h2>
+        <p class="specials-subheading">Handcrafted favorites marked with the star (★) on our cafe menu</p>
       </div>
 
-      <div class="specials-bento-carousel" id="specialsCarousel">
+      <div class="specials-glass-grid" id="specialsCarousel">
         <!-- Rendered by JS from physical menu specials -->
       </div>
 
-      <div class="showcase-bottom-cta">
-        <button class="btn-glass-secondary" id="browseAllMenuBtn">
-          <span>Explore All 24 Menu Items</span>
-          <span>➔</span>
+      <div class="specials-footer-cta">
+        <button class="btn-glass-wide" id="browseAllMenuBtn">
+          <span>View Full Menu & Pricing (24 Items)</span>
+          <span class="arrow">➔</span>
         </button>
       </div>
     </section>
 
-    <!-- Cafe Ambiance & Heritage Note -->
-    <section class="heritage-story-section">
-      <div class="story-glass-panel">
-        <div class="story-content">
-          <span class="story-stamp">THE JOE'S BREW STORY</span>
-          <h3 class="story-title">Crafting Warm Moments Since 2006</h3>
-          <p>
-            From our slow-brewed signature Filter Coffee and hot Belgian Chocolate Melt to our legendary <em>Bun Milkella</em>, Joe’s Brew is built around simple perfection. Our digital ordering system bridges the physical distance between our upstairs loft and ground-floor kitchen, ensuring your cups arrive steaming hot.
-          </p>
-          <div class="cafe-meta-details">
-            <div class="meta-item">
-              <strong>Timings:</strong> 9:00 AM – 11:00 PM Daily
-            </div>
-            <div class="meta-item">
-              <strong>Payments:</strong> Quick UPI (GPay/PhonePe/Paytm) & Counter Cash/Card
-            </div>
+    <!-- Cafe Ambiance & Story Glass Card -->
+    <section class="cafe-heritage-section">
+      <div class="heritage-glass-card">
+        <span class="heritage-tag">THE JOE'S BREW TRADITION</span>
+        <h3 class="heritage-title">Crafting Comfort Since 2006</h3>
+        <p class="heritage-text">
+          Whether you're savoring our hot Belgian Chocolate Melt, sipping on our thick Biscoff Milkshake, or sharing hot Peri Peri Fries with friends upstairs, Joe’s Brew has been your neighborhood destination for over two decades.
+        </p>
+        <div class="heritage-stats-row">
+          <div class="stat-bubble">
+            <strong class="stat-num">2006</strong>
+            <span class="stat-lbl">Established</span>
+          </div>
+          <div class="stat-bubble">
+            <strong class="stat-num">2 Floors</strong>
+            <span class="stat-lbl">Spacious Seating</span>
+          </div>
+          <div class="stat-bubble">
+            <strong class="stat-num">100%</strong>
+            <span class="stat-lbl">Freshly Prepared</span>
           </div>
         </div>
       </div>
@@ -175,26 +200,29 @@
        ========================================================================= -->
   <section class="page-view" id="menuView">
     <!-- Menu Page Header Banner -->
-    <div class="menu-banner-glass">
-      <div class="menu-banner-content">
-        <div class="menu-badge-row">
-          <button class="table-switcher-tag" id="menuTableSwitcherTag">
-            <span>📍 SEATED AT:</span>
-            <strong id="menuTableDisplay">Top-04 (Upstairs)</strong>
-            <span class="edit-icon">✎</span>
-          </button>
-          <div class="kitchen-sync-badge">
-            <span class="sync-pulse"></span>
-            <span>Ground Floor Kitchen Connected</span>
+    <div class="menu-banner-wrap">
+      <div class="menu-banner-acrylic">
+        <div class="menu-header-flex">
+          <div>
+            <div class="menu-table-pill" id="menuTableSwitcherTag">
+              <span class="pin-symbol">📍</span>
+              <span>Ordering for:</span>
+              <strong id="menuTableDisplay">Top-04 (Upstairs)</strong>
+              <span class="change-tag">Change</span>
+            </div>
+            <h2 class="menu-heading">Café Menu</h2>
+            <p class="menu-sub">Strictly our 24 physical cafe items • All taxes included</p>
+          </div>
+          <div class="menu-status-pill">
+            <span class="pulse-emerald"></span>
+            <span>Kitchen Online</span>
           </div>
         </div>
-        <h2 class="menu-page-title">Café Menu</h2>
-        <p class="menu-page-desc">Authentic selections straight from our physical cafe board</p>
       </div>
     </div>
 
-    <!-- Category Glass Pills Bar -->
-    <nav class="vintage-category-bar">
+    <!-- Category Filter Bar (Glassmorphic Pills) -->
+    <nav class="glass-category-bar">
       <div class="category-pills-scroll" id="menuCategoriesBar">
         <button class="cat-filter-btn active" data-cat="ALL">All Items (24)</button>
         <button class="cat-filter-btn" data-cat="TEA">Tea (3)</button>
@@ -207,7 +235,7 @@
       </div>
     </nav>
 
-    <!-- Menu List Grid -->
+    <!-- Menu Grid -->
     <main class="menu-catalog-container">
       <div class="menu-items-grid" id="menuItemsGrid">
         <!-- Rendered dynamically strictly from data/menu.json -->
@@ -255,8 +283,8 @@
         </div>
 
         <div class="cooking-note-block">
-          <label for="orderGeneralNotes" class="note-label">Special Kitchen Instructions (Optional)</label>
-          <input type="text" id="orderGeneralNotes" class="vintage-input" placeholder="e.g. Extra hot, sugar on the side, bring drinks first...">
+          <label for="orderGeneralNotes" class="note-label">Special Cooking Instructions (Optional)</label>
+          <input type="text" id="orderGeneralNotes" class="glass-input" placeholder="e.g. Extra hot, sugar on the side, bring drinks first...">
         </div>
 
         <div class="bill-breakdown-card">
@@ -332,7 +360,7 @@
         <div class="upi-details-container" id="upiDetailsContainer">
           <div class="upi-apps-row">
             <div class="upi-app-btn gpay">
-              <span>GPay</span>
+              <span>Google Pay</span>
             </div>
             <div class="upi-app-btn phonepe">
               <span>PhonePe</span>
@@ -348,8 +376,8 @@
           <div class="qr-code-box">
             <div class="qr-canvas-wrap" id="qrContainer">
               <svg class="qr-placeholder-svg" viewBox="0 0 100 100">
-                <rect width="100" height="100" fill="#FFF8EE" rx="6"/>
-                <path d="M10 10h30v30h-30zM15 15h20v20h-20zM20 20h10v10h-10zM60 10h30v30h-30zM65 15h20v20h-20zM70 20h10v10h-10zM10 60h30v30h-30zM15 65h20v20h-20zM20 70h10v10h-10zM50 10h5v15h-5zM45 35h15v5h-15zM50 45h20v10h-20zM75 50h15v10h-15zM60 70h30v5h-30zM70 80h10v10h-10zM45 60h10v30h-10z" fill="#2B1810"/>
+                <rect width="100" height="100" fill="#FFF8EE" rx="8"/>
+                <path d="M10 10h30v30h-30zM15 15h20v20h-20zM20 20h10v10h-10zM60 10h30v30h-30zM65 15h20v20h-20zM70 20h10v10h-10zM10 60h30v30h-30zM15 65h20v20h-20zM20 70h10v10h-10zM50 10h5v15h-5zM45 35h15v5h-15zM50 45h20v10h-20zM75 50h15v10h-15zM60 70h30v5h-30zM70 80h10v10h-10zM45 60h10v30h-10z" fill="#24140D"/>
               </svg>
             </div>
             <span class="qr-caption">Scan with any UPI App • Joe's Brew VPA</span>
@@ -496,11 +524,13 @@
   <div class="vintage-toast-stack" id="toastStack"></div>
 
   <!-- Footer Signature -->
-  <footer class="vintage-footer">
+  <footer class="glass-footer">
     <div class="footer-container">
-      <img src="/assets/logo.jpg" alt="Joe's Brew" class="footer-crest">
-      <p class="footer-vintage-brand">Joe's Brew • Estd 2006</p>
-      <p class="footer-vintage-sub">Blissful Coffee & In-House Ordering Service</p>
+      <div class="footer-logo-wrap">
+        <img src="/assets/logo.jpg" alt="Joe's Brew" class="footer-full-logo">
+      </div>
+      <p class="footer-brand">Joe's Brew • Estd 2006</p>
+      <p class="footer-sub">Blissful Coffee & In-House Table Ordering</p>
       <div class="footer-kds-route">
         <a href="/kds" class="kds-portal-link" target="_blank">Staff Kitchen Display System (KDS) ➔</a>
       </div>
