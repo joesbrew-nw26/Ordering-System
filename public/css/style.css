@@ -2901,6 +2901,60 @@ input, select, textarea {
   box-shadow: 0 0 8px #27AE60;
 }
 
+/* Order Success Cheerful WhatsApp Banner */
+.order-success-wa-banner {
+  width: 90%;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.14) 0%, rgba(18, 140, 126, 0.10) 100%);
+  border: 1.5px solid rgba(37, 211, 102, 0.5);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 0 14px rgba(37, 211, 102, 0.12);
+  animation: pulseWaGlow 3.5s infinite ease-in-out;
+}
+
+@keyframes pulseWaGlow {
+  0%, 100% {
+    border-color: rgba(37, 211, 102, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    border-color: rgba(37, 211, 102, 0.85);
+    box-shadow: 0 4px 22px rgba(37, 211, 102, 0.28);
+  }
+}
+
+.wa-banner-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.wa-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wa-banner-title {
+  font-family: var(--font-vintage);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #4EFA8A;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.wa-banner-sub {
+  font-size: 0.78rem;
+  color: #F0ECE1;
+  line-height: 1.35;
+}
+
 .success-actions {
   display: flex;
   gap: 12px;

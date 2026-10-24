@@ -1075,7 +1075,8 @@ async function submitOrder() {
     paymentModalBackdrop.classList.remove('open');
 
     // Populate Success Modal
-    if (successOrderNo) successOrderNo.textContent = createdOrder.id;
+    const displayNum = createdOrder.orderNumber ? `#${createdOrder.orderNumber}` : (createdOrder.id?.startsWith('JB-') ? `#${createdOrder.id.replace('JB-', '')}` : `#${createdOrder.id}`);
+    if (successOrderNo) successOrderNo.textContent = displayNum;
     if (successTable) {
       const waText = createdOrder.customerPhone ? `<br><small style="color:#25D366;font-size:0.80rem;font-weight:700;">📲 WhatsApp Alert: +91 ${createdOrder.customerPhone}</small>` : '';
       successTable.innerHTML = `${createdOrder.tableId} (${createdOrder.floor})${waText}`;
@@ -1085,7 +1086,7 @@ async function submitOrder() {
     orderSuccessModal.classList.add('open');
 
     try { chimeAudio.play(); } catch (e) {}
-    showToast(`Order #${createdOrder.id} placed! Kitchen alerted.`);
+    showToast(`Order ${displayNum} placed! Kitchen alerted.`);
   } catch (err) {
     console.error(err);
     showToast('Failed to send order. Please try again.');
@@ -1426,24 +1427,30 @@ function bindEventHandlers() {
 
   confirmOrderBtn?.addEventListener('click', submitOrder);
 
-  // Success Modal Actions
+  // Success Modal Actions: Dismiss and return to Homepage
   orderDoneBtn?.addEventListener('click', () => {
     orderSuccessModal.classList.remove('is-open');
-    switchView('MENU');
+    orderSuccessModal.classList.remove('open');
+    switchView('HOME');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   successCallWaiterBtn?.addEventListener('click', () => {
     orderSuccessModal.classList.remove('is-open');
+    orderSuccessModal.classList.remove('open');
     waiterModalBackdrop.classList.add('is-open');
+    waiterModalBackdrop.classList.add('open');
   });
 
   // Call Waiter Modal
   callWaiterNavBtn?.addEventListener('click', () => {
     waiterModalBackdrop.classList.add('is-open');
+    waiterModalBackdrop.classList.add('open');
   });
 
   closeWaiterModalBtn?.addEventListener('click', () => {
     waiterModalBackdrop.classList.remove('is-open');
+    waiterModalBackdrop.classList.remove('open');
   });
 
   // Waiter Reason Selection (.waiter-option)

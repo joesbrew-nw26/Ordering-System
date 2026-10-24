@@ -365,7 +365,13 @@ app.post('/api/orders', async (req, res) => {
 
     const total = subtotal + calculatedPackaging;
     const existingOrders = await getOrders();
-    const orderNumber = (existingOrders.length + 1).toString().padStart(4, '0');
+    let maxNum = existingOrders.length;
+    existingOrders.forEach(o => {
+      const raw = o.orderNumber || o.order_number || o.id || '';
+      const n = parseInt(String(raw).replace(/\D/g, ''), 10);
+      if (!isNaN(n) && n > maxNum) maxNum = n;
+    });
+    const orderNumber = (maxNum + 1).toString().padStart(4, '0');
 
     let modePrefix = '';
     if (computedOrderMode === 'Takeaway') {
@@ -376,7 +382,7 @@ app.post('/api/orders', async (req, res) => {
     const formattedInstructions = `${modePrefix}${instructions || ''}`.trim();
 
     const newOrder = {
-      id: `JB-${Date.now().toString().slice(-6)}`,
+      id: `JB-${orderNumber}`,
       orderNumber,
       tableId,
       floor: floor || (tableId.startsWith('Top') ? 'Terrace' : 'Ground Floor'),
