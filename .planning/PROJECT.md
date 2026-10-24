@@ -62,6 +62,8 @@ Eliminates ordering friction for upstairs customers by routing digital table ord
 | Warm Bento-Box Aesthetic | Follows PRD warm palette (`#FFE4C4`, `#F5DEB3`, `#8B4513`, `#3B2E2E`) with high readability under cafe lighting | ✓ Good |
 | Node.js + WebSocket Architecture | Guarantees instant sub-second order transmission to kitchen display across devices without manual refresh | ✓ Good |
 | Dual Checkout Modes | Support both instant UPI mobile checkout and traditional pay-at-counter to accommodate all customer types | ✓ Good |
+| Frontend Design Skill | Adopt `frontend-design` skill (.agents/skills/frontend-design) to enforce distinctive, high-craft brand design without generic patterns | ✓ Good |
+| UX Usability Audit Skill | Adopt `design-ux` skill (.agents/skills/design-ux) to enforce heuristic evaluation of interactive flows, mobile ergonomics, and zero-friction table ordering | ✓ Good |
 
 ---
 *Last updated: 2026-10-09 after initial project definition*

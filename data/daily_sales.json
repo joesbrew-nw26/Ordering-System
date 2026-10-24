@@ -1,0 +1,196 @@
+{
+  "2026-10-19": {
+    "date": "2026-10-19",
+    "totalRevenue": 395,
+    "totalOrders": 9,
+    "validOrdersCount": 9,
+    "totalItemsSold": 15,
+    "statusCounts": {
+      "total": 9,
+      "completed": 9,
+      "ready": 0,
+      "preparing": 0,
+      "received": 0,
+      "cancelled": 0
+    },
+    "floorBreakdown": {
+      "upstairs": {
+        "orderCount": 9,
+        "revenue": 395,
+        "percentage": 100
+      },
+      "ground": {
+        "orderCount": 0,
+        "revenue": 0,
+        "percentage": 0
+      }
+    },
+    "paymentSummary": {
+      "mode": "Pay at Counter",
+      "counterSettled": 395
+    },
+    "itemSales": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "quantity": 7,
+        "unitPrice": 25,
+        "totalRevenue": 175
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "quantity": 5,
+        "unitPrice": 20,
+        "totalRevenue": 100
+      },
+      {
+        "id": "coffee-02",
+        "name": "Black coffee",
+        "quantity": 2,
+        "unitPrice": 25,
+        "totalRevenue": 50
+      },
+      {
+        "id": "melt-01",
+        "name": "Hot chocolate",
+        "quantity": 1,
+        "unitPrice": 70,
+        "totalRevenue": 70
+      }
+    ],
+    "topItems": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "quantity": 7,
+        "unitPrice": 25,
+        "totalRevenue": 175
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "quantity": 5,
+        "unitPrice": 20,
+        "totalRevenue": 100
+      },
+      {
+        "id": "coffee-02",
+        "name": "Black coffee",
+        "quantity": 2,
+        "unitPrice": 25,
+        "totalRevenue": 50
+      },
+      {
+        "id": "melt-01",
+        "name": "Hot chocolate",
+        "quantity": 1,
+        "unitPrice": 70,
+        "totalRevenue": 70
+      }
+    ],
+    "waiterCallsCount": 0,
+    "isShiftClosed": true,
+    "closedAt": "2026-10-21T08:24:06.022Z",
+    "closedBy": "Evening Lead",
+    "staffNotes": "Day settled",
+    "generatedAt": "2026-10-21T08:24:06.022Z"
+  },
+  "2026-10-21": {
+    "date": "2026-10-21",
+    "totalRevenue": 420,
+    "totalOrders": 6,
+    "validOrdersCount": 6,
+    "totalItemsSold": 7,
+    "statusCounts": {
+      "total": 6,
+      "completed": 4,
+      "ready": 2,
+      "preparing": 0,
+      "received": 0,
+      "cancelled": 0
+    },
+    "floorBreakdown": {
+      "upstairs": {
+        "orderCount": 6,
+        "revenue": 420,
+        "percentage": 100
+      },
+      "ground": {
+        "orderCount": 0,
+        "revenue": 0,
+        "percentage": 0
+      }
+    },
+    "paymentSummary": {
+      "mode": "Pay at Counter",
+      "counterSettled": 420
+    },
+    "itemSales": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "quantity": 3,
+        "unitPrice": 25,
+        "totalRevenue": 75
+      },
+      {
+        "id": "biscoff_shake",
+        "name": "Biscoff Milkshake",
+        "quantity": 2,
+        "unitPrice": 130,
+        "totalRevenue": 260
+      },
+      {
+        "id": "bun_milkella",
+        "name": "Joe's Brew Bun Milkella",
+        "quantity": 1,
+        "unitPrice": 65,
+        "totalRevenue": 65
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "quantity": 1,
+        "unitPrice": 20,
+        "totalRevenue": 20
+      }
+    ],
+    "topItems": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "quantity": 3,
+        "unitPrice": 25,
+        "totalRevenue": 75
+      },
+      {
+        "id": "biscoff_shake",
+        "name": "Biscoff Milkshake",
+        "quantity": 2,
+        "unitPrice": 130,
+        "totalRevenue": 260
+      },
+      {
+        "id": "bun_milkella",
+        "name": "Joe's Brew Bun Milkella",
+        "quantity": 1,
+        "unitPrice": 65,
+        "totalRevenue": 65
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "quantity": 1,
+        "unitPrice": 20,
+        "totalRevenue": 20
+      }
+    ],
+    "waiterCallsCount": 0,
+    "isShiftClosed": true,
+    "closedAt": "2026-10-21T08:32:55.642Z",
+    "closedBy": "Kitchen Dispatcher",
+    "staffNotes": "Evening shift settled. Cash register balanced. Kitchen sanitized.",
+    "generatedAt": "2026-10-21T08:32:55.642Z"
+  }
+}

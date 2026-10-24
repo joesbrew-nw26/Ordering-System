@@ -6,9 +6,11 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node --watch server.js",
+    "tunnel": "npx localtunnel --port 3000"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "express": "^4.19.2",
     "ws": "^8.18.0"
   }

@@ -2,542 +2,713 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Joe's Brew | In-House Table Ordering & Blissful Coffee (Estd 2006)</title>
-  <meta name="description" content="Joe's Brew (Estd 2006). In-house mobile table ordering for ground and upstairs dining. Order fresh chai, filter coffee, snacks, and specials directly to the kitchen.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Joe's Brew | Blissful Coffee — In-House Ordering (Estd 2006)</title>
+  <meta name="description" content="Joe's Brew — Blissful Coffee since 2006. Browse our curated menu, order from your table, and enjoy freshly brewed coffee delivered from our ground-floor kitchen.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@800;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem('jb_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
 </head>
-<body class="cafe-glass-theme">
+<body>
 
-  <!-- Ambient Radiant Warm Cafe Glows -->
-  <div class="ambient-glow glow-top-gold"></div>
-  <div class="ambient-glow glow-mid-amber"></div>
-  <div class="ambient-glow glow-bottom-espresso"></div>
-
-  <!-- Top Glass Navigation Bar -->
-  <header class="glass-navbar" id="glassNavbar">
-    <div class="nav-container">
-      <div class="nav-brand-group" id="navHomeLink" role="button" tabindex="0">
-        <!-- Circular Crop Crest Logo in Nav -->
-        <div class="nav-circle-logo-wrap">
-          <img src="/assets/logo.jpg" alt="Joe's Brew Crest" class="nav-circle-logo-img">
+  <!-- ── NAVBAR ── -->
+  <header class="navbar" id="glassNavbar">
+    <div class="navbar__inner">
+      <a class="navbar__brand" id="navHomeLink" role="button" tabindex="0">
+        <div class="navbar__logo">
+          <img src="/assets/logo.jpg" alt="Joe's Brew" class="navbar__logo-img">
         </div>
-        <div class="nav-brand-titles">
-          <div class="nav-title-row">
-            <span class="nav-brand-name">Joe's Brew</span>
-            <span class="nav-estd-pill">ESTD 2006</span>
-          </div>
-          <span class="nav-brand-sub">Blissful Coffee • In-House Kitchen</span>
+        <div class="navbar__brand-text">
+          <span class="navbar__name">Joe's Brew</span>
+          <span class="navbar__tagline">Vintage Café & Espresso Bar · Estd 2006</span>
         </div>
-      </div>
+      </a>
 
-      <div class="nav-center-tabs">
-        <button class="nav-tab active" id="tabCafeHome">The Café</button>
-        <button class="nav-tab" id="tabFullMenu">Our Menu</button>
-      </div>
+      <nav class="navbar__tabs">
+        <button class="navbar__tab active" id="tabCafeHome">The Café</button>
+        <button class="navbar__tab" id="tabFullMenu">Café Menu</button>
+      </nav>
 
-      <div class="nav-actions">
-        <!-- Table Location Selector Badge -->
-        <button class="glass-btn table-pill-btn" id="tableSelectorBtn" title="Change Physical Table">
-          <span class="table-pulse-dot"></span>
-          <span id="currentTableNavText">Top-04 (Upstairs)</span>
-          <span class="chevron">▾</span>
+      <div class="navbar__actions">
+        <button class="nav-btn nav-btn--table" id="tableSelectorBtn">
+          <span class="nav-btn__dot"></span>
+          <span id="currentTableNavText">Top-04</span>
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-
-        <!-- Waiter Call Pager Button -->
-        <button class="glass-btn waiter-pill-btn" id="callWaiterNavBtn" title="Call Waiter">
-          <span class="bell-icon">🔔</span>
-          <span class="btn-text-desktop">Call Waiter</span>
+        <button class="nav-btn nav-btn--theme" id="themeToggleBtn" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+          <span class="theme-icon theme-icon--sun" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+          <span class="theme-icon theme-icon--moon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
         </button>
-
-        <!-- Cart Badge -->
-        <button class="glass-btn cart-pill-btn" id="cartNavBtn" title="View Cart">
-          <span class="cart-icon">🛒</span>
-          <span class="cart-count-badge" id="cartCountBadge">0</span>
+        <button class="nav-btn" id="callWaiterNavBtn" title="Call Waiter">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="nav-btn__label">Service</span>
+        </button>
+        <button class="nav-btn nav-btn--cart" id="cartNavBtn" title="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span class="cart-badge" id="cartCountBadge">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- =========================================================================
-       VIEW 1: THE CAFE'S HOMEPAGE (Atmospheric Glass Hero & Curated Specials)
-       ========================================================================= -->
-  <section class="page-view active" id="cafeHomeView">
-    
-    <!-- Hero Showcase Section -->
-    <div class="hero-section-container">
-      <div class="hero-acrylic-panel">
+  <!-- ══════════════════════════════════════════════════════════════
+       VIEW 0 — TABLE SELECTOR GATEWAY (Entry Screen)
+       ══════════════════════════════════════════════════════════════ -->
+  <section class="page-view" id="tableGatewayView">
+    <div class="gateway-container">
+      <div class="gateway-card">
+        <div class="gateway-crest">
+          <img src="/assets/logo.jpg" alt="Joe's Brew" class="gateway-crest-img">
+        </div>
         
-        <!-- Seamless Logo Presentation (Circular Crest + Matched Backdrop) -->
-        <div class="hero-logo-centerpiece">
-          <div class="hero-logo-circle-ring">
-            <img src="/assets/logo.jpg" alt="Joe's Brew Blissful Coffee Emblem" class="hero-circle-logo-img">
+        <div class="gateway-badge">
+          <span class="gateway-badge-dot"></span>
+          ✦ Artisanal Café · Estd 2006 ✦
+        </div>
+
+        <h2 class="gateway-title">Where are you seated today?</h2>
+        <p class="gateway-subtitle">
+          Please select your table below or scan the QR code plaque on your tabletop to start ordering.
+        </p>
+
+        <!-- QR Stand Guidance Banner -->
+        <div class="gateway-qr-hint">
+          <div class="gateway-qr-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
           </div>
-          <div class="hero-brand-headline-wrap">
-            <span class="hero-estd-ribbon">✦ ESTABLISHED 2006 • IN-HOUSE ORDERING ✦</span>
-            <h1 class="hero-cafe-name">Joe's Brew</h1>
-            <p class="hero-cafe-motto">Blissful Coffee, Warm Moments & Fresh Kitchen Eats</p>
+          <div>
+            <strong>Scanning a physical QR stand?</strong>
+            <p>Your table locks in automatically when you scan with your phone camera!</p>
           </div>
         </div>
 
-        <p class="hero-lead-text">
-          Spanning two stories of cozy café charm. Whether you are relaxing in our upstairs lounge or on the ground floor, your table orders and service calls route directly to our ground-floor kitchen in real time.
-        </p>
-
-        <!-- Physical Seating & Real-Time Status Card -->
-        <div class="hero-status-strip">
-          <div class="strip-left">
-            <span class="pin-symbol">📍</span>
-            <span>You are ordering at:</span>
-            <button class="strip-table-badge" id="heroTableChangeBtn" title="Change table location">
-              <strong id="heroTableHint">Top-04 (Upstairs Seating)</strong>
-              <span class="edit-hint">✎ Change Table</span>
+        <!-- Floor Section: Terrace -->
+        <div class="gateway-floor-box">
+          <div class="gateway-floor-header">
+            <span class="gateway-floor-title">Terrace Seating</span>
+            <span class="gateway-floor-badge">Tables 1 to 4</span>
+          </div>
+          <div class="gateway-table-grid" id="gatewayTerraceGrid">
+            <button class="gateway-table-btn" data-table="Top-01">
+              <span class="gateway-table-id">Top-01</span>
+              <span class="gateway-table-desc">Table 1</span>
+            </button>
+            <button class="gateway-table-btn" data-table="Top-02">
+              <span class="gateway-table-id">Top-02</span>
+              <span class="gateway-table-desc">Table 2</span>
+            </button>
+            <button class="gateway-table-btn" data-table="Top-03">
+              <span class="gateway-table-id">Top-03</span>
+              <span class="gateway-table-desc">Table 3</span>
+            </button>
+            <button class="gateway-table-btn" data-table="Top-04">
+              <span class="gateway-table-id">Top-04</span>
+              <span class="gateway-table-desc">Table 4</span>
             </button>
           </div>
-          <div class="strip-right">
-            <span class="live-dot-green"></span>
-            <span>Kitchen Display Online</span>
+        </div>
+
+        <!-- Floor Section: Ground Floor -->
+        <div class="gateway-floor-box">
+          <div class="gateway-floor-header">
+            <span class="gateway-floor-title">Ground Floor Seating</span>
+            <span class="gateway-floor-badge">Tables 1 to 4</span>
+          </div>
+          <div class="gateway-table-grid" id="gatewayGroundGrid">
+            <button class="gateway-table-btn" data-table="Ground-01">
+              <span class="gateway-table-id">Ground-01</span>
+              <span class="gateway-table-desc">Table 1</span>
+            </button>
+            <button class="gateway-table-btn" data-table="Ground-02">
+              <span class="gateway-table-id">Ground-02</span>
+              <span class="gateway-table-desc">Table 2</span>
+            </button>
+            <button class="gateway-table-btn" data-table="Ground-03">
+              <span class="gateway-table-id">Ground-03</span>
+              <span class="gateway-table-desc">Table 3</span>
+            </button>
+            <button class="gateway-table-btn" data-table="Ground-04">
+              <span class="gateway-table-id">Ground-04</span>
+              <span class="gateway-table-desc">Table 4</span>
+            </button>
           </div>
         </div>
 
-        <!-- THE PROMINENT BIG "ORDER NOW" MASTER BUTTON -->
-        <div class="hero-cta-wrapper">
-          <button class="btn-order-now-master" id="heroOrderNowBtn">
-            <span class="btn-ambient-glow"></span>
-            <span class="btn-light-sweep"></span>
-            <span class="btn-text">ORDER NOW</span>
-            <span class="btn-arrow-icon">➔</span>
-          </button>
-          <span class="cta-sub-hint">Instant digital ordering • UPI (GPay/PhonePe) & Pay at Counter</span>
-        </div>
-
-        <!-- 3 Pillars Grid -->
-        <div class="hero-pillars-row">
-          <div class="pillar-card">
-            <span class="pillar-icon">🏛️</span>
-            <div>
-              <strong>Two-Story Café</strong>
-              <small>Ground & Upstairs Seating</small>
-            </div>
-          </div>
-          <div class="pillar-card">
-            <span class="pillar-icon">⚡</span>
-            <div>
-              <strong>Zero Friction</strong>
-              <small>No climbing downstairs to order</small>
-            </div>
-          </div>
-          <div class="pillar-card">
-            <span class="pillar-icon">☕</span>
-            <div>
-              <strong>Original 2006 Recipes</strong>
-              <small>Filter Coffee & Bun Milkella</small>
-            </div>
-          </div>
-        </div>
-
+        <p class="gateway-footer-hint">
+          Settle at Counter · Terrace Service Direct from Ground Kitchen
+        </p>
       </div>
     </div>
-
-    <!-- Curated House Specials Showcase Section -->
-    <section class="specials-showcase-section">
-      <div class="specials-header">
-        <div class="gold-filigree-line">
-          <span class="line-side"></span>
-          <span class="line-star">★ HOUSE SPECIALS ★</span>
-          <span class="line-side"></span>
-        </div>
-        <h2 class="specials-title">Chef's Signature Selections</h2>
-        <p class="specials-subtitle">Starred creations handcrafted from our physical cafe catalog</p>
-      </div>
-
-      <!-- Specials Grid (Populated from Menu Specials) -->
-      <div class="specials-cards-grid" id="specialsCarousel">
-        <!-- Injected via JavaScript from data/menu.json -->
-      </div>
-
-      <div class="specials-footer-action">
-        <button class="btn-browse-full-menu" id="browseAllMenuBtn">
-          <span>Explore All 24 Menu Items</span>
-          <span>➔</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Heritage & Timings Section -->
-    <section class="heritage-showcase-section">
-      <div class="heritage-panel">
-        <span class="heritage-eyebrow">THE JOE'S BREW EXPERIENCE</span>
-        <h3 class="heritage-heading">Brewing Bliss Since 2006</h3>
-        <p class="heritage-para">
-          From our thick Belgian Hot Chocolate and slow-brewed South Indian Filter Coffee to our legendary <em>Bun Milkella</em>, Joe’s Brew is built around exceptional taste. Our live digital ordering system bridges the physical distance between our upstairs tables and ground-floor kitchen, ensuring every cup arrives piping hot.
-        </p>
-        <div class="heritage-highlights-row">
-          <div class="highlight-chip">
-            <strong>Estd 2006</strong>
-            <small>Over 18 Years of Craft</small>
-          </div>
-          <div class="highlight-chip">
-            <strong>9:00 AM – 11:00 PM</strong>
-            <small>Daily Fresh Service</small>
-          </div>
-          <div class="highlight-chip">
-            <strong>Instant UPI & Cash</strong>
-            <small>Pay at Table or Counter</small>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </section>
 
-  <!-- =========================================================================
-       VIEW 2: THE FULL MENU PAGE (Exact 24 Items, Category Tabs, Add to Cart)
-       ========================================================================= -->
-  <section class="page-view" id="menuView">
-    
-    <!-- Menu Header Banner -->
-    <div class="menu-banner-container">
-      <div class="menu-banner-card">
-        <div class="menu-banner-left">
-          <div class="menu-table-pill" id="menuTableSwitcherTag">
-            <span class="pin">📍</span>
-            <span>Ordering for:</span>
-            <strong id="menuTableDisplay">Top-04 (Upstairs)</strong>
-            <span class="edit-badge">Change Table</span>
-          </div>
-          <h2 class="menu-title">Café Menu</h2>
-          <p class="menu-desc">Strictly our 24 physical cafe items • Prices in Indian Rupees (₹) • Taxes included</p>
+  <!-- ══════════════════════════════════════════════════════════════
+       VIEW 1 — CAFÉ HOME
+       ══════════════════════════════════════════════════════════════ -->
+  <section class="page-view" id="cafeHomeView">
+
+    <!-- HERO — Full Bleed Immersive -->
+    <div class="hero">
+      <div class="hero__bg">
+        <img src="/assets/vintage-bar-hero.jpg" alt="Joe's Brew Vintage Coffee Bar" class="hero__bg-img">
+        <div class="hero__overlay"></div>
+      </div>
+
+      <div class="hero__content">
+        <div class="hero__badge anim-fade" data-delay="0">
+          <span class="hero__badge-dot"></span>
+          ✦ Artisanal Café & Espresso Bar · Estd 2006 ✦
         </div>
-        <div class="menu-banner-right">
-          <div class="kitchen-online-tag">
-            <span class="live-dot-green"></span>
-            <span>Kitchen Live</span>
+
+        <h1 class="hero__title anim-fade" data-delay="1">
+          <span class="hero__title-main">Joe's</span>
+          <span class="hero__title-accent">BREW</span>
+        </h1>
+
+        <p class="hero__subtitle anim-fade" data-delay="2">
+          Handcrafted Coffee, Slow-Steeped Teas<br class="hide-mobile"> & Fresh Kitchen Comfort Fare
+        </p>
+
+        <div class="hero__location anim-fade" data-delay="3">
+          <button class="hero__table-btn" id="heroTableChangeBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="heroTableHint">Table Top-04 · Terrace Seating</span>
+          </button>
+          <div class="hero__kitchen-live">
+            <span class="pulse-dot"></span>
+            Kitchen & Café Live
           </div>
+        </div>
+
+        <button class="hero__cta anim-fade" data-delay="4" id="heroOrderNowBtn">
+          <span>Order Now</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <p class="hero__payment-hint anim-fade" data-delay="5">
+          Pay at Counter · Terrace Service · Cash & Cards Accepted
+        </p>
+      </div>
+
+      <!-- Scroll indicator to Heritage Journey -->
+      <div class="hero__scroll-hint anim-fade" data-delay="6">
+        <span>Scroll to Heritage Journey</span>
+        <div class="hero__scroll-line"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         8. HERITAGE & ORIGIN CHRONICLE (2006 — 2026)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="about" id="heritageChronicleSection">
+      <div class="about__inner anim-slide">
+        
+        <!-- Left: Narrative, Timeline & Faith Inscription -->
+        <div class="about__content">
+          <div class="heritage-eyebrow-badge">
+            <span class="heritage-dot"></span>
+            ✦ Estd 2006 · The Resurrection Journey ✦
+          </div>
+
+          <h2 class="about__title">
+            Our Journey<br>
+            <span class="heritage-title-sub">From "Time Pass" to Joe's Brew</span>
+          </h2>
+
+          <p class="about__text">
+            It all began in 2006 with a small dream and a big hope. We opened our first coffee stall, <strong>“TIME PASS”</strong> — more than just a shop, it was a home where friendships blossomed, conversations flowed, and memories were brewed.
+          </p>
+
+          <p class="about__text" style="margin-top: 10px;">
+            For two precious years we served coffee and shared smiles until challenges forced our doors to close in 2008. <em>Yet the dream never died.</em> It simply waited to rise again.
+          </p>
+
+          <!-- Archival Timeline Milestones -->
+          <div class="heritage-timeline">
+            <div class="heritage-timeline__node">
+              <span class="timeline-badge">2006</span>
+              <div class="timeline-info">
+                <strong>“Time Pass” Opens</strong>
+                <span>Humble beginnings & lifelong memories</span>
+              </div>
+            </div>
+            <div class="heritage-timeline__arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+            </div>
+            <div class="heritage-timeline__node">
+              <span class="timeline-badge timeline-badge--pause">2008</span>
+              <div class="timeline-info">
+                <strong>Doors Close · Faith Endures</strong>
+                <span>Tested by trials, the dream stayed alive</span>
+              </div>
+            </div>
+            <div class="heritage-timeline__arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+            </div>
+            <div class="heritage-timeline__node heritage-timeline__node--active">
+              <span class="timeline-badge timeline-badge--gold">2026</span>
+              <div class="timeline-info">
+                <strong>Joe's Brew Reborn</strong>
+                <span>Rebuilt with faith. Fueled by love.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scripture & Motto Inscription Plaque -->
+          <div class="heritage-scripture-plaque">
+            <div class="scripture-cross">✝</div>
+            <blockquote class="scripture-text">
+              “I can do all things through Christ who strengthens me.”
+            </blockquote>
+            <cite class="scripture-cite">Philippians 4:13</cite>
+            <div class="heritage-motto-tag">
+              <span>COFFEE</span>
+              <span class="motto-sep">✦</span>
+              <span>COMMUNITY</span>
+              <span class="motto-sep">✦</span>
+              <span>CHRIST</span>
+            </div>
+          </div>
+
+          <!-- Quick Legacy Stats -->
+          <div class="about__stats">
+            <div class="stat-card">
+              <span class="stat-card__value">2006</span>
+              <span class="stat-card__label">First Dream Rooted</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card__value">2026</span>
+              <span class="stat-card__label">Rebuilt & Thriving</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card__value">2 Floors</span>
+              <span class="stat-card__label">Ground & Top Cafe</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card__value">1 Spirit</span>
+              <span class="stat-card__label">Same Dream · Stronger Purpose</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Museum-Framed Archival Poster Wall Artifact -->
+        <div class="about__poster-col anim-slide">
+          <div class="heritage-frame-container">
+            <div class="heritage-frame-matting">
+              <img src="/assets/history-journey.jpg" alt="Our Journey: From Time Pass to Joe's Brew 2006-2026 Chronicle" class="heritage-poster-img" loading="lazy">
+            </div>
+
+            <!-- Filigree Brass Corner Accents -->
+            <div class="frame-corner frame-corner--tl"></div>
+            <div class="frame-corner frame-corner--tr"></div>
+            <div class="frame-corner frame-corner--bl"></div>
+            <div class="frame-corner frame-corner--br"></div>
+          </div>
+
+          <p class="heritage-caption-note">✦ Official Archival Chronicle · Estd 2006 – 2026 ✦</p>
+        </div>
+
+      </div>
+    </section>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       VIEW 2 — FULL MENU
+       ══════════════════════════════════════════════════════════════ -->
+  <section class="page-view" id="menuView">
+    <div class="menu-header">
+      <div class="menu-header__inner">
+        <div>
+          <div class="menu-header__table" id="menuTableSwitcherTag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="menuTableDisplay">Top-04 (Terrace)</span>
+            <span class="menu-header__change">Change</span>
+          </div>
+          <h2 class="menu-header__title">The Heritage Café Menu</h2>
+          <p class="menu-header__desc">24 Handcrafted Creations · Prices in ₹ · Taxes Included</p>
+        </div>
+        <div class="menu-header__status">
+          <span class="pulse-dot"></span>
+          Kitchen & Café Live
         </div>
       </div>
     </div>
 
-    <!-- Category Glass Pills Bar -->
-    <nav class="category-sticky-bar">
-      <div class="category-scroll-strip" id="menuCategoriesBar">
-        <button class="cat-pill-btn active" data-cat="ALL">All Items (24)</button>
-        <button class="cat-pill-btn" data-cat="TEA">Tea (3)</button>
-        <button class="cat-pill-btn" data-cat="COFFEE">Coffee (2)</button>
-        <button class="cat-pill-btn" data-cat="MELT">Melt (1)</button>
-        <button class="cat-pill-btn" data-cat="COOKIES">Cookies (2)</button>
-        <button class="cat-pill-btn" data-cat="DRINKS">Drinks (7)</button>
-        <button class="cat-pill-btn" data-cat="SNACKS">Snacks (5)</button>
-        <button class="cat-pill-btn" data-cat="EATS">Eats (4)</button>
+    <nav class="cat-bar">
+      <div class="cat-bar__scroll" id="menuCategoriesBar">
+        <button class="cat-btn active" data-cat="ALL">All Items</button>
+        <button class="cat-btn" data-cat="TEA">Artisan Teas</button>
+        <button class="cat-btn" data-cat="COFFEE">Fresh Coffee</button>
+        <button class="cat-btn" data-cat="MELT">Melt & Toast</button>
+        <button class="cat-btn" data-cat="COOKIES">Cookies</button>
+        <button class="cat-btn" data-cat="DRINKS">Cold Beverages</button>
+        <button class="cat-btn" data-cat="SNACKS">Quick Bites</button>
+        <button class="cat-btn" data-cat="EATS">Hearty Eats</button>
       </div>
     </nav>
 
-    <!-- 24 Physical Menu Items Grid -->
-    <main class="menu-grid-container">
-      <div class="menu-items-grid" id="menuItemsGrid">
-        <!-- Rendered dynamically strictly from data/menu.json -->
-      </div>
+    <main class="menu-grid-wrap">
+      <div class="menu-grid" id="menuItemsGrid"></div>
     </main>
-
   </section>
 
-  <!-- =========================================================================
-       FLOATING STICKY BOTTOM CART BAR (Appears when items are in cart)
-       ========================================================================= -->
-  <div class="sticky-cart-bar" id="stickyCartBar">
-    <div class="sticky-cart-inner">
-      <div class="sticky-cart-summary">
-        <div class="cart-qty-pill">
-          <span id="stickyCartCount">0</span> items
-        </div>
-        <div class="sticky-cart-price">
-          <span class="currency">₹</span><span id="stickyCartTotal">0</span>
-        </div>
+  <!-- ── STICKY CART BAR ── -->
+  <div class="cart-bar" id="stickyCartBar">
+    <div class="cart-bar__inner">
+      <div class="cart-bar__info">
+        <span class="cart-bar__count"><span id="stickyCartCount">0</span> items</span>
+        <span class="cart-bar__total">₹<span id="stickyCartTotal">0</span></span>
       </div>
-      <button class="btn-view-cart-gold" id="openCartBtn">
-        <span>View Cart</span>
-        <span class="arrow">➔</span>
+      <button class="cart-bar__btn" id="openCartBtn">
+        View Order
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- =========================================================================
-       MODAL 1: SLIDE-UP CART DRAWER
-       ========================================================================= -->
-  <div class="glass-modal-backdrop" id="cartModalBackdrop">
-    <div class="glass-sheet cart-sheet" id="cartSheet">
-      <div class="sheet-header">
-        <div class="sheet-title-group">
-          <span class="sheet-pretitle">YOUR IN-HOUSE TICKET</span>
-          <h3 class="sheet-title">Order Review</h3>
-          <div class="sheet-table-chip" id="cartTableBadge">Table: Top-04 (Upstairs)</div>
+  <!-- ── MODAL: CART ── -->
+  <div class="modal-backdrop" id="cartModalBackdrop">
+    <div class="modal" id="cartSheet">
+      <div class="modal__handle"></div>
+      <div class="modal__head">
+        <div>
+          <p class="modal__eyebrow">Table Ticket</p>
+          <h3 class="modal__title">Your Order Ticket</h3>
+          <span class="modal__chip" id="cartTableBadge">Table: Top-04</span>
         </div>
-        <button class="sheet-close-btn" id="closeCartBtn">&times;</button>
+        <button class="modal__close" id="closeCartBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
-
-      <div class="sheet-body">
-        <div class="cart-items-list" id="cartItemsList">
-          <!-- Dynamically populated cart items -->
+      <div class="modal__body">
+        <!-- Dining / Parcel Mode Quick Banner -->
+        <div class="order-mode-section">
+          <div class="order-mode-label-row">
+            <span class="order-mode-eyebrow">Item Dining Options</span>
+            <span class="order-mode-active-chip" id="orderModeChip">🍽️ Dine-In by Default</span>
+          </div>
+          <p class="order-mode-hint-text">
+            Choose <strong>Dine-In</strong> or <strong>Takeaway</strong> individually for each item below.
+          </p>
+          <div class="order-mode-quick-row">
+            <button type="button" class="order-mode-quick-btn" id="btnSetAllDineIn">🍽️ Set All Dine-In</button>
+            <button type="button" class="order-mode-quick-btn" id="btnSetAllTakeaway">🥡 Set All Takeaway</button>
+          </div>
         </div>
 
-        <div class="cooking-note-block">
-          <label for="orderGeneralNotes" class="note-label">Special Cooking Instructions (Optional)</label>
-          <input type="text" id="orderGeneralNotes" class="glass-input" placeholder="e.g. Extra hot, sugar on the side, bring drinks first...">
+        <div class="cart-list" id="cartItemsList"></div>
+        <div class="cart-note">
+          <label for="orderGeneralNotes" class="cart-note__label">Special Preparation Instructions</label>
+          <input type="text" id="orderGeneralNotes" class="cart-note__input" placeholder="e.g. Extra hot, less sugar, no ice...">
         </div>
-
-        <div class="bill-breakdown-card">
-          <div class="bill-row">
-            <span>Item Subtotal</span>
-            <span class="val" id="cartSubtotalVal">₹0</span>
+        <div class="cart-bill">
+          <div class="cart-bill__row"><span>Subtotal</span><span id="cartSubtotalVal">₹0</span></div>
+          <div class="cart-bill__row cart-bill__row--packaging" id="cartPackagingRow" style="display: none;">
+            <span class="cart-bill__packaging-label">
+              <span>Packaging & Containers</span>
+              <small class="cart-bill__packaging-tag">Parcel</small>
+            </span>
+            <span id="cartPackagingVal">+₹0</span>
           </div>
-          <div class="bill-row">
-            <span>Taxes & Service</span>
-            <span class="val">Included</span>
-          </div>
-          <div class="bill-divider"></div>
-          <div class="bill-row total-row">
-            <span>Grand Total</span>
-            <span class="total-val" id="cartGrandTotalVal">₹0</span>
-          </div>
+          <div class="cart-bill__breakdown-list" id="cartPackagingBreakdown" style="display: none;"></div>
+          <div class="cart-bill__row"><span>Taxes</span><span>Included</span></div>
+          <div class="cart-bill__divider"></div>
+          <div class="cart-bill__row cart-bill__row--total"><span>Total</span><span id="cartGrandTotalVal">₹0</span></div>
         </div>
       </div>
-
-      <div class="sheet-footer">
-        <button class="btn-proceed-payment-gold" id="proceedToPaymentBtn">
-          <span>Proceed to Payment</span>
-          <span class="proceed-total" id="proceedPaymentTotal">₹0</span>
-          <span>➔</span>
+      <div class="modal__foot">
+        <button class="btn-primary btn-primary--full" id="proceedToPaymentBtn">
+          <span>Proceed to Checkout</span>
+          <span class="btn-primary__badge" id="proceedPaymentTotal">₹0</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- =========================================================================
-       MODAL 2: PAYMENT PAGE / MODAL (UPI Fast Pay & Pay at Counter)
-       ========================================================================= -->
-  <div class="glass-modal-backdrop" id="paymentModalBackdrop">
-    <div class="glass-sheet payment-sheet" id="paymentSheet">
-      <div class="sheet-header">
-        <div class="sheet-title-group">
-          <span class="sheet-pretitle">STEP 2 OF 2</span>
-          <h3 class="sheet-title">Choose Payment Method</h3>
-          <div class="sheet-table-chip" id="paymentTableChip">Top-04 (Upstairs)</div>
+  <!-- ── MODAL: CUSTOMER CONTACT & WHATSAPP NOTIFICATION ── -->
+  <div class="modal-backdrop" id="customerPhoneModalBackdrop">
+    <div class="modal" id="customerPhoneSheet">
+      <div class="modal__handle"></div>
+      <div class="modal__head">
+        <div>
+          <p class="modal__eyebrow">Step 1 of 2 · WhatsApp Alert</p>
+          <h3 class="modal__title">Contact Details</h3>
+          <span class="modal__chip" id="phoneTableChip">Table: Top-04</span>
         </div>
-        <button class="sheet-close-btn" id="closePaymentBtn">&times;</button>
-      </div>
-
-      <div class="sheet-body">
-        <div class="payment-amount-banner">
-          <span class="amt-caption">Amount Payable</span>
-          <h2 class="amt-value" id="paymentBannerAmount">₹0</h2>
-        </div>
-
-        <!-- Payment Mode Tabs -->
-        <div class="payment-modes-selector">
-          <label class="payment-mode-card active" id="modeCardUpi">
-            <input type="radio" name="payMode" value="UPI" checked>
-            <div class="mode-info">
-              <span class="mode-badge">Recommended</span>
-              <strong class="mode-title">Instant UPI App / QR</strong>
-              <small>Google Pay, PhonePe, Paytm, BHIM</small>
-            </div>
-            <span class="radio-indicator"></span>
-          </label>
-
-          <label class="payment-mode-card" id="modeCardCounter">
-            <input type="radio" name="payMode" value="PAY_LATER">
-            <div class="mode-info">
-              <strong class="mode-title">Pay at Counter / Waiter</strong>
-              <small>Cash or Card upon finishing your meal</small>
-            </div>
-            <span class="radio-indicator"></span>
-          </label>
-        </div>
-
-        <!-- UPI Deep Link Box -->
-        <div class="upi-details-container" id="upiDetailsContainer">
-          <div class="upi-apps-row">
-            <div class="upi-app-btn gpay">
-              <span>Google Pay</span>
-            </div>
-            <div class="upi-app-btn phonepe">
-              <span>PhonePe</span>
-            </div>
-            <div class="upi-app-btn paytm">
-              <span>Paytm</span>
-            </div>
-            <div class="upi-app-btn bhim">
-              <span>BHIM UPI</span>
-            </div>
-          </div>
-
-          <div class="qr-code-box">
-            <div class="qr-canvas-wrap" id="qrContainer">
-              <svg class="qr-placeholder-svg" viewBox="0 0 100 100">
-                <rect width="100" height="100" fill="#FFF8EE" rx="8"/>
-                <path d="M10 10h30v30h-30zM15 15h20v20h-20zM20 20h10v10h-10zM60 10h30v30h-30zM65 15h20v20h-20zM70 20h10v10h-10zM10 60h30v30h-30zM15 65h20v20h-20zM20 70h10v10h-10zM50 10h5v15h-5zM45 35h15v5h-15zM50 45h20v10h-20zM75 50h15v10h-15zM60 70h30v5h-30zM70 80h10v10h-10zM45 60h10v30h-10z" fill="#20120B"/>
-              </svg>
-            </div>
-            <span class="qr-caption">Scan with any UPI App • Joe's Brew VPA</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sheet-footer">
-        <button class="btn-order-confirm-gold" id="confirmOrderBtn">
-          <span>Confirm & Send Order to Kitchen</span>
-          <span>➔</span>
+        <button class="modal__close" id="closePhoneModalBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- =========================================================================
-       MODAL 3: ORDER SUCCESS & LIVE STATUS TRACKER
-       ========================================================================= -->
-  <div class="glass-modal-backdrop" id="orderSuccessModal">
-    <div class="glass-sheet success-sheet">
-      <div class="success-icon-wrap">
-        <span class="vintage-check">✓</span>
-      </div>
-
-      <h3 class="success-title">Order Sent to Kitchen!</h3>
-      <p class="success-subtitle">The ground-floor kitchen has received your ticket.</p>
-
-      <div class="order-ticket-card">
-        <div class="ticket-header">
+      <div class="modal__body">
+        <div class="phone-wa-banner">
+          <div class="phone-wa-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.58 3.38 17.07L2.12 21.72C2.04 22.02 2.31 22.3 2.61 22.21L7.26 20.95C8.71 21.77 10.33 22.23 12.02 22.23C17.54 22.23 22.02 17.75 22.02 12.23C22 6.48 17.52 2 12 2Z" fill="#25D366"/><path d="M17.47 14.38C17.18 14.23 15.74 13.52 15.47 13.43C15.2 13.33 15.01 13.28 14.81 13.57C14.62 13.86 14.07 14.51 13.9 14.71C13.73 14.9 13.56 14.93 13.27 14.78C12.98 14.63 12.05 14.33 10.94 13.34C10.08 12.57 9.5 11.62 9.33 11.33C9.16 11.04 9.31 10.88 9.46 10.74C9.59 10.6 9.75 10.39 9.9 10.22C10.04 10.05 10.09 9.93 10.19 9.73C10.29 9.54 10.24 9.37 10.17 9.22C10.1 9.08 9.52 7.64 9.28 7.06C9.04 6.5 8.8 6.57 8.63 6.57C8.46 6.56 8.27 6.56 8.08 6.56C7.88 6.56 7.57 6.63 7.31 6.92C7.04 7.21 6.3 7.9 6.3 9.31C6.3 10.72 7.33 12.07 7.47 12.27C7.62 12.46 9.5 15.36 12.37 16.6C13.06 16.9 13.59 17.07 14 17.21C14.7 17.43 15.34 17.4 15.84 17.32C16.4 17.24 17.56 16.62 17.8 15.94C18.04 15.27 18.04 14.69 17.97 14.57C17.9 14.45 17.76 14.53 17.47 14.38Z" fill="#FFF"/></svg>
+          </div>
           <div>
-            <span class="ticket-label">ORDER NUMBER</span>
-            <strong class="ticket-no" id="successOrderNo">JB-0001</strong>
-          </div>
-          <div class="ticket-table" id="successTable">Top-04 (Upstairs)</div>
-        </div>
-
-        <!-- Live Step Tracker -->
-        <div class="live-status-tracker">
-          <div class="tracker-step active" id="stepReceived">
-            <div class="step-dot"></div>
-            <div class="step-text">
-              <strong>Received</strong>
-              <small>Kitchen acknowledged</small>
-            </div>
-          </div>
-          <div class="tracker-step" id="stepPreparing">
-            <div class="step-dot"></div>
-            <div class="step-text">
-              <strong>Preparing</strong>
-              <small>Freshly brewing</small>
-            </div>
-          </div>
-          <div class="tracker-step" id="stepReady">
-            <div class="step-dot"></div>
-            <div class="step-text">
-              <strong>Ready to Serve</strong>
-              <small>Heading upstairs</small>
-            </div>
+            <strong>Instant WhatsApp Order Alert</strong>
+            <p>Our kitchen will WhatsApp you the second your freshly brewed order is ready to serve!</p>
           </div>
         </div>
-      </div>
 
-      <div class="success-actions">
-        <button class="btn-glass-secondary" id="orderDoneBtn">Back to Menu</button>
-        <button class="btn-glass-secondary waiter-action-btn" id="successCallWaiterBtn">🔔 Call Waiter</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================================
-       MODAL 4: CALL WAITER DIALOG
-       ========================================================================= -->
-  <div class="glass-modal-backdrop" id="waiterModalBackdrop">
-    <div class="glass-sheet waiter-sheet">
-      <div class="sheet-header">
-        <div class="sheet-title-group">
-          <span class="sheet-pretitle">UPSTAIRS SERVICE PAGER</span>
-          <h3 class="sheet-title">Call Waiter</h3>
-          <div class="sheet-table-chip" id="waiterTableChip">Top-04 (Upstairs)</div>
+        <div class="cart-note" style="margin-top: 16px;">
+          <label for="customerPhoneInput" class="cart-note__label">WhatsApp Mobile Number <span style="color:#E74C3C">*</span></label>
+          <div class="phone-input-group">
+            <span class="phone-prefix">+91</span>
+            <input type="tel" id="customerPhoneInput" class="cart-note__input phone-input" placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel-national" required>
+          </div>
+          <small class="phone-helper-text" id="phoneErrorHint">Kitchen uses this to send your order ready notification</small>
         </div>
-        <button class="sheet-close-btn" id="closeWaiterModalBtn">&times;</button>
-      </div>
 
-      <div class="sheet-body">
-        <p class="waiter-desc">Select what you need, and our staff downstairs will be alerted instantly:</p>
-
-        <div class="waiter-reasons-grid">
-          <button class="reason-pill" data-reason="Water Refill">
-            <span class="reason-icon">💧</span>
-            <span>Water Refill</span>
-          </button>
-          <button class="reason-pill" data-reason="Request Bill / Payment">
-            <span class="reason-icon">🧾</span>
-            <span>Request Bill</span>
-          </button>
-          <button class="reason-pill" data-reason="Assistance with Order">
-            <span class="reason-icon">🙋‍♂️</span>
-            <span>General Assistance</span>
-          </button>
-          <button class="reason-pill" data-reason="Clean Table">
-            <span class="reason-icon">🧹</span>
-            <span>Clean Table</span>
-          </button>
+        <div class="cart-note" style="margin-top: 14px;">
+          <label for="customerNameInput" class="cart-note__label">Your Name (Optional)</label>
+          <input type="text" id="customerNameInput" class="cart-note__input" placeholder="e.g. Rahul, Priya" autocomplete="name">
         </div>
       </div>
-
-      <div class="sheet-footer">
-        <button class="btn-order-confirm-gold" id="sendWaiterCallBtn">
-          <span>Send Call to Waitstaff</span>
+      <div class="modal__foot">
+        <button class="btn-primary btn-primary--full" id="proceedToPaymentFinalBtn">
+          <span>Review & Confirm Order →</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- =========================================================================
-       MODAL 5: PHYSICAL TABLE SELECTOR
-       ========================================================================= -->
-  <div class="glass-modal-backdrop" id="tableModalBackdrop">
-    <div class="glass-sheet table-sheet">
-      <div class="sheet-header">
-        <div class="sheet-title-group">
-          <span class="sheet-pretitle">CAFE SEATING</span>
-          <h3 class="sheet-title">Select Physical Table</h3>
+  <!-- ── MODAL: ORDER CONFIRMATION & BILLING ── -->
+  <div class="modal-backdrop" id="paymentModalBackdrop">
+    <div class="modal" id="paymentSheet">
+      <div class="modal__handle"></div>
+      <div class="modal__head">
+        <div>
+          <p class="modal__eyebrow">Step 2 of 2</p>
+          <h3 class="modal__title">Confirm Order</h3>
+          <span class="modal__chip" id="paymentTableChip">Top-04</span>
         </div>
-        <button class="sheet-close-btn" id="closeTableModalBtn">&times;</button>
+        <button class="modal__close" id="closePaymentBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
-
-      <div class="sheet-body">
-        <div class="floor-block">
-          <h4 class="floor-heading">Upstairs Seating (Top Floor)</h4>
-          <div class="table-buttons-grid" id="upstairsTableBtns"></div>
+      <div class="modal__body">
+        <div class="pay-amount">
+          <span class="pay-amount__label">Total Bill Amount</span>
+          <span class="pay-amount__value" id="paymentBannerAmount">₹0</span>
+        </div>
+        
+        <!-- Order Type Indicator in Confirmation Sheet -->
+        <div class="payment-order-type-badge" id="paymentOrderTypeBadge" style="margin-top: 10px; margin-bottom: 12px; background: rgba(30, 20, 14, 0.85); border: 1px solid rgba(200, 157, 86, 0.35); border-radius: var(--radius-xs); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.82rem; color: var(--text-muted);">Dining Preference:</span>
+          <span id="paymentOrderTypeLabel" style="font-family: var(--font-vintage); font-size: 0.86rem; font-weight: 700; color: var(--brass-bright);">🍽️ Dine-In Table</span>
         </div>
 
-        <div class="floor-block">
-          <h4 class="floor-heading">Ground Floor Seating</h4>
-          <div class="table-buttons-grid" id="groundTableBtns"></div>
+        <div class="counter-pay-banner" style="margin-top: 10px; background: rgba(200, 157, 86, 0.1); border: 1.5px solid var(--brass-gold); border-radius: var(--radius-sm); padding: 18px 16px; display: flex; align-items: flex-start; gap: 14px;">
+          <div style="font-size: 1.8rem; line-height: 1; flex-shrink: 0;">🏷️</div>
+          <div>
+            <strong style="font-family: var(--font-vintage); font-size: 0.96rem; color: var(--brass-bright); display: block; margin-bottom: 4px;">Pay at Billing Counter</strong>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">
+              No online payment required. Your order ticket will be transmitted straight to the kitchen. Please settle your bill at the counter after your meal or pick-up.
+            </p>
+          </div>
         </div>
+
+        <div style="margin-top: 14px; background: rgba(33, 21, 14, 0.85); border: 1px solid rgba(200, 157, 86, 0.3); border-radius: var(--radius-xs); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.82rem; color: var(--text-muted);">Payment Method:</span>
+          <span style="font-family: var(--font-vintage); font-size: 0.84rem; font-weight: 700; color: #FFF;">Cash / Card at Counter</span>
+        </div>
+      </div>
+      <div class="modal__foot">
+        <button class="btn-primary btn-primary--full" id="confirmOrderBtn">
+          <span>Place Order • Pay at Counter</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Feed -->
-  <div class="vintage-toast-stack" id="toastStack"></div>
+  <!-- ── MODAL: ORDER SUCCESS ── -->
+  <div class="modal-backdrop" id="orderSuccessModal">
+    <div class="modal modal--success">
+      <div class="modal__handle"></div>
+      <div class="success-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h3 class="modal__title" style="text-align:center">Order Sent!</h3>
+      <p class="modal__subtitle">Kitchen has received your ticket.</p>
+      <div class="ticket-card">
+        <div class="ticket-card__top">
+          <div><span class="ticket-card__label">ORDER</span><strong class="ticket-card__id" id="successOrderNo">JB-0001</strong></div>
+          <span class="ticket-card__table" id="successTable">Top-04</span>
+        </div>
+        <div class="tracker">
+          <div class="tracker__step active" id="stepReceived"><div class="tracker__dot"></div><div><strong>Received</strong><small>Kitchen acknowledged</small></div></div>
+          <div class="tracker__step" id="stepPreparing"><div class="tracker__dot"></div><div><strong>Preparing</strong><small>Freshly brewing</small></div></div>
+          <div class="tracker__step" id="stepReady"><div class="tracker__dot"></div><div><strong>Ready</strong><small>Heading to your table</small></div></div>
+        </div>
+      </div>
+      <div class="success-actions">
+        <button class="btn-secondary" id="orderDoneBtn">Back to Menu</button>
+        <button class="btn-secondary" id="successCallWaiterBtn">🔔 Call Waiter</button>
+      </div>
+    </div>
+  </div>
 
-  <!-- Footer Signature -->
-  <footer class="cafe-footer">
-    <div class="footer-container">
-      <div class="footer-circle-logo">
-        <img src="/assets/logo.jpg" alt="Joe's Brew" class="footer-circle-img">
+  <!-- ── MODAL: CALL WAITER ── -->
+  <div class="modal-backdrop" id="waiterModalBackdrop">
+    <div class="modal">
+      <div class="modal__handle"></div>
+      <div class="modal__head">
+        <div>
+          <p class="modal__eyebrow">Service</p>
+          <h3 class="modal__title">Call Staff</h3>
+          <span class="modal__chip" id="waiterTableChip">Top-04</span>
+        </div>
+        <button class="modal__close" id="closeWaiterModalBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
-      <p class="footer-brand-title">Joe's Brew • Estd 2006</p>
-      <p class="footer-subtext">Blissful Coffee & In-House Digital Ordering</p>
-      <div class="footer-kds-route">
-        <a href="/kds" class="kds-portal-link" target="_blank">Staff Kitchen Display System (KDS) ➔</a>
+      <div class="modal__body">
+        <p class="waiter-desc">What do you need? Staff will be alerted instantly.</p>
+        <div class="waiter-grid">
+          <button class="waiter-option active" data-reason="Water Refill"><span>💧</span>Water</button>
+          <button class="waiter-option" data-reason="Request Bill / Payment"><span>🧾</span>Bill</button>
+          <button class="waiter-option" data-reason="Assistance with Order"><span>🙋‍♂️</span>Help</button>
+          <button class="waiter-option" data-reason="Clean Table"><span>🧹</span>Clean</button>
+        </div>
       </div>
+      <div class="modal__foot">
+        <button class="btn-primary btn-primary--full" id="sendWaiterCallBtn">Send Alert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: TABLE SELECT ── -->
+  <div class="modal-backdrop" id="tableModalBackdrop">
+    <div class="modal">
+      <div class="modal__handle"></div>
+      <div class="modal__head">
+        <div>
+          <p class="modal__eyebrow">Welcome to Joe's Brew</p>
+          <h3 class="modal__title">Select Your Table</h3>
+          <p class="modal__table-hint">Tap where you are seated to start ordering:</p>
+        </div>
+        <button class="modal__close" id="closeTableModalBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div style="background: rgba(36, 22, 14, 0.85); border: 1px solid rgba(200, 157, 86, 0.4); border-radius: var(--radius-xs); padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.82rem; color: var(--text-muted);">Current Seating:</span>
+          <strong id="modalActiveTableBadge" style="color: var(--brass-bright); font-family: var(--font-vintage); font-size: 0.92rem;">Top-01 · Terrace</strong>
+        </div>
+        <div class="floor-section">
+          <h4 class="floor-section__title">🏛️ Terrace Seating (Tables 1 to 4)</h4>
+          <div class="table-grid" id="terraceTableBtns"></div>
+        </div>
+        <div class="floor-section">
+          <h4 class="floor-section__title">☕ Ground Floor Seating (Tables 1 to 4)</h4>
+          <div class="table-grid" id="groundTableBtns"></div>
+        </div>
+      </div>
+      <div class="modal__foot">
+        <button class="btn-primary btn-primary--full" id="confirmTableSelectionBtn">
+          <span>Confirm Table & View Menu</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: ITEM DETAIL (Tap to Expand) ── -->
+  <div class="modal-backdrop" id="itemDetailModalBackdrop">
+    <div class="modal" id="itemDetailModal">
+      <div class="modal__handle"></div>
+      <div class="modal__head">
+        <div>
+          <p class="modal__eyebrow" id="itemDetailCategory">CATEGORY</p>
+          <h3 class="modal__title" id="itemDetailName">Item Name</h3>
+          <div id="itemDetailBadgeWrap" style="margin-top: 6px;"></div>
+        </div>
+        <button class="modal__close" id="closeItemDetailBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <p class="item-detail-desc" id="itemDetailDescription"></p>
+        <div class="item-detail-tags" id="itemDetailTags"></div>
+        
+        <!-- Dining Preference for Item -->
+        <div class="detail-mode-section" style="margin-top: 14px;">
+          <label class="cart-note__label">Dining Preference</label>
+          <div class="order-mode-toggle" role="radiogroup">
+            <button type="button" class="order-mode-btn active" id="detailModeDineInBtn" data-mode="Dine-In">
+              <span>🍽️ Dine-In Table</span>
+            </button>
+            <button type="button" class="order-mode-btn" id="detailModeTakeawayBtn" data-mode="Takeaway">
+              <span>🥡 Takeaway</span>
+            </button>
+          </div>
+          <div class="parcel-info-badge" id="detailParcelNotice" style="display: none; margin-top: 8px;">
+            <p class="parcel-info-badge__desc" id="detailParcelNoticeText"></p>
+          </div>
+        </div>
+
+        <div class="cart-note" style="margin-top: 16px;">
+          <label for="itemCustomNoteInput" class="cart-note__label">Cooking / Serving Instructions</label>
+          <input type="text" id="itemCustomNoteInput" class="cart-note__input" placeholder="e.g. Less sugar, extra hot, no ice, parcel...">
+        </div>
+        <div class="item-detail-qty-row">
+          <span class="item-detail-price" id="itemDetailPrice">₹0</span>
+          <div class="qty-counter-group">
+            <button class="qty-btn" id="itemDetailMinusBtn">−</button>
+            <span class="qty-display" id="itemDetailQtyDisplay">1</span>
+            <button class="qty-btn" id="itemDetailPlusBtn">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal__foot">
+        <button class="btn-primary btn-primary--full" id="itemDetailAddToCartBtn">
+          <span>Add to Ticket</span>
+          <span class="btn-primary__badge" id="itemDetailBtnTotal">₹0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobile-nav" id="mobileNavTabs">
+    <button class="mobile-nav__btn active" id="mobileTabHome"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Café</span></button>
+    <button class="mobile-nav__btn" id="mobileTabMenu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span>Menu</span></button>
+    <button class="mobile-nav__btn" id="mobileTabCart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg><span>Cart</span><span class="cart-badge mobile-cart-badge" id="mobileCartCountBadge" style="display:none;">0</span></button>
+    <button class="mobile-nav__btn" id="mobileTabWaiter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Staff</span></button>
+  </nav>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__logo">
+        <img src="/assets/logo.jpg" alt="Joe's Brew" class="footer__logo-img">
+      </div>
+      <p class="footer__name">Joe's Brew</p>
+      <p class="footer__sub">Blissful Coffee · Estd 2006 · In-House Ordering</p>
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

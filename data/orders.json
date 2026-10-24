@@ -1,9 +1,1938 @@
 [
   {
+    "id": "JB-965241",
+    "orderNumber": "0043",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Takeaway",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "category": "TEA",
+        "price": 20,
+        "quantity": 1,
+        "mode": "Takeaway",
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Takeaway",
+    "packagingCharge": 50,
+    "generalInstructions": "[🥡 TAKEAWAY / PARCEL]",
+    "subtotal": 45,
+    "total": 95,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T11:22:45.241Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T11:22:45.241Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-24T11:23:12.468Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-24T11:23:32.816Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T11:23:42.412Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-797594",
+    "orderNumber": "0042",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "orderMode": "Dine-In",
+    "packagingCharge": 0,
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T10:46:37.594Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T10:46:37.594Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T10:46:46.478Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-264734",
+    "orderNumber": "0041",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "melt-01",
+        "name": "Hot chocolate",
+        "category": "MELT",
+        "price": 70,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "orderMode": "Dine-In",
+    "packagingCharge": 0,
+    "generalInstructions": "",
+    "subtotal": 70,
+    "total": 70,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T10:37:44.734Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T10:37:44.734Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T10:46:47.999Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-249706",
+    "orderNumber": "0040",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "coffee-01",
+        "name": "Coffee",
+        "category": "COFFEE",
+        "price": 30,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "orderMode": "Dine-In",
+    "packagingCharge": 0,
+    "generalInstructions": "",
+    "subtotal": 30,
+    "total": 30,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T10:37:29.706Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T10:37:29.706Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T10:46:47.243Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-211546",
+    "orderNumber": "0039",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "category": "TEA",
+        "price": 20,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "tea-03",
+        "name": "Lemon tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "coffee-01",
+        "name": "Coffee",
+        "category": "COFFEE",
+        "price": 30,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "coffee-02",
+        "name": "Black coffee",
+        "category": "COFFEE",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "melt-01",
+        "name": "Hot chocolate",
+        "category": "MELT",
+        "price": 70,
+        "quantity": 1,
+        "mode": "Takeaway",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "cookie-01",
+        "name": "Nutra biscuit (2 pcs)",
+        "category": "COOKIES",
+        "price": 10,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "cookie-02",
+        "name": "Sazzy biscuit (3 pcs)",
+        "category": "COOKIES",
+        "price": 10,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-01",
+        "name": "Biscoff milkshake",
+        "category": "DRINKS",
+        "price": 130,
+        "quantity": 1,
+        "mode": "Takeaway",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-02",
+        "name": "Cold milo",
+        "category": "DRINKS",
+        "price": 100,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-03",
+        "name": "Iced tea",
+        "category": "DRINKS",
+        "price": 100,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-04",
+        "name": "Cold coffee",
+        "category": "DRINKS",
+        "price": 100,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-05",
+        "name": "Chocolate milkshake",
+        "category": "DRINKS",
+        "price": 80,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "drink-06",
+        "name": "Oreo milkshake",
+        "category": "DRINKS",
+        "price": 80,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Mixed",
+    "packagingCharge": 20,
+    "generalInstructions": "[🍽️ + 🥡 MIXED ORDER]",
+    "subtotal": 805,
+    "total": 825,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T10:36:51.546Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T10:36:51.546Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T10:46:49.458Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-605381",
+    "orderNumber": "0038",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "orderMode": "Dine-In",
+    "packagingCharge": 0,
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T09:20:05.381Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T09:20:05.381Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T10:46:48.800Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-440676",
+    "orderNumber": "0037",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "category": "TEA",
+        "price": 20,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Dine-In",
+    "packagingCharge": 0,
+    "generalInstructions": "",
+    "subtotal": 45,
+    "total": 45,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-24T08:44:00.676Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T08:44:00.676Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T09:19:02.180Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-430646",
+    "orderNumber": "0036",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "category": "TEA",
+        "price": 25,
+        "quantity": 1,
+        "mode": "Takeaway",
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "eat-01",
+        "name": "French fries",
+        "category": "EATS",
+        "price": 90,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Mixed",
+    "packagingCharge": 25,
+    "generalInstructions": "[🍽️ + 🥡 MIXED ORDER]",
+    "subtotal": 115,
+    "total": 140,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "Rohan Sharma",
+    "customerPhone": "9840123456",
+    "createdAt": "2026-10-24T09:10:00.646Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-24T09:10:00.646Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-24T09:15:00.646Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T10:37:55.988Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-043457",
+    "orderNumber": "0035",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "category": "TEA",
+        "price": 20,
+        "quantity": 5,
+        "mode": "Takeaway",
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "eat-01",
+        "name": "French fries",
+        "category": "EATS",
+        "price": 90,
+        "quantity": 1,
+        "mode": "Dine-In",
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Mixed",
+    "packagingCharge": 25,
+    "generalInstructions": "[🍽️ + 🥡 MIXED ORDER]",
+    "subtotal": 190,
+    "total": 215,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "Vikram",
+    "customerPhone": "9840123456",
+    "createdAt": "2026-10-23T08:27:23.457Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-23T08:27:23.457Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T09:18:59.462Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-684959",
+    "orderNumber": "0034",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "eat-01",
+        "name": "French fries",
+        "price": 90,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Parcel",
+    "packagingCharge": 35,
+    "generalInstructions": "[🥡 TAKEAWAY / PARCEL]",
+    "subtotal": 115,
+    "total": 150,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "John Doe",
+    "customerPhone": "9876543210",
+    "createdAt": "2026-10-23T07:31:24.959Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-23T07:31:24.959Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T09:18:58.018Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-515005",
+    "orderNumber": "0033",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "eat-01",
+        "name": "French fries",
+        "price": 90,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Parcel",
+    "packagingCharge": 35,
+    "generalInstructions": "[🥡 TAKEAWAY / PARCEL]",
+    "subtotal": 115,
+    "total": 150,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "John Doe",
+    "customerPhone": "9876543210",
+    "createdAt": "2026-10-23T07:28:35.005Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-23T07:28:35.005Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T09:18:57.170Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-288060",
+    "orderNumber": "0032",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "eat-01",
+        "name": "French fries",
+        "price": 90,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "orderMode": "Parcel",
+    "packagingCharge": 35,
+    "generalInstructions": "[🥡 TAKEAWAY / PARCEL]",
+    "subtotal": 115,
+    "total": 150,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "John Doe",
+    "customerPhone": "9876543210",
+    "createdAt": "2026-10-23T07:24:48.060Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-23T07:24:48.060Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-23T09:08:43.425Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-24T09:18:48.520Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-24T09:18:55.291Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-807323",
+    "orderNumber": "0031",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6379929194",
+    "createdAt": "2026-10-21T08:03:27.323Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-21T08:03:27.323Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-21T08:03:35.214Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-21T08:46:43.223Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-577501",
+    "orderNumber": "0030",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-21T07:59:37.501Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-21T07:59:37.501Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-21T08:00:01.376Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-21T08:46:44.341Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-305452",
+    "orderNumber": "0029",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "bun_milkella",
+        "name": "Joe's Brew Bun Milkella",
+        "price": 65,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 65,
+    "total": 65,
+    "paymentMode": "Pay at Counter",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "Rohan",
+    "customerPhone": "9876543210",
+    "createdAt": "2026-10-21T07:55:05.452Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-21T07:55:05.453Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-21T07:59:54.914Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-630286",
+    "orderNumber": "0028",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "biscoff_shake",
+        "name": "Biscoff Milkshake",
+        "price": 130,
+        "quantity": 2,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 260,
+    "total": 260,
+    "paymentMode": "UPI",
+    "paymentStatus": "PAID",
+    "status": "Completed",
+    "customerName": "Aarav",
+    "customerPhone": "9876543210",
+    "createdAt": "2026-10-21T07:43:50.286Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-21T07:43:50.286Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-21T07:44:24.317Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-21T07:48:28.727Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-21T07:48:45.411Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-295975",
+    "orderNumber": "0027",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 20,
+    "total": 20,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-21T07:04:55.975Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-21T07:04:55.975Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-21T07:05:19.354Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-199064",
+    "orderNumber": "0026",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-21T07:03:19.064Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-21T07:03:19.064Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-21T07:04:13.285Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-21T07:04:23.150Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-21T07:05:20.126Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-352983",
+    "orderNumber": "0025",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "coffee-02",
+        "name": "Black coffee",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 45,
+    "total": 45,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:55:52.983Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:55:52.983Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:56:37.967Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:56:40.679Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-344720",
+    "orderNumber": "0024",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:55:44.720Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:55:44.720Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:56:06.889Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:56:13.208Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-280075",
+    "orderNumber": "0023",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "coffee-02",
+        "name": "Black coffee",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "melt-01",
+        "name": "Hot chocolate",
+        "price": 70,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 95,
+    "total": 95,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:54:40.075Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:54:40.075Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:55:20.225Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:55:34.710Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-023919",
+    "orderNumber": "0022",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 20,
+    "total": 20,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:50:23.919Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:50:23.919Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-19T05:50:37.923Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:50:42.029Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:50:51.740Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-009578",
+    "orderNumber": "0021",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:50:09.578Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:50:09.578Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:50:57.164Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:51:01.177Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-946826",
+    "orderNumber": "0020",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:49:06.826Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:49:06.826Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:49:22.333Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:49:33.088Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-853293",
+    "orderNumber": "0019",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 45,
+    "total": 45,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:47:33.293Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:47:33.293Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:48:55.752Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-711082",
+    "orderNumber": "0018",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 45,
+    "total": 45,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:45:11.082Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:45:11.082Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:45:46.360Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:46:14.004Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-365996",
+    "orderNumber": "0017",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 2,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 70,
+    "total": 70,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-19T05:39:25.996Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-19T05:39:25.996Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-19T05:40:17.709Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-19T05:40:45.451Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-278839",
+    "orderNumber": "0016",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "drink-03",
+        "name": "Iced tea",
+        "price": 100,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-04",
+        "name": "Cold coffee",
+        "price": 100,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 200,
+    "total": 200,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "deepika",
+    "customerPhone": "6969696969",
+    "createdAt": "2026-10-11T06:47:58.839Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-11T06:47:58.839Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-11T06:49:09.087Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-148766",
+    "orderNumber": "0015",
+    "tableId": "Top-03",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "coffee-01",
+        "name": "Coffee",
+        "price": 30,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 30,
+    "total": 30,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Priya Sharma",
+    "customerPhone": "9876543210",
+    "createdAt": "2026-10-11T06:45:48.766Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-11T06:45:48.766Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-11T06:49:04.374Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-050981",
+    "orderNumber": "0014",
+    "tableId": "Top-02",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "coffee-01",
+        "name": "Coffee",
+        "price": 30,
+        "quantity": 2,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 60,
+    "total": 60,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Arun Kumar",
+    "createdAt": "2026-10-11T06:44:10.981Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-11T06:44:10.981Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-11T06:49:01.414Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-006970",
+    "orderNumber": "0013",
+    "tableId": "Top-07",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "cookie-01",
+        "name": "Nutra biscuit (2 pcs)",
+        "price": 10,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-04",
+        "name": "Cold coffee",
+        "price": 100,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 110,
+    "total": 110,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-11T06:26:46.970Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-11T06:26:46.970Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-11T06:37:47.532Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-768392",
+    "orderNumber": "0012",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "snack-03",
+        "name": "Crispy nuggets (3 pcs)",
+        "price": 30,
+        "quantity": 2,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 60,
+    "total": 60,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:19:28.392Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:19:28.393Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:19:42.068Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-766510",
+    "orderNumber": "0011",
+    "tableId": "Top-01",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "drink-01",
+        "name": "Biscoff milkshake",
+        "price": 130,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-02",
+        "name": "Cold milo",
+        "price": 100,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "Extra chocolate",
+    "subtotal": 230,
+    "total": 230,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:19:26.510Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:19:26.510Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:19:43.548Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-708850",
+    "orderNumber": "0010",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "eat-03",
+        "name": "Panner momos",
+        "price": 60,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "drink-05",
+        "name": "Chocolate milkshake",
+        "price": 80,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 140,
+    "total": 140,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:18:28.850Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:18:28.850Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-10T17:18:32.830Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:19:00.168Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-701882",
+    "orderNumber": "0009",
+    "tableId": "Top-08",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "tea-03",
+        "name": "Lemon tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 70,
+    "total": 70,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:18:21.882Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:18:21.882Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:18:36.925Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-677716",
+    "orderNumber": "0008",
+    "tableId": "Top-01",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "PAY_LATER",
+    "paymentStatus": "Pending (Pay at Counter)",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:17:57.716Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:17:57.716Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:18:08.059Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-652560",
+    "orderNumber": "0007",
+    "tableId": "Top-01",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 45,
+    "total": 45,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:17:32.560Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:17:32.560Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-10T17:17:38.241Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-10T17:17:40.502Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-10T17:17:43.046Z"
+      },
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:17:44.595Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-10T17:17:45.518Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-10T17:17:45.675Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-10T17:17:47.362Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:17:49.410Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-755091",
+    "orderNumber": "0006",
+    "tableId": "Top-07",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-02",
+        "name": "Black Tea",
+        "price": 20,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 20,
+    "total": 20,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:02:35.091Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:02:35.091Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:02:52.306Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-728634",
+    "orderNumber": "0005",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "tea-01",
+        "name": "Tea",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 25,
+    "total": 25,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T17:02:08.634Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T17:02:08.634Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:02:53.106Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-478293",
+    "orderNumber": "0004",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "coffee-02",
+        "name": "Black coffee",
+        "price": 25,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": false
+      },
+      {
+        "id": "melt-01",
+        "name": "Hot chocolate",
+        "price": 70,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "",
+    "subtotal": 95,
+    "total": 95,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-10T16:57:58.293Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-10T16:57:58.293Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-10T16:58:19.997Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T16:58:24.734Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-10T17:02:20.553Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-747029",
+    "orderNumber": "0003",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "snack-01",
+        "name": "Joe's brew special BUN MILKELLA",
+        "price": 65,
+        "quantity": 2,
+        "note": "Extra warm",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "Extra condensed milk on bun",
+    "subtotal": 130,
+    "total": 130,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-09T17:42:27.029Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-09T17:42:27.029Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-09T17:44:19.727Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-09T17:44:24.876Z"
+      }
+    ]
+  },
+  {
+    "id": "JB-501668",
+    "orderNumber": "0002",
+    "tableId": "Top-04",
+    "floor": "Terrace",
+    "items": [
+      {
+        "id": "coffee-01",
+        "name": "Coffee ★",
+        "price": 30,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "Extra hot",
+    "subtotal": 30,
+    "total": 30,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Completed",
+    "customerName": "Guest",
+    "createdAt": "2026-10-09T17:21:41.668Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-09T17:21:41.668Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-09T17:44:26.348Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-09T17:44:30.516Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-09T17:44:31.806Z"
+      }
+    ]
+  },
+  {
     "id": "JB-452659",
     "orderNumber": "0001",
     "tableId": "Top-04",
-    "floor": "Upstairs",
+    "floor": "Terrace",
     "items": [
       {
         "id": "snack-01",
@@ -27,7 +1956,7 @@
     "total": 125,
     "paymentMode": "UPI",
     "paymentStatus": "Paid via UPI",
-    "status": "Preparing",
+    "status": "Completed",
     "customerName": "Guest",
     "createdAt": "2026-10-09T16:14:12.659Z",
     "statusHistory": [
@@ -38,6 +1967,26 @@
       {
         "status": "Preparing",
         "timestamp": "2026-10-09T16:14:52.776Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-09T16:23:26.372Z"
+      },
+      {
+        "status": "Received",
+        "timestamp": "2026-10-09T16:23:28.847Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-09T16:23:30.190Z"
+      },
+      {
+        "status": "Ready to Serve",
+        "timestamp": "2026-10-09T16:23:37.636Z"
+      },
+      {
+        "status": "Completed",
+        "timestamp": "2026-10-09T16:23:40.574Z"
       }
     ]
   }

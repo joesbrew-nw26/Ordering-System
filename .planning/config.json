@@ -49,6 +49,9 @@
     "context_warnings": true
   },
   "project_code": "JOE-BREW",
-  "agent_skills": {},
+  "agent_skills": {
+    "frontend-design": ".agents/skills/frontend-design/SKILL.md",
+    "design-ux": ".agents/skills/design-ux/SKILL.md"
+  },
   "claude_md_path": "./GEMINI.md"
 }

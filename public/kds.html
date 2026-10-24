@@ -72,192 +72,715 @@
     .kds-main-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
-      padding: 20px;
-      max-width: 1400px;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1460px;
       margin: 0 auto;
     }
-    @media (min-width: 900px) {
+    @media (min-width: 960px) {
       .kds-main-grid {
-        grid-template-columns: 2.5fr 1fr;
+        grid-template-columns: minmax(0, 2.25fr) minmax(360px, 1.15fr);
+        gap: 20px;
+        padding: 20px;
       }
     }
     .kds-section-title {
       font-family: var(--font-vintage);
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       color: var(--vintage-gold-glow);
-      margin-bottom: 14px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
+    /* Clean, Spacious & High-Craft KDS Tickets */
     .kds-tickets-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
     }
     .kds-ticket-card {
-      background: rgba(43, 24, 16, 0.95);
-      border: 2px solid rgba(201, 151, 56, 0.4);
-      border-radius: var(--radius-md);
-      padding: 16px;
+      background: linear-gradient(180deg, rgba(42, 23, 15, 0.98) 0%, rgba(28, 14, 9, 0.98) 100%);
+      border: 2px solid rgba(228, 191, 118, 0.4);
+      border-radius: 14px;
+      padding: 18px 20px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 15px rgba(0, 0, 0, 0.3);
       position: relative;
+      min-width: 0;
+      box-sizing: border-box;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
-    .kds-ticket-card.is-upstairs {
+    .kds-ticket-card:hover {
+      border-color: var(--vintage-gold);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(228, 191, 118, 0.2);
+    }
+    .kds-ticket-card.is-upstairs,
+    .kds-ticket-card.is-terrace {
       border-color: #F59E0B;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(245, 158, 11, 0.25);
     }
-    .ticket-header-row {
+
+    /* Ticket Header Bar */
+    .ticket-top-bar {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
+    }
+    .ticket-table-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .ticket-table-badge {
       background: #F59E0B;
       color: #180E09;
-      font-size: 0.95rem;
+      font-size: 1.15rem;
       font-weight: 900;
-      padding: 4px 10px;
-      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      border-radius: 8px;
       letter-spacing: 0.04em;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
     }
     .ticket-table-badge.is-ground {
       background: #10B981;
       color: #FFF;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
     }
-    .ticket-meta {
-      text-align: right;
+    .ticket-floor-tag {
       font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
       color: #D1C4B9;
+      text-transform: uppercase;
     }
-    .ticket-items-list {
-      margin: 10px 0;
-      flex: 1;
-    }
-    .ticket-item-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.92rem;
-    }
-    .item-qty-badge {
-      background: var(--vintage-gold);
-      color: #180E09;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      margin-right: 8px;
-    }
-    .ticket-notes-box {
-      background: rgba(255, 255, 255, 0.05);
-      border-left: 3px solid #F59E0B;
-      padding: 8px;
-      border-radius: 4px;
-      font-size: 0.78rem;
-      color: #FDE68A;
-      margin: 10px 0;
-    }
-    .ticket-action-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-    }
-    .kds-step-btn {
-      flex: 1;
-      padding: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.1);
-      color: #FFF;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .kds-step-btn.active {
-      background: var(--vintage-gold);
-      color: #180E09;
-      border-color: var(--vintage-gold);
-      font-weight: 800;
-    }
-    .kds-step-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-    /* Waiter Calls Box */
-    .kds-side-panel {
+    .ticket-queue-badge {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 8px;
+      background: rgba(228, 191, 118, 0.12);
+      border: 1.5px solid rgba(228, 191, 118, 0.4);
+      white-space: nowrap;
     }
-    .waiter-call-card {
-      background: rgba(220, 38, 38, 0.2);
-      border: 1.5px solid #EF4444;
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      margin-bottom: 10px;
+    .ticket-queue-badge.is-first {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(217, 119, 6, 0.45));
+      border-color: #F59E0B;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+    .ticket-queue-badge.is-urgent {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #EF4444;
+      animation: urgentBlink 1.4s infinite;
+    }
+    .ticket-queue-badge .queue-num {
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: #FDE68A;
+    }
+    .ticket-queue-badge .queue-time {
+      font-size: 0.70rem;
+      font-weight: 700;
+      color: #D1C4B9;
+    }
+    .ticket-id-meta {
+      text-align: right;
+    }
+    .ticket-order-number {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 0.03em;
+    }
+    .ticket-time-stamp {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #D1C4B9;
+    }
+
+    /* Ticket Service Mode Banner */
+    .ticket-service-banner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      animation: pulseRed 2s infinite;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
     }
-    @keyframes pulseRed {
-      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-      70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    .banner--takeaway {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.12) 100%);
+      border: 1.5px solid rgba(245, 158, 11, 0.5);
+      color: #FDE68A;
     }
-    .btn-resolve-call {
-      background: #EF4444;
-      color: #FFF;
-      border: none;
-      padding: 6px 12px;
-      border-radius: var(--radius-pill);
-      font-size: 0.75rem;
+    .banner--dinein {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.12) 100%);
+      border: 1.5px solid rgba(16, 185, 129, 0.5);
+      color: #A7F3D0;
+    }
+    .banner--mixed {
+      background: linear-gradient(90deg, rgba(30, 58, 138, 0.35) 0%, rgba(245, 158, 11, 0.35) 100%);
+      border: 1.5px solid #F59E0B;
+      color: #FFF9EE;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25);
+    }
+    .banner-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+    }
+    .banner-sub {
+      font-size: 0.70rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Customer Information Row */
+    .ticket-customer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
+      color: #E5E7EB;
+      gap: 8px;
+    }
+    .customer-name {
       font-weight: 700;
-      cursor: pointer;
+      color: #FFF;
     }
-    /* Stock CMS List */
-    .stock-list-container {
-      background: rgba(36, 20, 13, 0.8);
-      border: 1px solid var(--vintage-gold);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      max-height: 380px;
-      overflow-y: auto;
+    .customer-phone {
+      font-weight: 800;
+      color: #34D399;
     }
-    .stock-item-row {
+    .customer-pay-tag {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #D1C4B9;
+    }
+
+    /* Items Container & Rows (Hero - Big, Clear & Legible) */
+    .ticket-items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 4px 0;
+      flex: 1;
+    }
+    .ticket-sub-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ticket-sub-heading {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+      margin-bottom: 2px;
+    }
+    .takeaway-heading {
+      color: #FCD34D;
+    }
+    .dinein-heading {
+      color: #6EE7B7;
+    }
+    .ticket-mixed-divider {
+      height: 1px;
+      background: dashed 1px rgba(228, 191, 118, 0.3);
+      margin: 4px 0;
+    }
+    .ticket-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .clean-item-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 8px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.85rem;
+      gap: 12px;
+    }
+    .clean-item-row:last-child {
+      border-bottom: none;
+    }
+    .item-left-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .item-qty-square {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .qty--dinein {
+      background: #10B981;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+    }
+    .qty--takeaway {
+      background: #F59E0B;
+      color: #180E09;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+    }
+    .item-name-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .item-main-title {
+      color: #FFFFFF;
+      font-size: 1.10rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    .item-special-note {
+      font-size: 0.80rem;
+      color: #FCA5A5;
+      font-weight: 600;
+      font-style: italic;
+    }
+    .item-price-tag {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #FFE399;
+      white-space: nowrap;
+    }
+    .ticket-packaging-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-top: 1px dashed rgba(245, 158, 11, 0.35);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #FDE68A;
+      margin-top: 2px;
+    }
+
+    /* Customer Note Callout */
+    .ticket-customer-note-callout {
+      background: rgba(245, 158, 11, 0.12);
+      border-left: 4px solid #F59E0B;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: #FDE68A;
+      margin-top: 4px;
+    }
+
+    /* Bottom Total Row */
+    .ticket-bottom-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      margin-top: 6px;
+      border-top: 1.5px solid rgba(255, 255, 255, 0.12);
+    }
+    .total-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #D1C4B9;
+    }
+    .total-value {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #FFE399;
+      text-shadow: 0 0 10px rgba(255, 227, 153, 0.5);
+    }
+
+    /* Action Stage Buttons */
+    .ticket-action-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .kds-step-btn {
+      height: 40px;
+      padding: 0 6px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .kds-step-btn.active {
+      background: var(--vintage-gold);
+      color: #180E09;
+      border-color: var(--vintage-gold);
+      box-shadow: 0 0 14px rgba(201, 151, 56, 0.6);
+    }
+    .kds-step-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================
+       BRIGHT WAITER ALERTS & 1-TAP STOCK CMS
+       ========================================== */
+    .kds-side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Waiter Calls Section (Super Bright Alert) */
+    .kds-waiter-section {
+      background: linear-gradient(180deg, rgba(50, 18, 14, 0.96) 0%, rgba(36, 12, 9, 0.96) 100%);
+      border: 2px solid #F87171;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.4), 0 4px 18px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+    .kds-waiter-section.has-active-calls {
+      border-color: #EF4444;
+      box-shadow: 0 0 35px rgba(239, 68, 68, 0.6), inset 0 0 16px rgba(239, 68, 68, 0.2);
+    }
+    .kds-section-title--waiter {
+      color: #FFF1F2;
+      text-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .waiter-live-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #E5E7EB;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 12px;
+    }
+    .waiter-live-pill.is-active {
+      background: #EF4444;
+      border-color: #FECACA;
+      color: #FFFFFF;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.95);
+      animation: livePulse 1.2s infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(239, 68, 68, 0.8); }
+      50% { transform: scale(1.06); box-shadow: 0 0 24px rgba(239, 68, 68, 1); }
+    }
+    .waiter-call-card {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.65) 0%, rgba(185, 28, 28, 0.80) 100%);
+      border: 2px solid #FECACA;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      animation: brightWaiterPulse 1.8s infinite ease-in-out;
+    }
+    @keyframes brightWaiterPulse {
+      0% {
+        box-shadow: 0 0 16px rgba(248, 113, 113, 0.65), inset 0 0 12px rgba(254, 202, 202, 0.25);
+        border-color: #F87171;
+      }
+      50% {
+        box-shadow: 0 0 32px rgba(239, 68, 68, 1), 0 0 14px rgba(254, 202, 202, 0.8), inset 0 0 18px rgba(254, 202, 202, 0.45);
+        border-color: #FFFFFF;
+      }
+      100% {
+        box-shadow: 0 0 16px rgba(248, 113, 113, 0.65), inset 0 0 12px rgba(254, 202, 202, 0.25);
+        border-color: #F87171;
+      }
+    }
+    .waiter-call-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .waiter-call-table {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #FFFFFF;
+      font-size: 1.08rem;
+      font-weight: 900;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+    }
+    .waiter-call-floor-badge {
+      background: #FFF;
+      color: #991B1B;
+      font-size: 0.70rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .waiter-call-reason {
+      font-size: 0.86rem;
+      color: #FFF1F2;
+      font-weight: 700;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+    .waiter-call-time {
+      font-size: 0.72rem;
+      color: #FECACA;
+      font-weight: 600;
+    }
+    .btn-resolve-call {
+      background: #FFFFFF;
+      color: #991B1B;
+      border: 1.5px solid #FECACA;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.80rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.7);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-resolve-call:hover {
+      background: #10B981;
+      color: #FFFFFF;
+      border-color: #34D399;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.9);
+      transform: scale(1.05);
+    }
+    .waiter-empty-state {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.80rem;
+      color: #6EE7B7;
+      font-weight: 600;
+    }
+
+    /* 1-Tap Stock Management Section (Bigger & Bright) */
+    .kds-stock-section {
+      background: linear-gradient(180deg, rgba(54, 30, 20, 0.98) 0%, rgba(36, 18, 12, 0.98) 100%);
+      border: 2px solid #FFD166;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 0 30px rgba(255, 209, 102, 0.32), 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 209, 102, 0.08);
+    }
+    .kds-section-title--stock {
+      color: #FFF0B3;
+      text-shadow: 0 0 16px rgba(255, 209, 102, 0.75);
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .stock-live-badge {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.5));
+      border: 1px solid #FFD166;
+      color: #FFF;
+      font-size: 0.70rem;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      letter-spacing: 0.03em;
+    }
+    .stock-search-wrap {
+      margin-bottom: 8px;
+    }
+    .stock-search-wrap input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(20, 10, 6, 0.9);
+      border: 1.5px solid rgba(228, 191, 118, 0.5);
+      border-radius: 8px;
+      padding: 7px 11px;
+      color: #FFF;
+      font-size: 0.80rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .stock-search-wrap input:focus {
+      border-color: #F59E0B;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+      background: rgba(30, 15, 9, 0.95);
+    }
+    .stock-list-container {
+      max-height: 520px;
+      min-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #E4BF76 rgba(0, 0, 0, 0.4);
+    }
+    .stock-list-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .stock-list-container::-webkit-scrollbar-thumb {
+      background: #E4BF76;
+      border-radius: 4px;
+    }
+    .stock-list-container::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .stock-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+    }
+    .stock-item-row:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(243, 201, 115, 0.35);
+    }
+    .stock-item-name {
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+    .stock-item-price {
+      font-size: 0.76rem;
+      color: #FCD34D;
+      font-weight: 800;
+      margin-left: 6px;
     }
     .stock-toggle-switch {
-      background: #10B981;
-      color: #FFF;
-      border: none;
-      padding: 4px 10px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      border: 1.5px solid #34D399;
+      padding: 5px 12px;
       border-radius: var(--radius-pill);
-      font-size: 0.72rem;
-      font-weight: 700;
+      font-size: 0.74rem;
+      font-weight: 800;
       cursor: pointer;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      letter-spacing: 0.03em;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .stock-toggle-switch:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.75);
     }
     .stock-toggle-switch.is-out {
-      background: #DC2626;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      border-color: #F87171;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.65);
+      color: #FFF;
+    }
+    .stock-toggle-switch.is-out:hover {
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.85);
     }
   </style>
 </head>
 <body class="kds-theme">
 
+  <!-- ==========================================
+       RESTRICTED KDS LOGIN OVERLAY PORTAL
+       ========================================== -->
+  <div id="kdsLoginPortal" class="kds-login-portal">
+    <div class="kds-login-card">
+      <img src="/assets/logo.jpg" alt="Joe's Brew Speakeasy Crest" class="kds-login-crest">
+      <h2 class="kds-login-title">Joe's Brew Kitchen Station</h2>
+      <p class="kds-login-subtitle">Restricted Access • Ground Floor KDS Dispatch</p>
+
+      <div class="kds-auth-toggle-row">
+        <button id="tabPinBtn" class="kds-auth-tab-btn active" type="button" onclick="switchKdsAuthMode('pin')">🔢 Station PIN</button>
+        <button id="tabCredsBtn" class="kds-auth-tab-btn" type="button" onclick="switchKdsAuthMode('creds')">🔑 Manager Login</button>
+      </div>
+
+      <!-- Quick Touch PIN Pad (Default) -->
+      <div id="kdsPinView">
+        <div class="pin-display-wrapper">
+          <div class="pin-dots-row">
+            <span class="pin-dot" id="dot0"></span>
+            <span class="pin-dot" id="dot1"></span>
+            <span class="pin-dot" id="dot2"></span>
+            <span class="pin-dot" id="dot3"></span>
+          </div>
+          <small style="font-size: 0.74rem; color: #D1C4B9;">Enter 4-digit Station PIN</small>
+        </div>
+
+        <div class="pin-grid">
+          <button class="pin-key" type="button" onclick="pressPinKey('1')">1</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('2')">2</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('3')">3</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('4')">4</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('5')">5</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('6')">6</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('7')">7</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('8')">8</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('9')">9</button>
+          <button class="pin-key key-action key-clear" type="button" onclick="clearPinKey()" title="Backspace">⌫</button>
+          <button class="pin-key" type="button" onclick="pressPinKey('0')">0</button>
+          <button class="pin-key key-action key-enter" type="button" onclick="submitPinLogin()" title="Authorize">↵</button>
+        </div>
+      </div>
+
+      <!-- Manager Credentials Form View -->
+      <div id="kdsCredsView" style="display: none;">
+        <form id="kdsCredsForm" class="kds-creds-form" onsubmit="submitCredsLogin(event)">
+          <input type="text" id="kdsUsername" class="kds-input-field" placeholder="Username (e.g. admin)" autocomplete="username">
+          <input type="password" id="kdsPassword" class="kds-input-field" placeholder="Password" autocomplete="current-password">
+          <button type="submit" class="kds-submit-btn">Authorize & Open Station</button>
+        </form>
+      </div>
+
+      <div id="kdsLoginError" class="kds-error-msg"></div>
+
+      <div class="kds-hint-badge">
+        ☕ <strong>Staff Notice:</strong> Station terminal is restricted. Default Station PIN is <code>2006</code> (Estd).
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       KDS MAIN HEADER
+       ========================================== -->
   <header class="kds-header">
     <div class="kds-title-group">
       <img src="/assets/logo.jpg" alt="Joe's Brew" class="kds-crest">
@@ -278,10 +801,19 @@
         <span class="sync-pulse"></span>
         <span style="color: #34D399;">Live WS</span>
       </div>
+
+      <!-- Close Shift & Logout Trigger -->
+      <button id="kdsCloseShiftBtn" class="kds-shift-btn" type="button" onclick="openShiftClosingModal()">
+        <span>📊</span>
+        <span>Close Shift & Logout</span>
+      </button>
     </div>
   </header>
 
-  <main class="kds-main-grid">
+  <!-- ==========================================
+       KDS MAIN CONTENT GRID
+       ========================================== -->
+  <main class="kds-main-grid" id="kdsMainGrid">
     <!-- Active Tickets Queue -->
     <section>
       <div class="kds-section-title">
@@ -296,20 +828,30 @@
 
     <!-- Side Panel: Waiter Alerts & Stock CMS -->
     <aside class="kds-side-panel">
-      <!-- Urgent Waiter Pager -->
-      <section>
-        <div class="kds-section-title">
-          <span>🔔 Upstairs Waiter Calls</span>
+      <!-- Urgent Waiter Pager (Bright Alert) -->
+      <section class="kds-waiter-section">
+        <div class="kds-section-title kds-section-title--waiter">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.1rem; line-height: 1;">🔔</span>
+            <span style="font-weight: 800;">Terrace Waiter Calls</span>
+          </div>
+          <span id="kdsWaiterLivePill" class="waiter-live-pill">0 Pending</span>
         </div>
-        <div id="kdsWaiterCallsList">
+        <div id="kdsWaiterCallsList" class="waiter-calls-list-wrap">
           <p style="font-size: 0.82rem; color: #9CA3AF;">No active waiter calls.</p>
         </div>
       </section>
 
-      <!-- Instant Live Stock Toggles -->
-      <section>
-        <div class="kds-section-title">
-          <span>📦 1-Tap Stock Management</span>
+      <!-- Instant Live Stock Toggles (Bigger & Bright CMS) -->
+      <section class="kds-stock-section">
+        <div class="kds-section-title kds-section-title--stock">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.1rem; line-height: 1;">📦</span>
+            <span style="font-weight: 800;">1-Tap Stock Management</span>
+          </div>
+        </div>
+        <div class="stock-search-wrap">
+          <input type="text" id="kdsStockSearchInput" placeholder="🔍 Quick search items (e.g. Tea, Fries)..." oninput="filterStockList(this.value)">
         </div>
         <div class="stock-list-container" id="kdsStockList">
           <!-- Populated from /api/menu -->
@@ -318,6 +860,134 @@
     </aside>
   </main>
 
+  <!-- ==========================================
+       DAILY SALES SUMMARY & SHIFT CLOSING MODAL
+       Saved to database for at least 7+ days
+       ========================================== -->
+  <div id="kdsSummaryModal" class="kds-summary-modal-backdrop hidden">
+    <div class="kds-summary-ledger">
+      <!-- Modal Header -->
+      <div class="ledger-header">
+        <div class="ledger-title-group">
+          <img src="/assets/logo.jpg" alt="Joe's Brew" class="ledger-crest">
+          <div>
+            <h2 class="ledger-main-title">Daily Sales & Shift Settlement</h2>
+            <p class="ledger-date-subtitle" id="ledgerDateSubtitle">Loading daily sales ledger...</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="ledger-status-pill is-live" id="ledgerStatusPill">🟢 Live Shift</span>
+          <button class="ledger-close-btn" type="button" onclick="closeShiftClosingModal()" title="Back to Kitchen">&times;</button>
+        </div>
+      </div>
+
+      <!-- 7-Day History Date Selector Strip -->
+      <div class="ledger-history-strip">
+        <span class="history-strip-label">Audit History:</span>
+        <div class="history-date-tabs" id="historyDateTabs">
+          <!-- Dynamically populated with past 7 days -->
+        </div>
+        <input type="date" id="ledgerCustomDatePicker" class="ledger-custom-date-picker" onchange="onCustomDateSelected(this.value)" title="Choose date to view">
+      </div>
+
+      <!-- Scrollable Ledger Metrics & Tables -->
+      <div class="ledger-body">
+        <!-- Bento Key Metric Cards -->
+        <div class="ledger-bento-grid">
+          <div class="ledger-kpi-card hero-kpi">
+            <span class="kpi-label">💰 Gross Total Revenue</span>
+            <div class="kpi-value" id="kpiGrossRevenue">₹0</div>
+            <div class="kpi-subtext">100% Settle at Register (Counter)</div>
+          </div>
+
+          <div class="ledger-kpi-card">
+            <span class="kpi-label">🧾 Total Table Orders</span>
+            <div class="kpi-value" id="kpiTotalOrders">0</div>
+            <div class="kpi-subtext" id="kpiOrdersBreakdown">0 Completed • 0 In Queue</div>
+          </div>
+
+          <div class="ledger-kpi-card">
+            <span class="kpi-label">🛋️ Floor Breakdown</span>
+            <div class="kpi-value" style="font-size: 1.15rem; margin-top: 8px;">
+              <span id="kpiFloorText">Terrace: ₹0 • Ground: ₹0</span>
+            </div>
+            <div class="floor-progress-bar">
+              <div class="floor-progress-upstairs" id="barUpstairs" style="width: 50%;"></div>
+              <div class="floor-progress-ground" id="barGround" style="width: 50%;"></div>
+            </div>
+          </div>
+
+          <div class="ledger-kpi-card">
+            <span class="kpi-label">☕ Units Sold & Ticket Size</span>
+            <div class="kpi-value" id="kpiItemsSold">0 Items</div>
+            <div class="kpi-subtext" id="kpiAvgTicket">Avg Ticket: ₹0</div>
+          </div>
+
+          <div class="ledger-kpi-card">
+            <span class="kpi-label">🔔 Terrace Runner Assists</span>
+            <div class="kpi-value" id="kpiWaiterCalls">0</div>
+            <div class="kpi-subtext">Table Service Requests Answered</div>
+          </div>
+        </div>
+
+        <!-- Itemized Sales Breakdown Table -->
+        <div>
+          <div class="ledger-section-heading">
+            <span>Itemized Sales Ledger</span>
+            <span style="font-size: 0.78rem; color: #D1C4B9;" id="ledgerItemsCount">0 distinct items sold</span>
+          </div>
+
+          <div class="ledger-table-wrap">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Rank & Menu Item</th>
+                  <th style="text-align: center;">Qty Sold</th>
+                  <th style="text-align: right;">Unit Price</th>
+                  <th style="text-align: right;">Total Sales</th>
+                  <th style="text-align: right;">Share %</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 20px; color: #9CA3AF;">Loading itemized data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Staff Closing Notes Box -->
+        <div class="ledger-notes-card">
+          <label for="ledgerStaffNotes" style="font-size: 0.78rem; font-weight: 700; color: var(--brass-pale); text-transform: uppercase; letter-spacing: 0.04em;">
+            📝 Shift Closing / Balancing Sign-off Notes:
+          </label>
+          <textarea id="ledgerStaffNotes" class="ledger-notes-input" rows="2" placeholder="e.g. Counter cash reconciled, shift handoff complete, stock replenished."></textarea>
+          <div id="ledgerClosedMeta" style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px; display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="ledger-footer">
+        <button class="ledger-btn-secondary" type="button" onclick="closeShiftClosingModal()">
+          ✕ Return to Kitchen
+        </button>
+
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button class="ledger-btn-print" type="button" onclick="printShiftSummary()">
+            🖨️ Print Settlement Slip
+          </button>
+          <button id="btnFinalizeShift" class="ledger-btn-finalize" type="button" onclick="finalizeShiftAndLogout()">
+            🛑 Finalize Shift & Log Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="kdsToastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column-reverse; gap: 8px; pointer-events: none;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/kds.js"></script>
 </body>
 </html>

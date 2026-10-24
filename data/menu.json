@@ -1,13 +1,13 @@
 [
   {
     "id": "tea-01",
-    "name": "Tea ★",
+    "name": "Tea",
     "category": "TEA",
     "price": 25,
     "isSpecial": true,
-    "description": "Slow-brewed traditional house milk chai with aromatic spices.",
+    "description": "Slow-brewed traditional house milk chai with aromatic spices and velvety finish.",
     "inStock": true,
-    "badge": "House Special",
+    "badge": "Joe's Brew Special",
     "type": "hot"
   },
   {
@@ -34,13 +34,13 @@
   },
   {
     "id": "coffee-01",
-    "name": "Coffee ★",
+    "name": "Coffee",
     "category": "COFFEE",
     "price": 30,
     "isSpecial": true,
     "description": "Signature vintage roast filter coffee, thick froth and deep chicory aroma.",
     "inStock": true,
-    "badge": "Vintage Roast",
+    "badge": "Joe's Brew Special",
     "type": "hot"
   },
   {
@@ -56,79 +56,79 @@
   },
   {
     "id": "melt-01",
-    "name": "Hot chocolate ★",
+    "name": "Hot chocolate",
     "category": "MELT",
     "price": 70,
     "isSpecial": true,
     "description": "Rich Belgian molten chocolate melted into velvety steamed whole milk.",
     "inStock": true,
-    "badge": "Melt Special",
+    "badge": "Joe's Brew Special",
     "type": "hot"
   },
   {
     "id": "cookie-01",
-    "name": "Nutra biscuit (2 pcs) ★",
+    "name": "Nutra biscuit (2 pcs)",
     "category": "COOKIES",
     "price": 10,
     "isSpecial": true,
     "description": "Crunchy whole-wheat baked tea-dunking biscuits (2 pieces).",
     "inStock": true,
-    "badge": "Chai Favorite",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
     "id": "cookie-02",
-    "name": "Sazzy biscuit (3 pcs) ★",
+    "name": "Sazzy biscuit (3 pcs)",
     "category": "COOKIES",
     "price": 10,
     "isSpecial": true,
     "description": "Golden buttery melt-in-the-mouth heritage tea biscuits (3 pieces).",
     "inStock": true,
-    "badge": "Bakery Special",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
     "id": "drink-01",
-    "name": "Biscoff milkshake ★",
+    "name": "Biscoff milkshake",
     "category": "DRINKS",
     "price": 130,
     "isSpecial": true,
     "description": "Decadent milkshake blended with Lotus Biscoff spread and cookie crumbs.",
     "inStock": true,
-    "badge": "Top Seller",
+    "badge": "Joe's Brew Special",
     "type": "cold"
   },
   {
     "id": "drink-02",
-    "name": "Cold milo ★",
+    "name": "Cold milo",
     "category": "DRINKS",
     "price": 100,
     "isSpecial": true,
     "description": "Iced chocolate malt drink crowned with a mound of crunchy raw Milo.",
     "inStock": true,
-    "badge": "Cafe Classic",
+    "badge": "Joe's Brew Special",
     "type": "cold"
   },
   {
     "id": "drink-03",
-    "name": "Iced tea ★",
+    "name": "Iced tea",
     "category": "DRINKS",
     "price": 100,
     "isSpecial": true,
     "description": "Crisp freshly brewed tea shaken over crushed ice with fresh mint and citrus.",
     "inStock": true,
-    "badge": "Chilled Brew",
+    "badge": "Joe's Brew Special",
     "type": "cold"
   },
   {
     "id": "drink-04",
-    "name": "Cold coffee ★",
+    "name": "Cold coffee",
     "category": "DRINKS",
     "price": 100,
     "isSpecial": true,
     "description": "Classic thick iced coffee blended with sweet milk and ice cream froth.",
     "inStock": true,
-    "badge": "Barista Pick",
+    "badge": "Joe's Brew Special",
     "type": "cold"
   },
   {
@@ -166,13 +166,13 @@
   },
   {
     "id": "snack-01",
-    "name": "Joe's brew special BUN MILKELLA ★",
+    "name": "Joe's brew special BUN MILKELLA",
     "category": "SNACKS",
     "price": 65,
     "isSpecial": true,
     "description": "Our legendary warm toasted brioche bun loaded with Nutella and condensed milk.",
     "inStock": true,
-    "badge": "House Legend",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
@@ -188,13 +188,13 @@
   },
   {
     "id": "snack-03",
-    "name": "Crispy nuggets (3 pcs) ★",
+    "name": "Crispy nuggets (3 pcs)",
     "category": "SNACKS",
     "price": 30,
     "isSpecial": true,
     "description": "Crunchy golden nuggets served hot with seasoned dip (3 pieces).",
     "inStock": true,
-    "badge": "Crispy Hit",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
@@ -210,13 +210,13 @@
   },
   {
     "id": "snack-05",
-    "name": "Crispy roll ★",
+    "name": "Crispy roll",
     "category": "SNACKS",
     "price": 20,
     "isSpecial": true,
     "description": "Crispy fried savory roll stuffed with seasoned spiced vegetables.",
     "inStock": true,
-    "badge": "Snack Star",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
@@ -232,24 +232,24 @@
   },
   {
     "id": "eat-02",
-    "name": "Peri peri fries ★",
+    "name": "Peri peri fries",
     "category": "EATS",
     "price": 110,
     "isSpecial": true,
     "description": "Hot crisp fries dusted generously with our fiery house peri-peri seasoning.",
     "inStock": true,
-    "badge": "Spicy Favorite",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
     "id": "eat-03",
-    "name": "Panner momos ★",
+    "name": "Panner momos",
     "category": "EATS",
     "price": 60,
     "isSpecial": true,
     "description": "Steamed delicate dumplings stuffed with spiced paneer, served with spicy dip.",
     "inStock": true,
-    "badge": "Chef Special",
+    "badge": "Joe's Brew Special",
     "type": "snack"
   },
   {
