@@ -337,13 +337,30 @@ function showKdsToast(msg) {
   }, 3500);
 }
 
-// Status Advancement
+// Status Advancement (with 0ms Instant Optimistic UI)
 async function advanceOrderStatus(orderId, nextStatus) {
   const order = kdsState.orders.find(o => o.id === orderId);
+  if (!order) return;
 
-  // AUTOMATED 1-CLICK WHATSAPP DISPATCH ON 'READY'
-  // Triggered synchronously on button click so browser popup blocker does not intercept it
-  if (nextStatus === 'Ready to Serve' && order?.customerPhone) {
+  const prevStatus = order.status;
+
+  // 1. OPTIMISTIC UI: Instantly update state & re-render in 0ms!
+  order.status = nextStatus;
+  if (!order.statusHistory) order.statusHistory = [];
+  order.statusHistory.push({ status: nextStatus, timestamp: new Date().toISOString() });
+
+  if (nextStatus === 'Ready to Serve') {
+    try { runnerChime.play(); } catch (e) {}
+    showKdsToast(`☕ Table ${order.tableId} is READY! WhatsApp alert dispatched.`);
+  } else if (nextStatus === 'Completed') {
+    showKdsToast(`✓ Order #${order.orderNumber || order.id} marked Done!`);
+  }
+
+  renderKdsTickets();
+  updateKdsCounts();
+
+  // AUTOMATED 1-CLICK WHATSAPP DISPATCH ON 'READY' (synchronous)
+  if (nextStatus === 'Ready to Serve' && order.customerPhone) {
     const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
     const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
     if (waPhone) {
@@ -375,6 +392,7 @@ async function advanceOrderStatus(orderId, nextStatus) {
     }
   }
 
+  // 2. Background sync to server
   try {
     const res = await fetch(`/api/orders/${orderId}/status`, {
       method: 'PATCH',
@@ -383,19 +401,12 @@ async function advanceOrderStatus(orderId, nextStatus) {
     });
 
     if (!res.ok) throw new Error('Status update failed');
-    const data = await res.json();
-
-    if (order) order.status = nextStatus;
-
-    if (nextStatus === 'Ready to Serve') {
-      try { runnerChime.play(); } catch (e) {}
-      showKdsToast(`☕ Table ${order?.tableId} is READY! WhatsApp pickup alert dispatched.`);
-    }
-
+  } catch (err) {
+    console.error('Failed to sync status to server:', err);
+    order.status = prevStatus;
     renderKdsTickets();
     updateKdsCounts();
-  } catch (err) {
-    console.error(err);
+    showKdsToast(`⚠️ Could not update order #${order.orderNumber || order.id}`);
   }
 }
 
@@ -452,15 +463,25 @@ function renderWaiterCalls() {
   }).join('');
 }
 
+// Resolve Waiter Call (with 0ms Instant Optimistic UI)
 async function resolveWaiterCall(callId) {
+  const call = kdsState.waiterCalls.find(c => c.id === callId);
+  if (!call) return;
+
+  // 1. Optimistic UI: remove immediately
+  call.resolved = true;
+  renderWaiterCalls();
+  updateKdsCounts();
+  showKdsToast('✓ Service alert cleared');
+
+  // 2. Background sync
   try {
     await fetch(`/api/call-waiter/${callId}/resolve`, { method: 'PATCH' });
-    const call = kdsState.waiterCalls.find(c => c.id === callId);
-    if (call) call.resolved = true;
+  } catch (e) {
+    console.error('Failed to resolve waiter call:', e);
+    call.resolved = false;
     renderWaiterCalls();
     updateKdsCounts();
-  } catch (e) {
-    console.error(e);
   }
 }
 

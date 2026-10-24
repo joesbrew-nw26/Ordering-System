@@ -12,6 +12,7 @@ import {
   deleteMenuItem,
   getOrders,
   getOrderById,
+  getLatestOrderNumber,
   createOrder,
   updateOrderStatus,
   getWaiterCalls,
@@ -43,6 +44,25 @@ const KDS_CREDENTIALS = {
   username: process.env.KDS_USER || 'admin',
   password: process.env.KDS_PASSWORD || 'brew2006'
 };
+
+// High-speed in-memory cache for menu items during order submission
+let cachedMenuItems = null;
+let lastMenuFetchTime = 0;
+const MENU_CACHE_TTL = 120 * 1000; // 2 minutes
+
+async function getFastMenuItems() {
+  const now = Date.now();
+  if (cachedMenuItems && (now - lastMenuFetchTime < MENU_CACHE_TTL)) {
+    return cachedMenuItems;
+  }
+  cachedMenuItems = await getMenuItems();
+  lastMenuFetchTime = now;
+  return cachedMenuItems;
+}
+
+function invalidateMenuCache() {
+  cachedMenuItems = null;
+}
 
 // Middleware: Enforce Admin Role for menu & rate mutations
 function requireAdminRole(req, res, next) {
@@ -223,6 +243,7 @@ app.post('/api/menu/stock-toggle', async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'Item not found' });
     }
+    invalidateMenuCache();
     broadcast('STOCK_UPDATE', { itemId: updated.id, inStock: updated.inStock, name: updated.name });
     res.json({ success: true, item: updated });
   } catch (err) {
@@ -240,6 +261,7 @@ app.put('/api/menu/:id', requireAdminRole, async (req, res) => {
       return res.status(404).json({ error: 'Menu item not found' });
     }
     broadcast('MENU_UPDATE', { action: 'UPDATE', item: updated });
+    invalidateMenuCache();
     res.json({ success: true, item: updated });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update menu item' });
@@ -252,6 +274,7 @@ app.post('/api/menu', requireAdminRole, async (req, res) => {
     if (!created) {
       return res.status(400).json({ error: 'Failed to create menu item' });
     }
+    invalidateMenuCache();
     broadcast('MENU_UPDATE', { action: 'ADD', item: created });
     res.status(201).json({ success: true, item: created });
   } catch (err) {
@@ -299,7 +322,7 @@ app.post('/api/orders', async (req, res) => {
       return res.status(400).json({ error: 'Table and items are required' });
     }
 
-    const menuItems = await getMenuItems();
+    const menuItems = await getFastMenuItems();
     const calculatedItems = items.map(cartItem => {
       const menuItem = menuItems.find(m => m.id === cartItem.id) || cartItem;
       const cat = (cartItem.category || menuItem?.category || '').toUpperCase();
@@ -364,14 +387,8 @@ app.post('/api/orders', async (req, res) => {
       : (hasTakeaway ? 'Takeaway' : 'Dine-In');
 
     const total = subtotal + calculatedPackaging;
-    const existingOrders = await getOrders();
-    let maxNum = existingOrders.length;
-    existingOrders.forEach(o => {
-      const raw = o.orderNumber || o.order_number || o.id || '';
-      const n = parseInt(String(raw).replace(/\D/g, ''), 10);
-      if (!isNaN(n) && n > maxNum) maxNum = n;
-    });
-    const orderNumber = (maxNum + 1).toString().padStart(4, '0');
+    const latestNum = await getLatestOrderNumber();
+    const orderNumber = (latestNum + 1).toString().padStart(4, '0');
 
     let modePrefix = '';
     if (computedOrderMode === 'Takeaway') {

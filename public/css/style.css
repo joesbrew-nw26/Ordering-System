@@ -2823,11 +2823,24 @@ input, select, textarea {
 .modal--success {
   text-align: center;
   align-items: center;
+  overflow-y: auto !important;
+  max-height: 94svh !important;
+  max-height: 94vh !important;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.modal--success::-webkit-scrollbar {
+  width: 4px;
+}
+.modal--success::-webkit-scrollbar-thumb {
+  background: rgba(200, 157, 86, 0.35);
+  border-radius: 4px;
 }
 
 .success-icon {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: linear-gradient(135deg, #27AE60, #1E8449);
   border: 2px solid #82E0AA;
@@ -2835,7 +2848,7 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 28px auto 16px;
+  margin: 18px auto 10px;
 }
 
 .ticket-card {
@@ -2964,6 +2977,97 @@ input, select, textarea {
 
 .success-actions button {
   flex: 1;
+}
+
+@media (max-width: 600px) {
+  .modal--success {
+    padding: 0 14px calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .success-icon {
+    width: 44px;
+    height: 44px;
+    margin: 10px auto 6px;
+  }
+
+  .success-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modal--success .modal__title {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+  }
+
+  .modal--success .modal__subtitle {
+    font-size: 0.74rem;
+    margin-bottom: 8px;
+  }
+
+  .ticket-card {
+    width: 100%;
+    margin: 6px auto 10px;
+    padding: 10px 12px;
+  }
+
+  .ticket-card__top {
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
+  .ticket-card__id {
+    font-size: 1.15rem;
+  }
+
+  .ticket-card__table {
+    font-size: 0.80rem;
+  }
+
+  .tracker {
+    gap: 6px;
+  }
+
+  .tracker__step {
+    gap: 8px;
+    font-size: 0.74rem;
+  }
+
+  .tracker__dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  .order-success-wa-banner {
+    width: 100%;
+    margin: 0 auto 12px;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .wa-banner-icon {
+    font-size: 1.2rem;
+  }
+
+  .wa-banner-title {
+    font-size: 0.80rem;
+  }
+
+  .wa-banner-sub {
+    font-size: 0.72rem;
+  }
+
+  .success-actions {
+    width: 100%;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+
+  .success-actions button {
+    min-height: 44px;
+    font-size: 0.82rem;
+    padding: 8px 10px;
+  }
 }
 
 /* Call Waiter (Desk Service Bell) */
@@ -6307,68 +6411,7 @@ body,
 }
 
 /* ── KITCHEN KDS & STAFF ACCESS LINKS ── */
-.gateway-staff-row {
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px dashed rgba(200, 157, 86, 0.3);
-  text-align: center;
-}
 
-.gateway-staff-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(36, 22, 14, 0.88);
-  border: 1px solid rgba(200, 157, 86, 0.45);
-  border-radius: var(--radius-xs);
-  color: var(--brass-bright);
-  font-family: var(--font-vintage);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.gateway-staff-link:hover {
-  background: var(--brass-gold);
-  color: #170E08;
-  border-color: var(--brass-bright);
-  box-shadow: 0 0 12px rgba(200, 157, 86, 0.4);
-}
-
-.footer__staff-row {
-  margin-top: 14px;
-}
-
-.footer__kds-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 18px;
-  background: rgba(36, 22, 14, 0.92);
-  border: 1.5px solid var(--brass-gold);
-  border-radius: var(--radius-xs);
-  color: var(--brass-bright);
-  font-family: var(--font-vintage);
-  font-size: 0.80rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.footer__kds-link:hover {
-  background: var(--brass-gold);
-  color: #160D07;
-  box-shadow: 0 0 16px rgba(200, 157, 86, 0.5);
-}
 
 
 
