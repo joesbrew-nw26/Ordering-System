@@ -7,6 +7,9 @@ import {
   getTables,
   getMenuItems,
   toggleMenuItemStock,
+  updateMenuItem,
+  addMenuItem,
+  deleteMenuItem,
   getOrders,
   getOrderById,
   createOrder,
@@ -32,13 +35,31 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// Active KDS Session tokens in-memory
-const activeSessions = new Set();
+// Active KDS Session tokens in-memory (token -> userSession)
+const activeSessions = new Map();
 const KDS_DEFAULT_PIN = process.env.KDS_PIN || '2006';
 const KDS_CREDENTIALS = {
   username: process.env.KDS_USER || 'admin',
   password: process.env.KDS_PASSWORD || 'brew2006'
 };
+
+// Middleware: Enforce Admin Role for menu & rate mutations
+function requireAdminRole(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : req.query.token;
+
+  if (!token || !activeSessions.has(token)) {
+    return res.status(401).json({ error: 'Unauthorized: Admin authentication token required' });
+  }
+
+  const session = activeSessions.get(token);
+  if (session.role !== 'Admin') {
+    return res.status(403).json({ error: 'Forbidden: Admin role privileges required to modify menu & rates' });
+  }
+
+  req.adminUser = session;
+  next();
+}
 
 // WebSocket broadcast helper (active in local server mode; Vercel clients use Supabase Realtime)
 function broadcast(eventType, payload) {
@@ -205,6 +226,49 @@ app.post('/api/menu/stock-toggle', async (req, res) => {
     res.json({ success: true, item: updated });
   } catch (err) {
     res.status(500).json({ error: 'Failed to toggle stock status' });
+  }
+});
+
+// Admin Menu Management Endpoints (Strictly requires Admin Role)
+app.put('/api/menu/:id', requireAdminRole, async (req, res) => {
+  try {
+    const itemId = req.params.id;
+    const updates = req.body;
+    const updated = await updateMenuItem(itemId, updates);
+    if (!updated) {
+      return res.status(404).json({ error: 'Menu item not found' });
+    }
+    broadcast('MENU_UPDATE', { action: 'UPDATE', item: updated });
+    res.json({ success: true, item: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update menu item' });
+  }
+});
+
+app.post('/api/menu', requireAdminRole, async (req, res) => {
+  try {
+    const created = await addMenuItem(req.body);
+    if (!created) {
+      return res.status(400).json({ error: 'Failed to create menu item' });
+    }
+    broadcast('MENU_UPDATE', { action: 'ADD', item: created });
+    res.status(201).json({ success: true, item: created });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create menu item' });
+  }
+});
+
+app.delete('/api/menu/:id', requireAdminRole, async (req, res) => {
+  try {
+    const itemId = req.params.id;
+    const deleted = await deleteMenuItem(itemId);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    broadcast('MENU_UPDATE', { action: 'DELETE', itemId });
+    res.json({ success: true, itemId });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete menu item' });
   }
 });
 
@@ -416,15 +480,18 @@ app.post('/api/kds/login', (req, res) => {
   const { pin, username, password } = req.body;
   let isValid = false;
   let operatorRole = 'Kitchen Dispatcher';
+  let role = 'Staff';
 
   if (pin && String(pin).trim() === KDS_DEFAULT_PIN) {
     isValid = true;
     operatorRole = 'Kitchen Dispatch Station';
+    role = 'Staff';
   } else if (username && password) {
     if (String(username).trim().toLowerCase() === KDS_CREDENTIALS.username.toLowerCase() &&
         String(password) === KDS_CREDENTIALS.password) {
       isValid = true;
       operatorRole = 'Floor Manager';
+      role = 'Admin';
     }
   }
 
@@ -436,16 +503,17 @@ app.post('/api/kds/login', (req, res) => {
   }
 
   const token = `kds_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-  activeSessions.add(token);
+  const userSession = {
+    name: operatorRole,
+    role: role,
+    authenticatedAt: new Date().toISOString()
+  };
+  activeSessions.set(token, userSession);
 
   res.json({
     success: true,
     token,
-    user: {
-      name: operatorRole,
-      role: 'Staff',
-      authenticatedAt: new Date().toISOString()
-    }
+    user: userSession
   });
 });
 
@@ -454,7 +522,7 @@ app.get('/api/kds/auth-check', (req, res) => {
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : req.query.token;
 
   if (token && activeSessions.has(token)) {
-    return res.json({ authenticated: true });
+    return res.json({ authenticated: true, user: activeSessions.get(token) });
   }
   return res.json({ authenticated: false });
 });

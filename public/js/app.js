@@ -1229,6 +1229,34 @@ function handleSocketMessage(msg) {
       renderSpecialsShowcase();
       showToast(`${name} is now ${inStock ? 'Available' : 'Sold Out'}`);
     }
+  } else if (msg.type === 'MENU_UPDATE') {
+    const { action, item, itemId } = msg.data || {};
+    if (action === 'ADD' && item) {
+      if (!state.menuItems.some(m => m.id === item.id)) {
+        state.menuItems.push(item);
+      }
+      renderMenuList();
+      renderSpecialsShowcase();
+      showToast(`✨ New creation added: ${item.name}`);
+    } else if (action === 'UPDATE' && item) {
+      const idx = state.menuItems.findIndex(m => m.id === item.id);
+      if (idx !== -1) {
+        state.menuItems[idx] = item;
+      }
+      // Update price in active cart if already added
+      state.cart.forEach(cartItem => {
+        if (cartItem.id === item.id) {
+          cartItem.price = item.price;
+        }
+      });
+      updateCartUI();
+      renderMenuList();
+      renderSpecialsShowcase();
+    } else if (action === 'DELETE' && itemId) {
+      state.menuItems = state.menuItems.filter(m => m.id !== itemId);
+      renderMenuList();
+      renderSpecialsShowcase();
+    }
   }
 }
 

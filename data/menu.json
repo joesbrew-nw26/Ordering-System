@@ -3,7 +3,7 @@
     "id": "tea-01",
     "name": "Tea",
     "category": "TEA",
-    "price": 25,
+    "price": 20,
     "isSpecial": true,
     "description": "Slow-brewed traditional house milk chai with aromatic spices and velvety finish.",
     "inStock": true,

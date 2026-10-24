@@ -6,8 +6,13 @@
 const kdsState = {
   orders: [],
   waiterCalls: [],
-  menuItems: []
+  menuItems: [],
+  currentUser: null
 };
+
+let adminMenuFilterCat = 'ALL';
+let adminMenuSearchQuery = '';
+let pendingDeleteItemId = null;
 
 // Sound effects
 const alertChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
@@ -470,6 +475,8 @@ function filterStockList(query) {
 function renderStockList() {
   if (!kdsStockList) return;
 
+  const isAdmin = kdsState.currentUser && kdsState.currentUser.role === 'Admin';
+
   const items = kdsState.menuItems.filter(item => {
     if (!stockSearchFilter) return true;
     return (item.name || '').toLowerCase().includes(stockSearchFilter) ||
@@ -487,15 +494,87 @@ function renderStockList() {
 
   kdsStockList.innerHTML = items.map(item => `
     <div class="stock-item-row" data-id="${item.id}">
-      <div>
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px; flex: 1; min-width: 0;">
         <strong class="stock-item-name">${item.name}</strong>
-        <span class="stock-item-price">₹${item.price}</span>
+        <span class="stock-item-price" id="rateDisplay_${item.id}">₹${item.price}</span>
+        ${isAdmin ? `
+          <button class="btn-stock-edit-rate" id="btnEditRate_${item.id}" onclick="startInlineRateEdit('${item.id}', ${item.price})" title="Quick edit rate (₹)">✏️</button>
+          <div id="inlineRateBox_${item.id}" class="inline-rate-box" style="display: none;">
+            <input type="number" id="inlineRateInput_${item.id}" class="inline-rate-input" value="${item.price}" min="0" max="9999" onkeydown="if(event.key==='Enter') saveInlineRate('${item.id}')">
+            <button class="btn-inline-rate-save" onclick="saveInlineRate('${item.id}')" title="Save Rate">✓</button>
+            <button class="btn-inline-rate-cancel" onclick="cancelInlineRateEdit('${item.id}')" title="Cancel">✕</button>
+          </div>
+        ` : ''}
       </div>
       <button class="stock-toggle-switch ${!item.inStock ? 'is-out' : ''}" onclick="toggleItemStock('${item.id}')">
         ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
       </button>
     </div>
   `).join('');
+}
+
+function startInlineRateEdit(itemId, price) {
+  const displayEl = document.getElementById(`rateDisplay_${itemId}`);
+  const editBtn = document.getElementById(`btnEditRate_${itemId}`);
+  const boxEl = document.getElementById(`inlineRateBox_${itemId}`);
+  const inputEl = document.getElementById(`inlineRateInput_${itemId}`);
+
+  if (displayEl) displayEl.style.display = 'none';
+  if (editBtn) editBtn.style.display = 'none';
+  if (boxEl) boxEl.style.display = 'inline-flex';
+  if (inputEl) {
+    inputEl.value = price;
+    inputEl.focus();
+    inputEl.select();
+  }
+}
+
+function cancelInlineRateEdit(itemId) {
+  const displayEl = document.getElementById(`rateDisplay_${itemId}`);
+  const editBtn = document.getElementById(`btnEditRate_${itemId}`);
+  const boxEl = document.getElementById(`inlineRateBox_${itemId}`);
+
+  if (displayEl) displayEl.style.display = 'inline';
+  if (editBtn) editBtn.style.display = 'inline-block';
+  if (boxEl) boxEl.style.display = 'none';
+}
+
+async function saveInlineRate(itemId) {
+  const inputEl = document.getElementById(`inlineRateInput_${itemId}`);
+  if (!inputEl) return;
+  const newPrice = Number(inputEl.value);
+  if (isNaN(newPrice) || newPrice < 0) {
+    alert('Please enter a valid non-negative price.');
+    return;
+  }
+
+  const token = localStorage.getItem(KDS_TOKEN_KEY);
+  try {
+    const res = await fetch(`/api/menu/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ price: newPrice })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const item = kdsState.menuItems.find(i => i.id === itemId);
+      if (item) item.price = newPrice;
+      cancelInlineRateEdit(itemId);
+      const displayEl = document.getElementById(`rateDisplay_${itemId}`);
+      if (displayEl) displayEl.textContent = `₹${newPrice}`;
+      showKdsToast(`💰 Updated ${item ? item.name : 'item'} rate to ₹${newPrice}`);
+      renderAdminMenuItemsTable();
+    } else {
+      alert(data.error || 'Failed to update rate');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error updating price');
+  }
 }
 
 async function toggleItemStock(itemId) {
@@ -663,6 +742,26 @@ function handleKdsSocketMessage(msg) {
       renderStockList();
       break;
 
+    case 'MENU_UPDATE':
+      if (msg.data) {
+        const { action, item, itemId } = msg.data;
+        if (action === 'ADD' && item) {
+          if (!kdsState.menuItems.some(i => i.id === item.id)) {
+            kdsState.menuItems.push(item);
+          }
+        } else if (action === 'UPDATE' && item) {
+          const idx = kdsState.menuItems.findIndex(i => i.id === item.id);
+          if (idx !== -1) {
+            kdsState.menuItems[idx] = item;
+          }
+        } else if (action === 'DELETE' && itemId) {
+          kdsState.menuItems = kdsState.menuItems.filter(i => i.id !== itemId);
+        }
+        renderStockList();
+        renderAdminMenuItemsTable();
+      }
+      break;
+
     case 'KDS_SHIFT_CLOSED':
       showKdsToast(`🔒 Shift for ${msg.data.date} finalized by staff (₹${msg.data.totalRevenue})`);
       break;
@@ -672,6 +771,19 @@ function handleKdsSocketMessage(msg) {
 // ==========================================================================
 // KDS AUTHENTICATION & PIN PAD LOGIC
 // ==========================================================================
+
+function updateKdsRoleUI() {
+  const isAdmin = kdsState.currentUser && kdsState.currentUser.role === 'Admin';
+  const badge = document.getElementById('kdsAdminRoleBadge');
+  const menuBtn = document.getElementById('kdsAdminMenuBtn');
+  const quickAddBtn = document.getElementById('kdsQuickAddStockBtn');
+
+  if (badge) badge.style.display = isAdmin ? 'inline-flex' : 'none';
+  if (menuBtn) menuBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+  if (quickAddBtn) quickAddBtn.style.display = isAdmin ? 'inline-block' : 'none';
+
+  renderStockList();
+}
 
 async function initKdsAuth() {
   const token = localStorage.getItem(KDS_TOKEN_KEY);
@@ -684,7 +796,9 @@ async function initKdsAuth() {
     const res = await fetch(`/api/kds/auth-check?token=${encodeURIComponent(token)}`);
     const data = await res.json();
     if (data.authenticated) {
+      kdsState.currentUser = data.user || { name: 'Kitchen Staff', role: 'Staff' };
       hideLoginPortal();
+      updateKdsRoleUI();
       loadKdsData();
       initKdsWebSocket();
     } else {
@@ -798,7 +912,9 @@ async function submitPinLogin() {
     const data = await res.json();
     if (res.ok && data.success) {
       localStorage.setItem(KDS_TOKEN_KEY, data.token);
+      kdsState.currentUser = data.user || { name: 'Kitchen Staff', role: 'Staff' };
       hideLoginPortal();
+      updateKdsRoleUI();
       loadKdsData();
       initKdsWebSocket();
       showKdsToast(`🔓 Welcome! Authenticated as ${data.user.name}`);
@@ -835,10 +951,12 @@ async function submitCredsLogin(e) {
     const data = await res.json();
     if (res.ok && data.success) {
       localStorage.setItem(KDS_TOKEN_KEY, data.token);
+      kdsState.currentUser = data.user || { name: 'Manager / Admin', role: 'Admin' };
       hideLoginPortal();
+      updateKdsRoleUI();
       loadKdsData();
       initKdsWebSocket();
-      showKdsToast(`🔓 Welcome! Authenticated as ${data.user.name}`);
+      showKdsToast(`👑 Welcome! Authenticated as ${data.user.name} (${data.user.role})`);
     } else {
       if (errorEl) errorEl.textContent = data.error || 'Invalid credentials.';
       shakeLoginCard();
@@ -1182,6 +1300,356 @@ if (!document.getElementById('kdsKeyframeStyles')) {
   document.head.appendChild(kfStyle);
 }
 
+// ==========================================================================
+// ADMIN MENU & RATE MANAGEMENT (Admin Role)
+// ==========================================================================
+
+function openAdminMenuModal() {
+  const modal = document.getElementById('kdsAdminMenuModal');
+  if (modal) modal.classList.remove('hidden');
+  adminMenuFilterCat = 'ALL';
+  adminMenuSearchQuery = '';
+  const searchInput = document.getElementById('adminMenuSearchInput');
+  if (searchInput) searchInput.value = '';
+  updateAdminCatTabsUI();
+  renderAdminMenuItemsTable();
+}
+
+function closeAdminMenuModal() {
+  const modal = document.getElementById('kdsAdminMenuModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function filterAdminMenu(cat) {
+  adminMenuFilterCat = cat;
+  updateAdminCatTabsUI();
+  renderAdminMenuItemsTable();
+}
+
+function updateAdminCatTabsUI() {
+  const buttons = document.querySelectorAll('#adminMenuCatTabs button');
+  buttons.forEach(btn => {
+    if (btn.dataset.cat === adminMenuFilterCat) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+function filterAdminMenuSearch(query) {
+  adminMenuSearchQuery = (query || '').toLowerCase().trim();
+  renderAdminMenuItemsTable();
+}
+
+function renderAdminMenuItemsTable() {
+  const tbody = document.getElementById('adminMenuItemsTableBody');
+  const countEl = document.getElementById('adminMenuTotalCount');
+  if (countEl) countEl.textContent = kdsState.menuItems.length;
+
+  if (!tbody) return;
+
+  const filtered = kdsState.menuItems.filter(item => {
+    const matchesCat = adminMenuFilterCat === 'ALL' || item.category === adminMenuFilterCat;
+    const matchesSearch = !adminMenuSearchQuery || 
+      (item.name || '').toLowerCase().includes(adminMenuSearchQuery) ||
+      (item.description || '').toLowerCase().includes(adminMenuSearchQuery);
+    return matchesCat && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 32px; color: #9CA3AF;">
+          No creations found matching criteria.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(item => {
+    return `
+      <tr data-item-id="${item.id}">
+        <td>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <strong style="color: #FFF; font-size: 0.92rem;">${item.name}</strong>
+            ${item.isSpecial ? '<span style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FCD34D; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; font-weight: 800;">★ SPECIAL</span>' : ''}
+          </div>
+          <p style="font-size: 0.74rem; color: #9CA3AF; margin-top: 2px; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${item.description || 'No description added.'}
+          </p>
+        </td>
+        <td>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(228, 191, 118, 0.15); border: 1px solid rgba(228, 191, 118, 0.4); color: #FDE68A; font-weight: 700;">
+            ${item.category}
+          </span>
+        </td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-weight: 800; color: #FCD34D; font-size: 0.94rem;">₹${item.price}</span>
+            <button class="btn-stock-edit-rate" onclick="promptEditRate('${item.id}', ${item.price})" title="Quick Change Price">✏️</button>
+          </div>
+        </td>
+        <td>
+          <button class="stock-toggle-switch ${!item.inStock ? 'is-out' : ''}" style="padding: 3px 9px; font-size: 0.70rem;" onclick="toggleItemStock('${item.id}')">
+            ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
+          </button>
+        </td>
+        <td style="text-align: right;">
+          <div style="display: inline-flex; gap: 6px;">
+            <button class="kds-admin-btn" style="font-size: 0.72rem; padding: 4px 10px; border-radius: 6px;" onclick="openEditItemModal('${item.id}')" title="Edit Full Details">
+              ✏️ Edit
+            </button>
+            <button class="ledger-btn-finalize" style="background: rgba(239, 68, 68, 0.25); border: 1px solid #EF4444; color: #FCA5A5; font-size: 0.72rem; padding: 4px 10px; border-radius: 6px;" onclick="confirmDeleteItem('${item.id}')" title="Delete from Menu">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function promptEditRate(itemId, currentPrice) {
+  const item = kdsState.menuItems.find(i => i.id === itemId);
+  const promptVal = prompt(`Update rate for "${item ? item.name : itemId}" (₹):`, currentPrice);
+  if (promptVal === null) return;
+  const newPrice = Number(promptVal);
+  if (isNaN(newPrice) || newPrice < 0) {
+    alert('Please enter a valid price');
+    return;
+  }
+
+  const token = localStorage.getItem(KDS_TOKEN_KEY);
+  try {
+    const res = await fetch(`/api/menu/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ price: newPrice })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      if (item) item.price = newPrice;
+      renderAdminMenuItemsTable();
+      renderStockList();
+      showKdsToast(`💰 Updated ${item ? item.name : 'item'} rate to ₹${newPrice}`);
+    } else {
+      alert(data.error || 'Failed to update rate');
+    }
+  } catch (err) {
+    alert('Network error updating price');
+  }
+}
+
+// Add & Edit Form Modal
+function openAddItemModal() {
+  const modal = document.getElementById('kdsItemFormModal');
+  const title = document.getElementById('itemFormModalTitle');
+  const idInput = document.getElementById('itemFormId');
+  const nameInput = document.getElementById('itemFormName');
+  const catInput = document.getElementById('itemFormCategory');
+  const priceInput = document.getElementById('itemFormPrice');
+  const typeInput = document.getElementById('itemFormType');
+  const descInput = document.getElementById('itemFormDesc');
+  const specialInput = document.getElementById('itemFormSpecial');
+
+  if (title) title.textContent = '✨ Add New Menu Creation';
+  if (idInput) idInput.value = '';
+  if (nameInput) nameInput.value = '';
+  if (catInput) catInput.value = 'TEA';
+  if (priceInput) priceInput.value = '';
+  if (typeInput) typeInput.value = 'hot';
+  if (descInput) descInput.value = '';
+  if (specialInput) specialInput.checked = false;
+
+  if (modal) modal.classList.remove('hidden');
+  setTimeout(() => nameInput?.focus(), 150);
+}
+
+function openEditItemModal(itemId) {
+  const item = kdsState.menuItems.find(i => i.id === itemId);
+  if (!item) return;
+
+  const modal = document.getElementById('kdsItemFormModal');
+  const title = document.getElementById('itemFormModalTitle');
+  const idInput = document.getElementById('itemFormId');
+  const nameInput = document.getElementById('itemFormName');
+  const catInput = document.getElementById('itemFormCategory');
+  const priceInput = document.getElementById('itemFormPrice');
+  const typeInput = document.getElementById('itemFormType');
+  const descInput = document.getElementById('itemFormDesc');
+  const specialInput = document.getElementById('itemFormSpecial');
+
+  if (title) title.textContent = `✏️ Edit Creation: ${item.name}`;
+  if (idInput) idInput.value = item.id;
+  if (nameInput) nameInput.value = item.name || '';
+  if (catInput) catInput.value = item.category || 'TEA';
+  if (priceInput) priceInput.value = item.price || 0;
+  if (typeInput) typeInput.value = item.type || 'hot';
+  if (descInput) descInput.value = item.description || '';
+  if (specialInput) specialInput.checked = Boolean(item.isSpecial);
+
+  if (modal) modal.classList.remove('hidden');
+  setTimeout(() => nameInput?.focus(), 150);
+}
+
+function closeItemFormModal() {
+  const modal = document.getElementById('kdsItemFormModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function onCategorySelectChange(cat) {
+  const typeInput = document.getElementById('itemFormType');
+  if (!typeInput) return;
+  if (cat === 'TEA' || cat === 'COFFEE') {
+    typeInput.value = 'hot';
+  } else if (cat === 'DRINKS') {
+    typeInput.value = 'cold';
+  } else {
+    typeInput.value = 'snack';
+  }
+}
+
+async function submitItemForm(e) {
+  if (e) e.preventDefault();
+  const token = localStorage.getItem(KDS_TOKEN_KEY);
+  if (!token) {
+    alert('Session expired. Please log in again.');
+    return;
+  }
+
+  const id = document.getElementById('itemFormId')?.value.trim();
+  const name = document.getElementById('itemFormName')?.value.trim();
+  const category = document.getElementById('itemFormCategory')?.value.trim();
+  const price = Number(document.getElementById('itemFormPrice')?.value);
+  const type = document.getElementById('itemFormType')?.value.trim() || 'hot';
+  const description = document.getElementById('itemFormDesc')?.value.trim() || '';
+  const isSpecial = Boolean(document.getElementById('itemFormSpecial')?.checked);
+
+  if (!name || isNaN(price) || price < 0) {
+    alert('Please fill out all required fields with valid values.');
+    return;
+  }
+
+  try {
+    if (id) {
+      // Update existing item
+      const res = await fetch(`/api/menu/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ name, category, price, type, description, isSpecial })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const existingIdx = kdsState.menuItems.findIndex(i => i.id === id);
+        if (existingIdx !== -1) {
+          kdsState.menuItems[existingIdx] = data.item;
+        }
+        closeItemFormModal();
+        renderStockList();
+        renderAdminMenuItemsTable();
+        showKdsToast(`✅ Saved changes to ${data.item.name}`);
+      } else {
+        alert(data.error || 'Failed to update item');
+      }
+    } else {
+      // Create new item
+      const res = await fetch('/api/menu', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ name, category, price, type, description, isSpecial, inStock: true })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (!kdsState.menuItems.some(i => i.id === data.item.id)) {
+          kdsState.menuItems.push(data.item);
+        }
+        closeItemFormModal();
+        renderStockList();
+        renderAdminMenuItemsTable();
+        showKdsToast(`🎉 Added new creation: ${data.item.name} (₹${data.item.price})`);
+      } else {
+        alert(data.error || 'Failed to add item');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error submitting item');
+  }
+}
+
+// Delete Confirmation
+function confirmDeleteItem(itemId) {
+  const item = kdsState.menuItems.find(i => i.id === itemId);
+  if (!item) return;
+  pendingDeleteItemId = itemId;
+
+  const modal = document.getElementById('kdsDeleteConfirmModal');
+  const promptEl = document.getElementById('deleteItemPromptText');
+  const confirmBtn = document.getElementById('btnConfirmDelete');
+
+  if (promptEl) {
+    promptEl.innerHTML = `Are you sure you want to permanently remove <strong>"${item.name}" (₹${item.price})</strong> from Joe's Brew? It will disappear from all customer menus immediately.`;
+  }
+
+  if (confirmBtn) {
+    confirmBtn.onclick = executeDeleteItem;
+  }
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeDeleteConfirmModal() {
+  pendingDeleteItemId = null;
+  const modal = document.getElementById('kdsDeleteConfirmModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function executeDeleteItem() {
+  if (!pendingDeleteItemId) return;
+  const token = localStorage.getItem(KDS_TOKEN_KEY);
+  if (!token) {
+    alert('Session expired. Please log in again.');
+    return;
+  }
+
+  const itemId = pendingDeleteItemId;
+  const item = kdsState.menuItems.find(i => i.id === itemId);
+
+  try {
+    const res = await fetch(`/api/menu/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      kdsState.menuItems = kdsState.menuItems.filter(i => i.id !== itemId);
+      closeDeleteConfirmModal();
+      renderStockList();
+      renderAdminMenuItemsTable();
+      showKdsToast(`🗑️ Removed ${item ? item.name : 'item'} from menu`);
+    } else {
+      alert(data.error || 'Failed to delete item');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error deleting item');
+  }
+}
+
 // Expose globals for onclick HTML handlers
 window.advanceOrderStatus = advanceOrderStatus;
 window.resolveWaiterCall = resolveWaiterCall;
@@ -1197,3 +1665,18 @@ window.selectHistoryDate = selectHistoryDate;
 window.onCustomDateSelected = onCustomDateSelected;
 window.printShiftSummary = printShiftSummary;
 window.finalizeShiftAndLogout = finalizeShiftAndLogout;
+window.startInlineRateEdit = startInlineRateEdit;
+window.cancelInlineRateEdit = cancelInlineRateEdit;
+window.saveInlineRate = saveInlineRate;
+window.openAdminMenuModal = openAdminMenuModal;
+window.closeAdminMenuModal = closeAdminMenuModal;
+window.filterAdminMenu = filterAdminMenu;
+window.filterAdminMenuSearch = filterAdminMenuSearch;
+window.openAddItemModal = openAddItemModal;
+window.openEditItemModal = openEditItemModal;
+window.closeItemFormModal = closeItemFormModal;
+window.onCategorySelectChange = onCategorySelectChange;
+window.submitItemForm = submitItemForm;
+window.confirmDeleteItem = confirmDeleteItem;
+window.closeDeleteConfirmModal = closeDeleteConfirmModal;
+window.promptEditRate = promptEditRate;
