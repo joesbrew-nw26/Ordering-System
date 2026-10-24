@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Joe's Brew | Kitchen Display System (KDS) • Ground Floor Station</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* KDS Specific High-Contrast Styles */
+    body.kds-theme {
+      background: #180E09;
+      color: #FDF8EE;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+    }
+    .kds-header {
+      background: rgba(36, 20, 13, 0.95);
+      border-bottom: 2px solid var(--vintage-gold);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .kds-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .kds-crest {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--vintage-gold);
+      background: #FFF;
+    }
+    .kds-title {
+      font-family: var(--font-vintage);
+      font-size: 1.35rem;
+      color: var(--vintage-gold-glow);
+    }
+    .kds-subtitle {
+      font-size: 0.75rem;
+      color: #D1C4B9;
+    }
+    .kds-top-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .kds-stat-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(201, 151, 56, 0.4);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .kds-stat-pill strong {
+      color: var(--vintage-gold-glow);
+      font-size: 1rem;
+      margin-left: 4px;
+    }
+    .kds-main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    @media (min-width: 900px) {
+      .kds-main-grid {
+        grid-template-columns: 2.5fr 1fr;
+      }
+    }
+    .kds-section-title {
+      font-family: var(--font-vintage);
+      font-size: 1.25rem;
+      color: var(--vintage-gold-glow);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kds-tickets-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .kds-ticket-card {
+      background: rgba(43, 24, 16, 0.95);
+      border: 2px solid rgba(201, 151, 56, 0.4);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .kds-ticket-card.is-upstairs {
+      border-color: #F59E0B;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+    }
+    .ticket-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+    .ticket-table-badge {
+      background: #F59E0B;
+      color: #180E09;
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.04em;
+    }
+    .ticket-table-badge.is-ground {
+      background: #10B981;
+      color: #FFF;
+    }
+    .ticket-meta {
+      text-align: right;
+      font-size: 0.72rem;
+      color: #D1C4B9;
+    }
+    .ticket-items-list {
+      margin: 10px 0;
+      flex: 1;
+    }
+    .ticket-item-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.92rem;
+    }
+    .item-qty-badge {
+      background: var(--vintage-gold);
+      color: #180E09;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+    }
+    .ticket-notes-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 3px solid #F59E0B;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: #FDE68A;
+      margin: 10px 0;
+    }
+    .ticket-action-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .kds-step-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .kds-step-btn.active {
+      background: var(--vintage-gold);
+      color: #180E09;
+      border-color: var(--vintage-gold);
+      font-weight: 800;
+    }
+    .kds-step-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    /* Waiter Calls Box */
+    .kds-side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .waiter-call-card {
+      background: rgba(220, 38, 38, 0.2);
+      border: 1.5px solid #EF4444;
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: pulseRed 2s infinite;
+    }
+    @keyframes pulseRed {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .btn-resolve-call {
+      background: #EF4444;
+      color: #FFF;
+      border: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    /* Stock CMS List */
+    .stock-list-container {
+      background: rgba(36, 20, 13, 0.8);
+      border: 1px solid var(--vintage-gold);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .stock-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.85rem;
+    }
+    .stock-toggle-switch {
+      background: #10B981;
+      color: #FFF;
+      border: none;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .stock-toggle-switch.is-out {
+      background: #DC2626;
+    }
+  </style>
+</head>
+<body class="kds-theme">
+
+  <header class="kds-header">
+    <div class="kds-title-group">
+      <img src="/assets/logo.jpg" alt="Joe's Brew" class="kds-crest">
+      <div>
+        <h1 class="kds-title">Joe's Brew Kitchen Display (KDS)</h1>
+        <p class="kds-subtitle">Ground Floor Kitchen & Runner Dispatch Station</p>
+      </div>
+    </div>
+
+    <div class="kds-top-stats">
+      <div class="kds-stat-pill">
+        Active Orders: <strong id="kdsActiveCount">0</strong>
+      </div>
+      <div class="kds-stat-pill">
+        Waiter Alerts: <strong id="kdsAlertCount" style="color: #F87171;">0</strong>
+      </div>
+      <div class="kds-stat-pill">
+        <span class="sync-pulse"></span>
+        <span style="color: #34D399;">Live WS</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="kds-main-grid">
+    <!-- Active Tickets Queue -->
+    <section>
+      <div class="kds-section-title">
+        <span>Incoming & Active Tickets</span>
+        <span style="font-size: 0.8rem; color: #D1C4B9;">Auto-Refreshes Instantly</span>
+      </div>
+      <div class="kds-tickets-container" id="kdsTicketsList">
+        <!-- Rendered by kds.js -->
+        <p style="color: #9CA3AF; padding: 20px;">Waiting for table orders...</p>
+      </div>
+    </section>
+
+    <!-- Side Panel: Waiter Alerts & Stock CMS -->
+    <aside class="kds-side-panel">
+      <!-- Urgent Waiter Pager -->
+      <section>
+        <div class="kds-section-title">
+          <span>🔔 Upstairs Waiter Calls</span>
+        </div>
+        <div id="kdsWaiterCallsList">
+          <p style="font-size: 0.82rem; color: #9CA3AF;">No active waiter calls.</p>
+        </div>
+      </section>
+
+      <!-- Instant Live Stock Toggles -->
+      <section>
+        <div class="kds-section-title">
+          <span>📦 1-Tap Stock Management</span>
+        </div>
+        <div class="stock-list-container" id="kdsStockList">
+          <!-- Populated from /api/menu -->
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script src="/js/kds.js"></script>
+</body>
+</html>

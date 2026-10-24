@@ -1,0 +1,44 @@
+[
+  {
+    "id": "JB-452659",
+    "orderNumber": "0001",
+    "tableId": "Top-04",
+    "floor": "Upstairs",
+    "items": [
+      {
+        "id": "snack-01",
+        "name": "Joe's brew special BUN MILKELLA ★",
+        "price": 65,
+        "quantity": 1,
+        "note": "",
+        "isSpecial": true
+      },
+      {
+        "id": "coffee-01",
+        "name": "Coffee ★",
+        "price": 30,
+        "quantity": 2,
+        "note": "",
+        "isSpecial": true
+      }
+    ],
+    "generalInstructions": "Extra hot coffee please",
+    "subtotal": 125,
+    "total": 125,
+    "paymentMode": "UPI",
+    "paymentStatus": "Paid via UPI",
+    "status": "Preparing",
+    "customerName": "Guest",
+    "createdAt": "2026-10-09T16:14:12.659Z",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "timestamp": "2026-10-09T16:14:12.659Z"
+      },
+      {
+        "status": "Preparing",
+        "timestamp": "2026-10-09T16:14:52.776Z"
+      }
+    ]
+  }
+]

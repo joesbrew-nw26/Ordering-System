@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Joe's Brew | Blissful Coffee Estd 2006 • In-House Table Ordering</title>
+  <meta name="description" content="Joe's Brew (Estd 2006). Blissful artisan coffee, tea, snacks, and house specials. Order directly to the ground floor kitchen from your table.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="vintage-glass-theme">
+
+  <!-- Ambient Vintage Cafe Glows -->
+  <div class="ambient-glow glow-gold"></div>
+  <div class="ambient-glow glow-espresso"></div>
+  <div class="vintage-grain-overlay"></div>
+
+  <!-- Top Glassmorphism Navigation Bar -->
+  <header class="vintage-navbar" id="vintageNavbar">
+    <div class="nav-container">
+      <div class="nav-brand-group" id="navHomeLink" role="button" tabindex="0">
+        <div class="nav-logo-crest">
+          <img src="/assets/logo.jpg" alt="Joe's Brew Emblem" class="crest-img">
+        </div>
+        <div class="nav-brand-titles">
+          <span class="nav-brand-name">Joe's Brew</span>
+          <span class="nav-brand-sub">ESTD 2006 • BLISSFUL COFFEE</span>
+        </div>
+      </div>
+
+      <div class="nav-center-links">
+        <button class="nav-tab active" id="tabCafeHome">The Café</button>
+        <button class="nav-tab" id="tabFullMenu">Our Menu</button>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Table Location Badge -->
+        <button class="glass-pill-btn table-pill-btn" id="tableSelectorBtn" title="Change Table">
+          <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h16M6 6v12M18 6v12"/>
+          </svg>
+          <span id="currentTableNavText">Top-04 (Upstairs)</span>
+          <span class="pill-chevron">▾</span>
+        </button>
+
+        <!-- Waiter Summon Button -->
+        <button class="glass-pill-btn waiter-pill-btn" id="callWaiterNavBtn" title="Call Waiter to your table">
+          <span class="bell-icon">🔔</span>
+          <span class="btn-text-desktop">Call Waiter</span>
+        </button>
+
+        <!-- Cart Quick Badge -->
+        <button class="glass-pill-btn cart-pill-btn" id="cartNavBtn" title="View Cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-count-badge" id="cartCountBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       VIEW 1: THE CAFE'S HOMEPAGE (Heritage, Atmosphere & Specials Showcase)
+       ========================================================================= -->
+  <section class="page-view active" id="cafeHomeView">
+    <!-- Hero Showcase Section -->
+    <div class="vintage-hero">
+      <div class="hero-glass-card">
+        <div class="hero-emblem-wrap">
+          <img src="/assets/logo.jpg" alt="Joe's Brew Estd 2006" class="hero-emblem">
+          <div class="emblem-halo"></div>
+        </div>
+
+        <div class="hero-vintage-badge">
+          <span class="star-sep">✦</span>
+          <span>ESTD 2006 • HANDCRAFTED IN-HOUSE</span>
+          <span class="star-sep">✦</span>
+        </div>
+
+        <h1 class="hero-vintage-title">Joe's Brew</h1>
+        <p class="hero-vintage-tagline">Blissful Coffee, Warm Conversations & Classic Eats</p>
+
+        <p class="hero-description">
+          Spanning two stories of cozy heritage charm. Whether you're relaxing upstairs or on the ground floor, your table orders and service calls route instantly to our kitchen without walking downstairs.
+        </p>
+
+        <!-- Physical Seating Highlight -->
+        <div class="heritage-features-grid">
+          <div class="feature-glass-pill">
+            <span class="feature-icon">🏛️</span>
+            <div>
+              <strong>Two-Story Café</strong>
+              <small>Ground & Upstairs Seating</small>
+            </div>
+          </div>
+          <div class="feature-glass-pill">
+            <span class="feature-icon">⚡</span>
+            <div>
+              <strong>Zero Friction</strong>
+              <small>Instant Real-Time Kitchen Sync</small>
+            </div>
+          </div>
+          <div class="feature-glass-pill">
+            <span class="feature-icon">☕</span>
+            <div>
+              <strong>Original 2006 Recipe</strong>
+              <small>Signature Roast & Bun Milkella</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- THE PROMINENT BIG "ORDER NOW" BUTTON -->
+        <div class="hero-cta-wrap">
+          <button class="btn-order-now-gold" id="heroOrderNowBtn">
+            <span class="btn-shine"></span>
+            <span class="btn-label">ORDER NOW</span>
+            <span class="btn-arrow">➔</span>
+          </button>
+          <div class="cta-table-hint">
+            Ordering for: <strong id="heroTableHint">Table Top-04 (Upstairs)</strong> • Tap to change
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Curated House Specials Showcase Section -->
+    <section class="specials-showcase-section">
+      <div class="section-title-wrap">
+        <div class="vintage-filigree-divider">
+          <span class="divider-line"></span>
+          <span class="divider-star">✦ ★ ✦</span>
+          <span class="divider-line"></span>
+        </div>
+        <h2 class="section-vintage-title">Chef's House Specials</h2>
+        <p class="section-subtitle">Our most cherished creations, starred on our physical menu since 2006</p>
+      </div>
+
+      <div class="specials-bento-carousel" id="specialsCarousel">
+        <!-- Rendered by JS from physical menu specials -->
+      </div>
+
+      <div class="showcase-bottom-cta">
+        <button class="btn-glass-secondary" id="browseAllMenuBtn">
+          <span>Explore All 24 Menu Items</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Cafe Ambiance & Heritage Note -->
+    <section class="heritage-story-section">
+      <div class="story-glass-panel">
+        <div class="story-content">
+          <span class="story-stamp">THE JOE'S BREW STORY</span>
+          <h3 class="story-title">Crafting Warm Moments Since 2006</h3>
+          <p>
+            From our slow-brewed signature Filter Coffee and hot Belgian Chocolate Melt to our legendary <em>Bun Milkella</em>, Joe’s Brew is built around simple perfection. Our digital ordering system bridges the physical distance between our upstairs loft and ground-floor kitchen, ensuring your cups arrive steaming hot.
+          </p>
+          <div class="cafe-meta-details">
+            <div class="meta-item">
+              <strong>Timings:</strong> 9:00 AM – 11:00 PM Daily
+            </div>
+            <div class="meta-item">
+              <strong>Payments:</strong> Quick UPI (GPay/PhonePe/Paytm) & Counter Cash/Card
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- =========================================================================
+       VIEW 2: THE FULL MENU PAGE (Exact 24 Items, Category Tabs, Add to Cart)
+       ========================================================================= -->
+  <section class="page-view" id="menuView">
+    <!-- Menu Page Header Banner -->
+    <div class="menu-banner-glass">
+      <div class="menu-banner-content">
+        <div class="menu-badge-row">
+          <button class="table-switcher-tag" id="menuTableSwitcherTag">
+            <span>📍 SEATED AT:</span>
+            <strong id="menuTableDisplay">Top-04 (Upstairs)</strong>
+            <span class="edit-icon">✎</span>
+          </button>
+          <div class="kitchen-sync-badge">
+            <span class="sync-pulse"></span>
+            <span>Ground Floor Kitchen Connected</span>
+          </div>
+        </div>
+        <h2 class="menu-page-title">Café Menu</h2>
+        <p class="menu-page-desc">Authentic selections straight from our physical cafe board</p>
+      </div>
+    </div>
+
+    <!-- Category Glass Pills Bar -->
+    <nav class="vintage-category-bar">
+      <div class="category-pills-scroll" id="menuCategoriesBar">
+        <button class="cat-filter-btn active" data-cat="ALL">All Items (24)</button>
+        <button class="cat-filter-btn" data-cat="TEA">Tea (3)</button>
+        <button class="cat-filter-btn" data-cat="COFFEE">Coffee (2)</button>
+        <button class="cat-filter-btn" data-cat="MELT">Melt (1)</button>
+        <button class="cat-filter-btn" data-cat="COOKIES">Cookies (2)</button>
+        <button class="cat-filter-btn" data-cat="DRINKS">Drinks (7)</button>
+        <button class="cat-filter-btn" data-cat="SNACKS">Snacks (5)</button>
+        <button class="cat-filter-btn" data-cat="EATS">Eats (4)</button>
+      </div>
+    </nav>
+
+    <!-- Menu List Grid -->
+    <main class="menu-catalog-container">
+      <div class="menu-items-grid" id="menuItemsGrid">
+        <!-- Rendered dynamically strictly from data/menu.json -->
+      </div>
+    </main>
+  </section>
+
+  <!-- =========================================================================
+       FLOATING STICKY BOTTOM CART BAR (Appears when items are in cart)
+       ========================================================================= -->
+  <div class="sticky-cart-bar" id="stickyCartBar">
+    <div class="sticky-cart-inner">
+      <div class="sticky-cart-summary">
+        <div class="cart-qty-pill">
+          <span id="stickyCartCount">0</span> items
+        </div>
+        <div class="sticky-cart-price">
+          <span class="currency">₹</span><span id="stickyCartTotal">0</span>
+        </div>
+      </div>
+      <button class="btn-view-cart-glass" id="openCartBtn">
+        <span>View Cart</span>
+        <span class="arrow">➔</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: SLIDE-UP CART DRAWER
+       ========================================================================= -->
+  <div class="glass-modal-backdrop" id="cartModalBackdrop">
+    <div class="glass-sheet cart-sheet" id="cartSheet">
+      <div class="sheet-header">
+        <div class="sheet-title-group">
+          <span class="sheet-pretitle">YOUR IN-HOUSE TICKET</span>
+          <h3 class="sheet-title">Order Review</h3>
+          <div class="sheet-table-chip" id="cartTableBadge">Table: Top-04 (Upstairs)</div>
+        </div>
+        <button class="sheet-close-btn" id="closeCartBtn">&times;</button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="cart-items-list" id="cartItemsList">
+          <!-- Dynamically populated cart items -->
+        </div>
+
+        <div class="cooking-note-block">
+          <label for="orderGeneralNotes" class="note-label">Special Kitchen Instructions (Optional)</label>
+          <input type="text" id="orderGeneralNotes" class="vintage-input" placeholder="e.g. Extra hot, sugar on the side, bring drinks first...">
+        </div>
+
+        <div class="bill-breakdown-card">
+          <div class="bill-row">
+            <span>Item Subtotal</span>
+            <span class="val" id="cartSubtotalVal">₹0</span>
+          </div>
+          <div class="bill-row">
+            <span>Taxes & Service</span>
+            <span class="val">Included</span>
+          </div>
+          <div class="bill-divider"></div>
+          <div class="bill-row total-row">
+            <span>Grand Total</span>
+            <span class="total-val" id="cartGrandTotalVal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="btn-proceed-payment-gold" id="proceedToPaymentBtn">
+          <span>Proceed to Payment</span>
+          <span class="proceed-total" id="proceedPaymentTotal">₹0</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: PAYMENT PAGE / MODAL (UPI Fast Pay & Pay at Counter)
+       ========================================================================= -->
+  <div class="glass-modal-backdrop" id="paymentModalBackdrop">
+    <div class="glass-sheet payment-sheet" id="paymentSheet">
+      <div class="sheet-header">
+        <div class="sheet-title-group">
+          <span class="sheet-pretitle">STEP 2 OF 2</span>
+          <h3 class="sheet-title">Choose Payment Method</h3>
+          <div class="sheet-table-chip" id="paymentTableChip">Top-04 (Upstairs)</div>
+        </div>
+        <button class="sheet-close-btn" id="closePaymentBtn">&times;</button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="payment-amount-banner">
+          <span class="amt-caption">Amount Payable</span>
+          <h2 class="amt-value" id="paymentBannerAmount">₹0</h2>
+        </div>
+
+        <!-- Payment Mode Tabs -->
+        <div class="payment-modes-selector">
+          <label class="payment-mode-card active" id="modeCardUpi">
+            <input type="radio" name="payMode" value="UPI" checked>
+            <div class="mode-info">
+              <span class="mode-badge">Recommended</span>
+              <strong class="mode-title">Instant UPI App / QR</strong>
+              <small>Google Pay, PhonePe, Paytm, BHIM</small>
+            </div>
+            <span class="radio-indicator"></span>
+          </label>
+
+          <label class="payment-mode-card" id="modeCardCounter">
+            <input type="radio" name="payMode" value="PAY_LATER">
+            <div class="mode-info">
+              <strong class="mode-title">Pay at Counter / Waiter</strong>
+              <small>Cash or Card upon finishing your meal</small>
+            </div>
+            <span class="radio-indicator"></span>
+          </label>
+        </div>
+
+        <!-- UPI Deep Link Box -->
+        <div class="upi-details-container" id="upiDetailsContainer">
+          <div class="upi-apps-row">
+            <div class="upi-app-btn gpay">
+              <span>GPay</span>
+            </div>
+            <div class="upi-app-btn phonepe">
+              <span>PhonePe</span>
+            </div>
+            <div class="upi-app-btn paytm">
+              <span>Paytm</span>
+            </div>
+            <div class="upi-app-btn bhim">
+              <span>BHIM UPI</span>
+            </div>
+          </div>
+
+          <div class="qr-code-box">
+            <div class="qr-canvas-wrap" id="qrContainer">
+              <svg class="qr-placeholder-svg" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#FFF8EE" rx="6"/>
+                <path d="M10 10h30v30h-30zM15 15h20v20h-20zM20 20h10v10h-10zM60 10h30v30h-30zM65 15h20v20h-20zM70 20h10v10h-10zM10 60h30v30h-30zM15 65h20v20h-20zM20 70h10v10h-10zM50 10h5v15h-5zM45 35h15v5h-15zM50 45h20v10h-20zM75 50h15v10h-15zM60 70h30v5h-30zM70 80h10v10h-10zM45 60h10v30h-10z" fill="#2B1810"/>
+              </svg>
+            </div>
+            <span class="qr-caption">Scan with any UPI App • Joe's Brew VPA</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="btn-order-confirm-gold" id="confirmOrderBtn">
+          <span>Confirm & Send Order to Kitchen</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: ORDER SUCCESS & LIVE STATUS TRACKER
+       ========================================================================= -->
+  <div class="glass-modal-backdrop" id="orderSuccessModal">
+    <div class="glass-sheet success-sheet">
+      <div class="success-icon-wrap">
+        <span class="vintage-check">✓</span>
+      </div>
+
+      <h3 class="success-title">Order Sent to Kitchen!</h3>
+      <p class="success-subtitle">The ground-floor kitchen has received your ticket.</p>
+
+      <div class="order-ticket-card">
+        <div class="ticket-header">
+          <div>
+            <span class="ticket-label">ORDER NUMBER</span>
+            <strong class="ticket-no" id="successOrderNo">JB-0001</strong>
+          </div>
+          <div class="ticket-table" id="successTable">Top-04 (Upstairs)</div>
+        </div>
+
+        <!-- Live Step Tracker -->
+        <div class="live-status-tracker">
+          <div class="tracker-step active" id="stepReceived">
+            <div class="step-dot"></div>
+            <div class="step-text">
+              <strong>Received</strong>
+              <small>Kitchen acknowledged</small>
+            </div>
+          </div>
+          <div class="tracker-step" id="stepPreparing">
+            <div class="step-dot"></div>
+            <div class="step-text">
+              <strong>Preparing</strong>
+              <small>Freshly brewing</small>
+            </div>
+          </div>
+          <div class="tracker-step" id="stepReady">
+            <div class="step-dot"></div>
+            <div class="step-text">
+              <strong>Ready to Serve</strong>
+              <small>Heading upstairs</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <button class="btn-glass-secondary" id="orderDoneBtn">Back to Menu</button>
+        <button class="btn-glass-secondary waiter-action-btn" id="successCallWaiterBtn">🔔 Call Waiter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: CALL WAITER DIALOG
+       ========================================================================= -->
+  <div class="glass-modal-backdrop" id="waiterModalBackdrop">
+    <div class="glass-sheet waiter-sheet">
+      <div class="sheet-header">
+        <div class="sheet-title-group">
+          <span class="sheet-pretitle">UPSTAIRS SERVICE PAGER</span>
+          <h3 class="sheet-title">Call Waiter</h3>
+          <div class="sheet-table-chip" id="waiterTableChip">Top-04 (Upstairs)</div>
+        </div>
+        <button class="sheet-close-btn" id="closeWaiterModalBtn">&times;</button>
+      </div>
+
+      <div class="sheet-body">
+        <p class="waiter-desc">Select what you need, and our staff downstairs will be alerted instantly:</p>
+
+        <div class="waiter-reasons-grid">
+          <button class="reason-pill" data-reason="Water Refill">
+            <span class="reason-icon">💧</span>
+            <span>Water Refill</span>
+          </button>
+          <button class="reason-pill" data-reason="Request Bill / Payment">
+            <span class="reason-icon">🧾</span>
+            <span>Request Bill</span>
+          </button>
+          <button class="reason-pill" data-reason="Assistance with Order">
+            <span class="reason-icon">🙋‍♂️</span>
+            <span>General Assistance</span>
+          </button>
+          <button class="reason-pill" data-reason="Clean Table">
+            <span class="reason-icon">🧹</span>
+            <span>Clean Table</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="btn-order-confirm-gold" id="sendWaiterCallBtn">
+          <span>Send Call to Waitstaff</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 5: PHYSICAL TABLE SELECTOR
+       ========================================================================= -->
+  <div class="glass-modal-backdrop" id="tableModalBackdrop">
+    <div class="glass-sheet table-sheet">
+      <div class="sheet-header">
+        <div class="sheet-title-group">
+          <span class="sheet-pretitle">CAFE SEATING</span>
+          <h3 class="sheet-title">Select Physical Table</h3>
+        </div>
+        <button class="sheet-close-btn" id="closeTableModalBtn">&times;</button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="floor-block">
+          <h4 class="floor-heading">Upstairs Seating (Top Floor)</h4>
+          <div class="table-buttons-grid" id="upstairsTableBtns"></div>
+        </div>
+
+        <div class="floor-block">
+          <h4 class="floor-heading">Ground Floor Seating</h4>
+          <div class="table-buttons-grid" id="groundTableBtns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feed -->
+  <div class="vintage-toast-stack" id="toastStack"></div>
+
+  <!-- Footer Signature -->
+  <footer class="vintage-footer">
+    <div class="footer-container">
+      <img src="/assets/logo.jpg" alt="Joe's Brew" class="footer-crest">
+      <p class="footer-vintage-brand">Joe's Brew • Estd 2006</p>
+      <p class="footer-vintage-sub">Blissful Coffee & In-House Ordering Service</p>
+      <div class="footer-kds-route">
+        <a href="/kds" class="kds-portal-link" target="_blank">Staff Kitchen Display System (KDS) ➔</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

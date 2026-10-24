@@ -248,6 +248,10 @@ app.patch('/api/call-waiter/:id/resolve', (req, res) => {
   res.json({ success: true, call });
 });
 
+app.get('/kds', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'kds.html'));
+});
+
 server.listen(PORT, () => {
   console.log(`☕ Joe's Brew Server running on http://localhost:${PORT}`);
   console.log(`📡 WebSocket server active on ws://localhost:${PORT}`);
