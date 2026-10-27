@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -9,12 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@800;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
-  <script>
-    (function() {
-      var savedTheme = localStorage.getItem('jb_theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    })();
-  </script>
 </head>
 <body>
 
@@ -41,14 +35,6 @@
           <span class="nav-btn__dot"></span>
           <span id="currentTableNavText">Top-04</span>
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button class="nav-btn nav-btn--theme" id="themeToggleBtn" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
-          <span class="theme-icon theme-icon--sun" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          </span>
-          <span class="theme-icon theme-icon--moon" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          </span>
         </button>
         <button class="nav-btn" id="callWaiterNavBtn" title="Call Waiter">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
@@ -354,9 +340,9 @@
         <button class="cat-btn active" data-cat="ALL">All Items</button>
         <button class="cat-btn" data-cat="TEA">Artisan Teas</button>
         <button class="cat-btn" data-cat="COFFEE">Fresh Coffee</button>
-        <button class="cat-btn" data-cat="MELT">Melt & Toast</button>
-        <button class="cat-btn" data-cat="COOKIES">Cookies</button>
+        <button class="cat-btn" data-cat="COOKIES">Biscuits & Cookies</button>
         <button class="cat-btn" data-cat="DRINKS">Cold Beverages</button>
+        <button class="cat-btn" data-cat="MELT">Melt & Toast</button>
         <button class="cat-btn" data-cat="SNACKS">Quick Bites</button>
         <button class="cat-btn" data-cat="EATS">Hearty Eats</button>
       </div>
@@ -533,6 +519,53 @@
           <span>Place Order • Pay at Counter</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CAFE BREWING ORDER PLACEMENT LOADER ── -->
+  <div class="brewing-overlay" id="orderBrewingOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Brewing your order">
+    <div class="brewing-card">
+      <div class="brewing-animation-wrap">
+        <!-- Animated Vintage Steam Lines -->
+        <div class="steam-container">
+          <span class="steam-line steam-1"></span>
+          <span class="steam-line steam-2"></span>
+          <span class="steam-line steam-3"></span>
+        </div>
+        <!-- Handcrafted Coffee Cup & Saucer SVG -->
+        <div class="brewing-cup">
+          <svg class="brewing-cup-svg" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="72" rx="36" ry="6" stroke="#C89D56" stroke-width="2.5" fill="rgba(33, 21, 14, 0.9)"/>
+            <ellipse cx="50" cy="72" rx="26" ry="3.5" stroke="#E5C378" stroke-width="1.2" stroke-dasharray="2 3"/>
+            <path d="M22 28 C22 58, 32 68, 50 68 C68 68, 78 58, 78 28 Z" fill="url(#cupGradient)" stroke="#C89D56" stroke-width="2.5"/>
+            <ellipse cx="50" cy="28" rx="28" ry="7" fill="#1C120C" stroke="#E5C378" stroke-width="2"/>
+            <ellipse cx="50" cy="28" rx="23" ry="5" fill="#3E2415"/>
+            <ellipse cx="50" cy="28" rx="14" ry="2.8" fill="#5A341E" class="coffee-ripple"/>
+            <path d="M76 34 C88 34, 90 54, 73 57" stroke="#C89D56" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <circle cx="50" cy="48" r="5" fill="none" stroke="#E5C378" stroke-width="1"/>
+            <polygon points="50,44 51.5,47.2 55,48 51.5,48.8 50,52 48.5,48.8 45,48 48.5,47.2" fill="#E5C378"/>
+            <defs>
+              <linearGradient id="cupGradient" x1="22" y1="28" x2="78" y2="68" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#26160D"/>
+                <stop offset="50%" stop-color="#361F12"/>
+                <stop offset="100%" stop-color="#1A0D07"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="brewing-glow"></div>
+        </div>
+      </div>
+
+      <div class="brewing-content">
+        <span class="brewing-badge">✦ Joe's Brew Hearth · Estd 2006 ✦</span>
+        <h3 class="brewing-title">Brewing Your Ticket...</h3>
+        <p class="brewing-desc">Handcrafting your table ticket & transmitting live to our ground-floor kitchen.</p>
+        
+        <div class="brewing-progress-track">
+          <div class="brewing-progress-bar"></div>
+        </div>
+        <span class="brewing-status-text">Notifying barista & kitchen team...</span>
       </div>
     </div>
   </div>

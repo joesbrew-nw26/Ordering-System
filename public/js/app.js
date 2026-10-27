@@ -51,7 +51,7 @@ const heroTableHint = document.getElementById('heroTableHint');
 const menuTableDisplay = document.getElementById('menuTableDisplay');
 const menuTableSwitcherTag = document.getElementById('menuTableSwitcherTag');
 const tableSelectorBtn = document.getElementById('tableSelectorBtn');
-const themeToggleBtn = document.getElementById('themeToggleBtn');
+const orderBrewingOverlay = document.getElementById('orderBrewingOverlay');
 const tableModalBackdrop = document.getElementById('tableModalBackdrop');
 const closeTableModalBtn = document.getElementById('closeTableModalBtn');
 const terraceTableBtns = document.getElementById('terraceTableBtns');
@@ -148,30 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ====================================================================
-// 0. THEME SWITCHER (Speakeasy Dark & Parisian Light Modes)
+// 0. THEME SYSTEM (Permanently Locked to Vintage Speakeasy Nocturne)
 // ====================================================================
 function initTheme() {
-  const savedTheme = localStorage.getItem('jb_theme') || 'dark';
-  applyTheme(savedTheme);
-
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      applyTheme(nextTheme);
-      localStorage.setItem('jb_theme', nextTheme);
-      showToast(nextTheme === 'light' ? '☀️ Daylight Parisian Salon mode activated' : '🌙 Speakeasy Nocturne dark mode activated');
-    });
-  }
-}
-
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  if (themeToggleBtn) {
-    const isLight = theme === 'light';
-    themeToggleBtn.setAttribute('title', isLight ? 'Switch to Speakeasy Nocturne (Dark Mode)' : 'Switch to Daylight Salon (Light Mode)');
-    themeToggleBtn.setAttribute('aria-label', isLight ? 'Switch to Speakeasy Nocturne (Dark Mode)' : 'Switch to Daylight Salon (Light Mode)');
-  }
+  document.documentElement.setAttribute('data-theme', 'dark');
+  localStorage.removeItem('jb_theme');
 }
 
 // ====================================================================
@@ -420,9 +401,26 @@ function renderSpecialsShowcase() {
 function renderMenuList() {
   if (!menuItemsGrid) return;
 
-  let filtered = state.menuItems;
+  // Prioritized Category Ordering: Artisan Tea -> Fresh Coffee -> Biscuits/Cookies -> Cold Beverages -> Melt -> Snacks -> Eats
+  const CATEGORY_PRIORITY = {
+    'TEA': 1,
+    'COFFEE': 2,
+    'COOKIES': 3,
+    'DRINKS': 4,
+    'MELT': 5,
+    'SNACKS': 6,
+    'EATS': 7
+  };
+
+  let filtered = [...state.menuItems];
   if (state.activeCategory !== 'ALL') {
     filtered = filtered.filter(item => item.category === state.activeCategory);
+  } else {
+    filtered.sort((a, b) => {
+      const pA = CATEGORY_PRIORITY[a.category] || 99;
+      const pB = CATEGORY_PRIORITY[b.category] || 99;
+      return pA - pB;
+    });
   }
 
   menuItemsGrid.innerHTML = filtered.map((item, idx) => {
@@ -1054,16 +1052,29 @@ async function submitOrder() {
 
   try {
     confirmOrderBtn.disabled = true;
-    confirmOrderBtn.innerHTML = `<span>Placing Order...</span>`;
+    confirmOrderBtn.innerHTML = `<span>Brewing Ticket...</span>`;
 
-    const res = await fetch('/api/orders', {
+    // 1. Immediately hide payment modal and display cafe brewing animation
+    paymentModalBackdrop?.classList.remove('is-open');
+    paymentModalBackdrop?.classList.remove('open');
+    if (orderBrewingOverlay) {
+      orderBrewingOverlay.classList.add('is-open');
+      orderBrewingOverlay.classList.add('open');
+    }
+
+    // Pacing delay (~800ms) so customer gets to enjoy the handcrafted cafe animation
+    const minDelay = new Promise(resolve => setTimeout(resolve, 800));
+
+    const orderPromise = fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderPayload)
+    }).then(async res => {
+      if (!res.ok) throw new Error('Order creation failed');
+      return res.json();
     });
 
-    if (!res.ok) throw new Error('Order creation failed');
-    const createdOrder = await res.json();
+    const [createdOrder] = await Promise.all([orderPromise, minDelay]);
     state.activeOrder = createdOrder;
 
     // Reset Cart
@@ -1071,8 +1082,6 @@ async function submitOrder() {
     if (orderGeneralNotes) orderGeneralNotes.value = '';
     updateCartUI();
     renderMenuList();
-    paymentModalBackdrop.classList.remove('is-open');
-    paymentModalBackdrop.classList.remove('open');
 
     // Populate Success Modal
     const displayNum = createdOrder.orderNumber ? `#${createdOrder.orderNumber}` : (createdOrder.id?.startsWith('JB-') ? `#${createdOrder.id.replace('JB-', '')}` : `#${createdOrder.id}`);
@@ -1082,6 +1091,12 @@ async function submitOrder() {
       successTable.innerHTML = `${createdOrder.tableId} (${createdOrder.floor})${waText}`;
     }
     updateLiveTrackerUI(createdOrder.status);
+
+    // Hide brewing animation and open Success Modal
+    if (orderBrewingOverlay) {
+      orderBrewingOverlay.classList.remove('is-open');
+      orderBrewingOverlay.classList.remove('open');
+    }
     orderSuccessModal.classList.add('is-open');
     orderSuccessModal.classList.add('open');
 
@@ -1089,6 +1104,12 @@ async function submitOrder() {
     showToast(`Order ${displayNum} placed! Kitchen alerted.`);
   } catch (err) {
     console.error(err);
+    if (orderBrewingOverlay) {
+      orderBrewingOverlay.classList.remove('is-open');
+      orderBrewingOverlay.classList.remove('open');
+    }
+    paymentModalBackdrop?.classList.add('is-open');
+    paymentModalBackdrop?.classList.add('open');
     showToast('Failed to send order. Please try again.');
   } finally {
     confirmOrderBtn.disabled = false;

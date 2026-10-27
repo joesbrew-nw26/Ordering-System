@@ -60,6 +60,12 @@ Progress: [----------] 0%
 
 None yet.
 
+### Quick Tasks Completed
+
+| Date | Slug | Summary |
+|------|------|---------|
+| 2026-10-27 | 20261027-dark-theme-menu-order-brewing-animation | Locked dark theme, prioritized Artisan Tea/Coffee/Biscuits/Drinks order, added cafe brewing loading screen |
+
 ### Blockers/Concerns
 
 None.

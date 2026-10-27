@@ -55,17 +55,6 @@
     "type": "hot"
   },
   {
-    "id": "melt-01",
-    "name": "Hot chocolate",
-    "category": "MELT",
-    "price": 70,
-    "isSpecial": true,
-    "description": "Rich Belgian molten chocolate melted into velvety steamed whole milk.",
-    "inStock": true,
-    "badge": "Joe's Brew Special",
-    "type": "hot"
-  },
-  {
     "id": "cookie-01",
     "name": "Nutra biscuit (2 pcs)",
     "category": "COOKIES",
@@ -163,6 +152,17 @@
     "inStock": true,
     "badge": null,
     "type": "cold"
+  },
+  {
+    "id": "melt-01",
+    "name": "Hot chocolate",
+    "category": "MELT",
+    "price": 70,
+    "isSpecial": true,
+    "description": "Rich Belgian molten chocolate melted into velvety steamed whole milk.",
+    "inStock": true,
+    "badge": "Joe's Brew Special",
+    "type": "hot"
   },
   {
     "id": "snack-01",

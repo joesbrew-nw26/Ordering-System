@@ -5265,903 +5265,250 @@ input, select, textarea {
 }
 
 /* ==========================================================================
-   THEME TOGGLE BUTTON & DUAL-MODE SYSTEM (Speakeasy Dark & Parisian Light)
+   CAFE BREWING ORDER PLACEMENT LOADER (Speakeasy Artisanal Animation)
+   Aesthetic Thesis: Handcrafted copper-and-brass hearth with rising steam wisps
    ========================================================================== */
-.nav-btn--theme {
-  padding: 6px 9px;
-  background: rgba(33, 21, 14, 0.85);
+.brewing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 6, 4, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 16px;
+}
+
+.brewing-overlay.is-open,
+.brewing-overlay.open,
+.brewing-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.brewing-card {
+  background: linear-gradient(150deg, #1C110A 0%, #120A05 60%, #1A0D07 100%);
   border: 1.5px solid var(--brass-gold);
-  border-radius: var(--radius-sm);
-  color: var(--brass-bright);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
-  user-select: none;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(200, 157, 86, 0.22), inset 0 1px 0 rgba(255, 235, 190, 0.15);
+  padding: 34px 26px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: brewingCardPop 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.nav-btn--theme:hover {
-  background: rgba(48, 30, 20, 0.95);
-  border-color: var(--brass-bright);
-  transform: translateY(-1px);
-  box-shadow: 0 0 10px rgba(200, 157, 86, 0.35);
-}
-
-.nav-btn--theme:active {
-  transform: scale(0.94);
-}
-
-.nav-btn--theme .theme-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Default / Dark Mode: Show Sun icon to switch to Light Mode */
-html:not([data-theme="light"]) .theme-icon--moon,
-html[data-theme="dark"] .theme-icon--moon {
-  display: none !important;
-}
-
-html:not([data-theme="light"]) .theme-icon--sun,
-html[data-theme="dark"] .theme-icon--sun {
-  display: inline-flex !important;
-  color: #F8DE9D;
-  filter: drop-shadow(0 0 6px rgba(248, 222, 157, 0.75));
-}
-
-/* Light Mode: Show Moon icon to switch to Dark Mode */
-html[data-theme="light"] .theme-icon--sun {
-  display: none !important;
-}
-
-html[data-theme="light"] .theme-icon--moon {
-  display: inline-flex !important;
-  color: #24140B;
-  filter: drop-shadow(0 0 4px rgba(168, 121, 44, 0.4));
-}
-
-@media (max-width: 767px) {
-  .nav-btn--theme {
-    padding: 4px 6px;
-    min-height: 32px;
-    min-width: 32px;
-    border-radius: var(--radius-xs);
+@keyframes brewingCardPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
   }
-  .nav-btn--theme svg {
-    width: 14px;
-    height: 14px;
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
-/* ==========================================================================
-   1920s PARISIAN GRAND BRASSERIE & LUXURY COFFEE SALON (LIGHT THEME)
-   Aesthetic Thesis:
-   - Warm Sunlit Alabaster & Rich French Crema Linen Canvas
-   - Hand-Engraved Double-Border Ivory Parchment Ledgers
-   - Radiant Gilded Brass & Warm Honey Metallic Controls
-   - Deep Roasted Dark Espresso Bean & Hazelnut Ink Typography
-   - Regal Crimson & Gold Special Reserve Badges
-   ========================================================================== */
-html[data-theme="light"] {
-  /* Luxury Light Palette Tokens */
-  --bar-mahogany-deep: #F8F4EC;     /* Antique warm alabaster canvas */
-  --bar-mahogany-dark: #F3ECE0;     /* Soft French linen surface */
-  --bar-mahogany-mid:  #EAE0CE;     /* Polished warm biscuit */
-  --bar-mahogany-light:#DDD1B8;
-  --bar-leather:       #D2C1A5;
-  --bar-leather-soft:  #C7B293;
-
-  /* Parchment Surfaces */
-  --parchment-canvas:  #FFFDF9;     /* Warm ivory stationery */
-  --parchment-mid:     #FAF5EB;
-  --parchment-deep:    #F2EBE0;
-  --parchment-border:  #D4AF37;     /* Antique gilded brass border */
-  --parchment-dark:    #1F1108;     /* Deep roasted espresso ink */
-  --parchment-muted:   #5C4230;     /* Warm hazelnut subtext */
-
-  /* Gilded Brass & Burnished Honey Gold */
-  --brass-gold:        #C89D56;     /* Primary rich gold */
-  --brass-bright:      #D4AF37;     /* Radiant highlighted brass */
-  --brass-pale:        #F8E4B8;
-  --brass-burnished:   #B38622;     /* Antique bronze shadow */
-  --brass-dark:        #6E4A12;
-  --copper-glow:       #C86A1B;
-  --copper-deep:       #8A3C06;
-
-  /* Typography Colors */
-  --text-main:         #1F1108;     /* Dark roasted espresso */
-  --text-secondary:    #4A3324;     /* Rich roasted walnut */
-  --text-muted:        #6D5545;     /* Warm hazelnut subtext */
-  --text-faint:        #9B826E;
-  --text-ink:          #1F1108;
-  --text-ink-muted:    #5C4230;
-
-  /* Elevation & Shadows */
-  --shadow-tavern-sm:  0 2px 8px rgba(70, 45, 20, 0.08), 0 1px 3px rgba(70, 45, 20, 0.04);
-  --shadow-tavern-md:  0 8px 24px rgba(70, 45, 20, 0.09), 0 2px 6px rgba(70, 45, 20, 0.05);
-  --shadow-tavern-lg:  0 16px 40px rgba(70, 45, 20, 0.12), 0 4px 14px rgba(70, 45, 20, 0.07);
-  --shadow-brass-glow: 0 0 18px rgba(212, 175, 55, 0.35), 0 4px 12px rgba(70, 45, 20, 0.10);
-
-  --bg-primary: #F8F4EC;
-  --bg-secondary: #F3ECE0;
-  --brand-primary: #C89D56;
+.brewing-animation-wrap {
+  position: relative;
+  width: 120px;
+  height: 105px;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-html[data-theme="light"],
-html[data-theme="light"] body {
-  background-color: #F8F4EC;
-  color: #1F1108;
+.brewing-cup {
+  position: relative;
+  width: 96px;
+  height: 76px;
 }
 
-/* Atmospheric Sunlit Morning French Café Wash */
-html[data-theme="light"] body::before {
-  background:
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(224, 178, 92, 0.20) 0%, transparent 65%),
-    radial-gradient(circle at 10% 40%, rgba(240, 210, 160, 0.14) 0%, transparent 50%),
-    radial-gradient(circle at 90% 70%, rgba(212, 175, 55, 0.10) 0%, transparent 45%),
-    linear-gradient(180deg, rgba(255, 253, 248, 0.5) 0%, rgba(248, 244, 236, 0.85) 100%);
+.brewing-cup-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7));
 }
 
-html[data-theme="light"] body::after {
-  background-image: 
-    repeating-linear-gradient(0deg, rgba(140, 100, 60, 0.012) 0px, rgba(140, 100, 60, 0.012) 1px, transparent 1px, transparent 4px),
-    radial-gradient(circle at 50% 50%, transparent 60%, rgba(190, 160, 130, 0.15) 100%);
+.brewing-glow {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 195, 120, 0.4) 0%, rgba(184, 134, 11, 0) 70%);
+  animation: cupGlowBreath 2.4s ease-in-out infinite;
+  pointer-events: none;
 }
 
-/* ── Light Navbar (Gilded Cream Brasserie Rail) ── */
-html[data-theme="light"] .navbar {
-  background: rgba(252, 248, 240, 0.96) !important;
-  border-bottom: 2px solid #C89D56 !important;
-  box-shadow: 0 4px 20px rgba(70, 45, 20, 0.08), inset 0 -1px 0 rgba(255, 255, 255, 0.8) !important;
+@keyframes cupGlowBreath {
+  0%, 100% {
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+    opacity: 0.95;
+  }
 }
 
-html[data-theme="light"] .navbar.scrolled {
-  background: rgba(248, 242, 232, 0.98) !important;
-  border-bottom-color: #B38622 !important;
-  box-shadow: 0 8px 26px rgba(70, 45, 20, 0.12) !important;
+.steam-container {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 34px;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
 }
 
-html[data-theme="light"] .navbar__logo {
-  background: #FFFDF9 !important;
-  border: 2px solid #C89D56 !important;
-  box-shadow: 0 0 10px rgba(200, 157, 86, 0.35) !important;
+.steam-line {
+  display: block;
+  width: 4px;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(to top, rgba(229, 195, 120, 0.85), rgba(255, 245, 220, 0));
+  filter: blur(1.2px);
+  animation: steamFloat 2.2s ease-in-out infinite;
 }
 
-html[data-theme="light"] .navbar__name {
-  color: #1F1108 !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+.steam-1 {
+  animation-delay: 0s;
+  transform: rotate(-6deg);
 }
 
-html[data-theme="light"] .navbar__tagline {
-  color: #6D5545 !important;
+.steam-2 {
+  animation-delay: 0.55s;
+  height: 28px;
 }
 
-html[data-theme="light"] .navbar__tabs {
-  background: rgba(240, 232, 218, 0.9) !important;
-  border-color: rgba(200, 157, 86, 0.45) !important;
+.steam-3 {
+  animation-delay: 1.1s;
+  transform: rotate(6deg);
 }
 
-html[data-theme="light"] .navbar__tab {
-  color: #5C4230 !important;
+@keyframes steamFloat {
+  0% {
+    transform: translateY(12px) scaleX(0.8);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-16px) scaleX(1.3);
+    opacity: 0;
+  }
 }
 
-html[data-theme="light"] .navbar__tab:hover {
-  color: #1F1108 !important;
+.coffee-ripple {
+  transform-origin: 50px 28px;
+  animation: ripplePulse 2s ease-in-out infinite;
 }
 
-html[data-theme="light"] .navbar__tab.active {
-  background: linear-gradient(135deg, #F0D080 0%, #D4AF37 50%, #B38622 100%) !important;
-  color: #1D1107 !important;
+@keyframes ripplePulse {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
 }
 
-html[data-theme="light"] .nav-btn {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.45) !important;
-  color: #24140B !important;
-  box-shadow: 0 1px 3px rgba(70, 45, 20, 0.06) !important;
+.brewing-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-html[data-theme="light"] .nav-btn:hover {
-  background: #FFFFFF !important;
-  border-color: #B38622 !important;
-  color: #170E08 !important;
-}
-
-html[data-theme="light"] .nav-btn--table {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-  color: #24140B !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .nav-btn--table .nav-btn__dot {
-  background: #C89D56 !important;
-  box-shadow: 0 0 6px #C89D56 !important;
-}
-
-html[data-theme="light"] .nav-btn--theme {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-}
-
-html[data-theme="light"] .nav-btn--cart {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-  color: #24140B !important;
-}
-
-/* ── Light Hero Section (Sunlit Morning Parisian Salon) ── */
-html[data-theme="light"] .hero {
-  background: radial-gradient(circle at 50% 25%, #FFFDF7 0%, #F5ECE0 60%, #EADDC9 100%) !important;
-}
-
-html[data-theme="light"] .hero__bg-img {
-  filter: sepia(0.4) contrast(1.1) brightness(1.05) saturate(1.2) !important;
-  opacity: 0.32 !important;
-}
-
-html[data-theme="light"] .hero__overlay {
-  background: radial-gradient(circle at 50% 40%, rgba(255, 253, 248, 0.4) 0%, rgba(248, 244, 236, 0.85) 85%, #F8F4EC 100%) !important;
-}
-
-html[data-theme="light"] .hero__badge {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-  color: #7A531A !important;
-  box-shadow: 0 4px 14px rgba(120, 80, 30, 0.1) !important;
-}
-
-html[data-theme="light"] .hero__badge-dot {
-  background: #C89D56 !important;
-  box-shadow: 0 0 6px #C89D56 !important;
-}
-
-html[data-theme="light"] .hero__title-main {
-  background: linear-gradient(180deg, #24140B 0%, #150A04 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  text-shadow: none !important;
-  filter: drop-shadow(0 2px 8px rgba(180, 130, 60, 0.25)) !important;
-}
-
-html[data-theme="light"] .hero__title-accent {
-  background: linear-gradient(135deg, #B38622 0%, #D4AF37 40%, #8C5E12 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  filter: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.9)) !important;
-}
-
-html[data-theme="light"] .hero__subtitle {
-  color: #4A3324 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="light"] .hero__table-btn {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-  color: #24140B !important;
-  box-shadow: 0 2px 8px rgba(70, 45, 20, 0.08) !important;
-}
-
-html[data-theme="light"] .hero__kitchen-live {
-  background: #EDF7EE !important;
-  border: 1.5px solid #2ECC71 !important;
-  color: #1E824C !important;
-  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.1) !important;
-}
-
-html[data-theme="light"] .hero__cta {
-  background: linear-gradient(145deg, #2A170D 0%, #170C06 100%) !important;
-  color: #F8DE9D !important;
-  font-weight: 800 !important;
-  border: 1.5px solid #C89D56 !important;
-  box-shadow: 0 6px 20px rgba(33, 18, 9, 0.4), inset 0 1px 0 rgba(255, 228, 160, 0.2) !important;
-}
-
-html[data-theme="light"] .hero__cta:hover {
-  background: linear-gradient(145deg, #382012 0%, #201007 100%) !important;
-  border-color: #E4BF76 !important;
-  color: #FFF !important;
-  box-shadow: 0 8px 24px rgba(33, 18, 9, 0.5), 0 0 18px rgba(200, 157, 86, 0.35) !important;
-}
-
-html[data-theme="light"] .hero__payment-hint {
-  color: #5C402E !important;
-  font-weight: 600 !important;
-}
-
-html[data-theme="light"] .hero__scroll-hint {
-  color: #735540 !important;
-}
-
-/* ── Light Features Strip ── */
-html[data-theme="light"] .feature-card {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.38) !important;
-  box-shadow: 0 4px 16px rgba(70, 45, 20, 0.07), inset 0 0 12px rgba(212, 175, 55, 0.04) !important;
-}
-
-html[data-theme="light"] .feature-card:hover {
-  background: #FFFFFF !important;
-  border-color: #B38622 !important;
-  box-shadow: 0 8px 24px rgba(70, 45, 20, 0.12) !important;
-}
-
-html[data-theme="light"] .feature-card__icon {
-  background: #FAF2E3 !important;
-  border: 1.5px solid #D4AF37 !important;
-  color: #B38622 !important;
-}
-
-html[data-theme="light"] .feature-card strong {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .feature-card span {
-  color: #634835 !important;
-}
-
-/* ── Light Specials Showcase ("The Café Reserve") ── */
-html[data-theme="light"] .specials__eyebrow {
-  color: #9C7220 !important;
-  letter-spacing: 0.18em !important;
-}
-
-html[data-theme="light"] .specials__title {
-  color: #1F1108 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="light"] .specials__desc {
-  color: #634835 !important;
-}
-
-html[data-theme="light"] .special-showcase-card {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #D4B26F !important;
-  box-shadow: 0 8px 24px rgba(70, 45, 20, 0.08), inset 0 0 16px rgba(212, 178, 111, 0.04) !important;
-}
-
-html[data-theme="light"] .special-showcase-card::before {
-  background: linear-gradient(90deg, transparent, #D4AF37, transparent) !important;
-  height: 3px !important;
-}
-
-html[data-theme="light"] .special-showcase-card:hover {
-  border-color: #B38622 !important;
-  box-shadow: 0 12px 30px rgba(70, 45, 20, 0.14) !important;
-}
-
-html[data-theme="light"] .special-cat-tag {
-  background: #FAF3E5 !important;
-  border: 1px solid #C89D56 !important;
-  color: #7A531A !important;
-  font-weight: 700 !important;
-}
-
-html[data-theme="light"] .special-star-badge,
-html[data-theme="light"] .item-special-pill {
-  background: linear-gradient(135deg, #9E2B1A 0%, #7A190C 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid #D4AF37 !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 6px rgba(122, 25, 12, 0.25) !important;
-}
-
-html[data-theme="light"] .special-item-title {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .special-item-desc {
-  color: #5C4230 !important;
-}
-
-html[data-theme="light"] .special-card-footer {
-  border-top: 1px dashed rgba(197, 155, 39, 0.4) !important;
-}
-
-html[data-theme="light"] .special-price-tag {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .special-add-btn,
-html[data-theme="light"] .btn-add-item {
-  background: linear-gradient(145deg, #2A170D 0%, #170C06 100%) !important;
-  color: #F8DE9D !important;
-  font-family: var(--font-vintage) !important;
-  font-weight: 800 !important;
-  border: 1.5px solid #C89D56 !important;
-  box-shadow: 0 3px 10px rgba(33, 18, 9, 0.35), inset 0 1px 0 rgba(255, 228, 160, 0.15) !important;
-  letter-spacing: 0.08em;
+.brewing-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-html[data-theme="light"] .special-add-btn:hover,
-html[data-theme="light"] .btn-add-item:hover {
-  background: linear-gradient(145deg, #382012 0%, #201007 100%) !important;
-  border-color: #E4BF76 !important;
-  color: #FFF !important;
-  box-shadow: 0 4px 14px rgba(33, 18, 9, 0.45), 0 0 12px rgba(200, 157, 86, 0.3) !important;
-  transform: translateY(-1px) scale(1.02) !important;
-}
-
-/* ── Light About Section ── */
-html[data-theme="light"] .about__inner {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.4) !important;
-  box-shadow: 0 12px 34px rgba(70, 45, 20, 0.10) !important;
-}
-
-html[data-theme="light"] .about__eyebrow {
-  color: #9C7220 !important;
-}
-
-html[data-theme="light"] .about__title {
-  color: #1F1108 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="light"] .about__body p {
-  color: #4A3324 !important;
-}
-
-html[data-theme="light"] .about-stat {
-  background: #FAF3E5 !important;
-  border: 1px solid rgba(197, 155, 39, 0.35) !important;
-}
-
-html[data-theme="light"] .about-stat-num {
-  color: #9C7220 !important;
-}
-
-html[data-theme="light"] .about-stat-label {
-  color: #6D5545 !important;
-}
-
-/* ── Light Menu Header & Category Bar ── */
-html[data-theme="light"] .menu-header__inner {
-  border-bottom: 1.5px solid rgba(197, 155, 39, 0.35) !important;
-}
-
-html[data-theme="light"] .menu-header__table {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-  color: #24140B !important;
-  box-shadow: 0 2px 6px rgba(80, 50, 20, 0.08) !important;
-}
-
-html[data-theme="light"] .menu-header__change {
-  color: #8C6019 !important;
-}
-
-html[data-theme="light"] .menu-header__status {
-  background: #EDF7EE !important;
-  border: 1.5px solid #2ECC71 !important;
-  color: #1E824C !important;
-}
-
-html[data-theme="light"] .menu-header__title {
-  color: #1F1108 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="light"] .menu-header__desc {
-  color: #634835 !important;
-}
-
-html[data-theme="light"] .cat-bar {
-  background: rgba(248, 244, 236, 0.96) !important;
-  border-bottom: 1.5px solid rgba(197, 155, 39, 0.35) !important;
-  box-shadow: 0 4px 16px rgba(80, 50, 20, 0.08) !important;
-}
-
-html[data-theme="light"] .cat-btn {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.4) !important;
-  color: #4A3324 !important;
-  font-weight: 700 !important;
-  box-shadow: 0 1px 3px rgba(80, 50, 20, 0.06) !important;
-}
-
-html[data-theme="light"] .cat-btn:hover {
-  color: #1F1108 !important;
-  border-color: #B38622 !important;
-}
-
-html[data-theme="light"] .cat-btn.active {
-  background: linear-gradient(145deg, #2A170D 0%, #170C06 100%) !important;
-  color: #F8DE9D !important;
-  font-weight: 800 !important;
-  border-color: #C89D56 !important;
-  box-shadow: 0 3px 10px rgba(33, 18, 9, 0.35), inset 0 1px 0 rgba(255, 228, 160, 0.15) !important;
-}
-
-/* ── Light Full Menu Item Cards ── */
-html[data-theme="light"] .menu-item-card {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.45) !important;
-  outline: 1px solid rgba(197, 155, 39, 0.2) !important;
-  outline-offset: 3px !important;
-  box-shadow: 0 6px 20px rgba(70, 45, 20, 0.07) !important;
-}
-
-html[data-theme="light"] .menu-item-card:hover {
-  border-color: #B38622 !important;
-  box-shadow: 0 10px 28px rgba(70, 45, 20, 0.12) !important;
-}
-
-html[data-theme="light"] .item-cat-label {
-  color: #9C7220 !important;
-  font-weight: 700 !important;
-}
-
-html[data-theme="light"] .item-name {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .item-desc {
-  color: #5C4230 !important;
-}
-
-html[data-theme="light"] .item-price {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .item-card-action-bar {
-  border-top: 1px dashed rgba(197, 155, 39, 0.4) !important;
-}
-
-/* ── Light Quantity Counter ── */
-html[data-theme="light"] .qty-counter-group {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #C89D56 !important;
-  box-shadow: 0 2px 6px rgba(70, 45, 20, 0.08) !important;
-}
-
-html[data-theme="light"] .qty-btn {
-  color: #1F1108 !important;
-}
-
-html[data-theme="light"] .qty-val {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-/* ── Light Table Gateway View (View 0) ── */
-html[data-theme="light"] .gateway-card {
-  background: linear-gradient(155deg, #FFFDF9 0%, #FAF5EC 100%) !important;
-  border: 2px solid #D4AF37 !important;
-  box-shadow: 0 16px 48px rgba(70, 45, 20, 0.12), 0 0 24px rgba(212, 175, 55, 0.15) !important;
-}
-
-html[data-theme="light"] .gateway-crest {
-  background: #FAF2E3 !important;
-  border: 2px solid #D4AF37 !important;
-  box-shadow: 0 0 14px rgba(212, 175, 55, 0.35) !important;
-}
-
-html[data-theme="light"] .gateway-badge {
-  background: #FAF2E3 !important;
-  border: 1.5px solid #D4AF37 !important;
-  color: #7A531A !important;
-  font-weight: 700 !important;
-}
-
-html[data-theme="light"] .gateway-title {
-  color: #1F1108 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="light"] .gateway-subtitle {
-  color: #4A3324 !important;
-}
-
-html[data-theme="light"] .gateway-qr-hint {
-  background: #FAF3E6 !important;
-  border: 1.5px dashed rgba(197, 155, 39, 0.45) !important;
-}
-
-html[data-theme="light"] .gateway-qr-hint strong {
-  color: #7A531A !important;
-}
-
-html[data-theme="light"] .gateway-qr-hint p {
-  color: #5C4230 !important;
-}
-
-html[data-theme="light"] .gateway-qr-icon {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #D4AF37 !important;
-  color: #7A531A !important;
-}
-
-html[data-theme="light"] .gateway-floor-box {
-  background: #F6EFE2 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.35) !important;
-}
-
-html[data-theme="light"] .gateway-floor-title {
-  color: #7A531A !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .gateway-floor-badge {
-  color: #634835 !important;
-}
-
-html[data-theme="light"] .gateway-table-btn {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.4) !important;
-  color: #1F1108 !important;
-}
-
-html[data-theme="light"] .gateway-table-btn:hover {
-  background: #FFF8EB !important;
-  border-color: #B38622 !important;
-  box-shadow: 0 4px 12px rgba(70, 45, 20, 0.12) !important;
-}
-
-html[data-theme="light"] .gateway-table-id {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .gateway-table-desc {
-  color: #634835 !important;
-}
-
-html[data-theme="light"] .gateway-table-btn.active {
-  background: linear-gradient(135deg, #F0D080 0%, #D4AF37 50%, #B38622 100%) !important;
-  border-color: #FFE4A0 !important;
-}
-
-html[data-theme="light"] .gateway-table-btn.active .gateway-table-id,
-html[data-theme="light"] .gateway-table-btn.active .gateway-table-desc {
-  color: #170E08 !important;
-}
-
-/* ── Light Modals & Cart Bottom Sheet ── */
-html[data-theme="light"] .modal {
-  background: #FFFDF9 !important;
-  border: 2px solid #D4AF37 !important;
-  box-shadow: 0 -10px 40px rgba(70, 45, 20, 0.16) !important;
-}
-
-html[data-theme="light"] .modal__head {
-  background: #F7EFE1 !important;
-  border-bottom: 1.5px solid rgba(197, 155, 39, 0.3) !important;
-}
-
-html[data-theme="light"] .modal__eyebrow {
-  color: #7A531A !important;
-  font-weight: 700 !important;
-}
-
-html[data-theme="light"] .modal__title {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .modal__chip {
-  background: #FFFDF9 !important;
-  border: 1px solid #C89D56 !important;
-  color: #24140B !important;
-  font-weight: 700 !important;
-}
-
-html[data-theme="light"] .modal__close-btn {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.4) !important;
-  color: #24140B !important;
-}
-
-html[data-theme="light"] .cart-item-card {
-  background: #FAF5EB !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.35) !important;
-  box-shadow: 0 2px 8px rgba(70, 45, 20, 0.05) !important;
-}
-
-html[data-theme="light"] .cart-item-name {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .cart-item-desc {
-  color: #5C4230 !important;
-}
-
-html[data-theme="light"] .cart-item-price {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-}
-
-html[data-theme="light"] .cart-item-mode-pill {
-  background: #FAF2E3 !important;
-  border: 1px solid #C89D56 !important;
-  color: #7A531A !important;
-}
-
-html[data-theme="light"] .cart-bill {
-  background: #F6EFE2 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.3) !important;
-}
-
-html[data-theme="light"] .cart-bill__row {
-  color: #4A3324 !important;
-}
-
-html[data-theme="light"] .cart-bill__row--total {
-  color: #1F1108 !important;
-  font-weight: 800 !important;
-  border-top: 1.5px solid rgba(197, 155, 39, 0.4) !important;
-}
-
-html[data-theme="light"] .cart-empty__title {
-  color: #1F1108 !important;
-}
-
-html[data-theme="light"] .cart-empty__desc {
-  color: #6D5545 !important;
-}
-
-html[data-theme="light"] .modal-notes-area {
-  background: #FFFDF9 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.4) !important;
-  color: #1F1108 !important;
-}
-
-/* ── Light Mobile Bottom Nav ── */
-html[data-theme="light"] .mobile-nav {
-  background: rgba(252, 248, 240, 0.96) !important;
-  border-top: 1.5px solid rgba(197, 155, 39, 0.35) !important;
-  box-shadow: 0 -4px 16px rgba(70, 45, 20, 0.08) !important;
-}
-
-html[data-theme="light"] .mobile-nav__btn {
-  color: #6D5545 !important;
-}
-
-html[data-theme="light"] .mobile-nav__btn.active {
-  color: #9C7220 !important;
-}
-
-/* ── Light Floating Toast ── */
-html[data-theme="light"] .vintage-toast {
-  background: rgba(31, 17, 8, 0.96) !important;
-  border: 1.5px solid #D4AF37 !important;
-  color: #FFF8EB !important;
-  box-shadow: 0 8px 24px rgba(40, 20, 10, 0.3) !important;
-}
-
-/* ── Light Heritage Chronicle & Archival Frame ── */
-html[data-theme="light"] .about__inner {
-  background: linear-gradient(150deg, #FFFDF9 0%, #F8F2E6 100%) !important;
-  border: 1.5px solid #C89D56 !important;
-  box-shadow: 0 12px 36px rgba(70, 45, 20, 0.08), inset 0 0 24px rgba(220, 190, 140, 0.15) !important;
-}
-
-html[data-theme="light"] .heritage-eyebrow-badge {
-  background: #FAF2E3 !important;
-  border: 1px solid #C89D56 !important;
-  color: #7A531A !important;
-}
-
-html[data-theme="light"] .heritage-dot {
-  background: #B38622 !important;
-  box-shadow: 0 0 8px rgba(179, 134, 34, 0.6) !important;
-}
-
-html[data-theme="light"] .about__title {
-  color: #1F1108 !important;
-}
-
-html[data-theme="light"] .heritage-title-sub {
-  color: #8C5A2B !important;
-}
-
-html[data-theme="light"] .about__text {
-  color: #4A3324 !important;
-}
-
-html[data-theme="light"] .heritage-timeline {
-  background: #F6EFE2 !important;
-  border: 1.5px solid rgba(197, 155, 39, 0.35) !important;
-}
-
-html[data-theme="light"] .timeline-info strong {
-  color: #1F1108 !important;
-}
-
-html[data-theme="light"] .timeline-info span {
-  color: #6D5545 !important;
-}
-
-html[data-theme="light"] .heritage-timeline__arrow {
-  color: #A3792A !important;
-}
-
-html[data-theme="light"] .heritage-scripture-plaque {
-  background: #FAF4E8 !important;
-  border: 1.5px solid #C89D56 !important;
-  box-shadow: inset 0 0 16px rgba(197, 155, 39, 0.12), 0 4px 14px rgba(70, 45, 20, 0.06) !important;
-}
-
-html[data-theme="light"] .scripture-cross {
-  color: #8C5A2B !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="light"] .scripture-text {
-  color: #1F1108 !important;
-}
-
-html[data-theme="light"] .scripture-cite {
-  color: #8C5A2B !important;
-}
-
-html[data-theme="light"] .heritage-motto-tag {
-  background: #2A170D !important;
-  border: 1px solid #C89D56 !important;
-  color: #F8DE9D !important;
-}
-
-html[data-theme="light"] .heritage-frame-container {
-  background: linear-gradient(145deg, #381E10 0%, #201008 100%) !important;
-  border: 3.5px solid #58331E !important;
-  box-shadow: 0 16px 36px rgba(70, 45, 20, 0.25), 0 0 0 1.5px #C89D56 !important;
-}
-
-html[data-theme="light"] .heritage-frame-container:hover {
-  box-shadow: 0 20px 44px rgba(70, 45, 20, 0.35), 0 0 0 2px #B38622, 0 0 20px rgba(179, 134, 34, 0.3) !important;
-}
-
-html[data-theme="light"] .heritage-zoom-pill {
-  background: rgba(31, 17, 8, 0.94) !important;
-  border-color: #D4AF37 !important;
-  color: #FFF6E5 !important;
-}
-
-html[data-theme="light"] .heritage-caption-note {
-  color: #6D5545 !important;
-}
-
-html[data-theme="light"] .heritage-expand-btn {
-  background: #FFFDF9 !important;
-  border: 1.5px solid #8C5A2B !important;
-  color: #2A170D !important;
-}
-
-html[data-theme="light"] .heritage-expand-btn:hover {
-  background: #2A170D !important;
-  color: #F8DE9D !important;
-  border-color: #C89D56 !important;
-}
-
-/* ── Light Stat Cards ── */
-html[data-theme="light"] .stat-card {
-  background: #FAF2E3 !important;
-  border: 1.5px solid #C89D56 !important;
-  box-shadow: 0 4px 12px rgba(70, 45, 20, 0.06) !important;
-}
-
-html[data-theme="light"] .stat-card__value {
-  color: #8C5A2B !important;
-}
-
-html[data-theme="light"] .stat-card__label {
-  color: #4A3324 !important;
-  font-weight: 600 !important;
+  color: var(--brass-gold);
+  margin-bottom: 8px;
+}
+
+.brewing-title {
+  font-family: var(--font-vintage);
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: #FFF8E7;
+  margin: 0 0 6px;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #FFF9EE 0%, #F5BE70 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brewing-desc {
+  font-size: 0.82rem;
+  color: #C4AD9A;
+  line-height: 1.45;
+  margin: 0 0 18px;
+  max-width: 290px;
+}
+
+.brewing-progress-track {
+  height: 4px;
+  width: 100%;
+  max-width: 240px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.brewing-progress-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, #E5C378, #FFF5D0, #E5C378, transparent);
+  animation: brewingProgressSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes brewingProgressSlide {
+  0% {
+    left: -50%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.brewing-status-text {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--brass-bright);
+  letter-spacing: 0.03em;
+  animation: textPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
 }
 
 /* ==========================================================================
