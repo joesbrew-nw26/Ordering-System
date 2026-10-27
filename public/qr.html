@@ -396,8 +396,9 @@
 
     const baseUrlInput = document.getElementById('baseUrlInput');
 
-    // Default to the current window location origin
-    baseUrlInput.value = window.location.origin;
+    // Default to the official deployed Vercel domain or current domain
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    baseUrlInput.value = isLocal ? 'https://joesbrew-ordering.vercel.app' : window.location.origin;
 
     function renderStands() {
       const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, '');
