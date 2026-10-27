@@ -66,7 +66,7 @@ async function loadKdsData() {
 }
 
 function updateKdsCounts() {
-  const activeOrders = kdsState.orders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled');
+  const activeOrders = kdsState.orders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled' && o.status !== 'Archived');
   if (kdsActiveCount) kdsActiveCount.textContent = activeOrders.length;
   if (kdsAlertCount) kdsAlertCount.textContent = kdsState.waiterCalls.filter(c => !c.resolved).length;
 }
@@ -84,7 +84,7 @@ function renderKdsTickets() {
 
   // Enforce chronological FIFO sorting: earliest customer order appears FIRST (#1 in Queue), subsequent orders follow
   const activeOrders = kdsState.orders
-    .filter(o => o.status !== 'Completed' && o.status !== 'Cancelled')
+    .filter(o => o.status !== 'Completed' && o.status !== 'Cancelled' && o.status !== 'Archived')
     .sort((a, b) => {
       const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -650,6 +650,9 @@ async function initKdsWebSocket() {
             statusHistory: o.status_history || [],
             createdAt: o.created_at
           };
+          // Ignore archived orders
+          if (formatted.status === 'Archived') return;
+
           // Avoid duplicate if already in list
           if (!kdsState.orders.some(item => item.id === formatted.id)) {
             kdsState.orders.push(formatted);
@@ -660,6 +663,12 @@ async function initKdsWebSocket() {
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
           const o = payload.new;
+          if (o.status === 'Archived') {
+            kdsState.orders = kdsState.orders.filter(item => item.id !== o.id);
+            renderKdsTickets();
+            updateKdsCounts();
+            return;
+          }
           const existing = kdsState.orders.find(item => item.id === o.id);
           if (existing) {
             existing.status = o.status;

@@ -20,6 +20,7 @@ import {
   resolveWaiterCall,
   getDailySalesRecord,
   saveDailySalesShiftClosure,
+  resetOrdersAndSales,
   isSupabaseConfigured
 } from './lib/supabase.js';
 
@@ -119,8 +120,8 @@ wss.on('connection', async (ws) => {
 async function calculateDailySummary(dateStr) {
   const targetDate = dateStr || new Date().toISOString().split('T')[0];
   const allOrders = await getOrders();
-  const dayOrders = allOrders.filter(o => o.createdAt && o.createdAt.startsWith(targetDate));
-  const validOrders = dayOrders.filter(o => o.status !== 'Cancelled');
+  const dayOrders = allOrders.filter(o => o.createdAt && o.createdAt.startsWith(targetDate) && o.status !== 'Archived');
+  const validOrders = dayOrders.filter(o => o.status !== 'Cancelled' && o.status !== 'Archived');
   const totalRevenue = validOrders.reduce((sum, o) => sum + (o.total || o.subtotal || 0), 0);
 
   const statusCounts = {
@@ -636,6 +637,16 @@ app.post('/api/kds/close-shift', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to close shift' });
+  }
+});
+
+app.post('/api/kds/reset-all', async (req, res) => {
+  try {
+    await resetOrdersAndSales();
+    broadcast('ORDERS_RESET', { reset: true });
+    res.json({ success: true, message: 'All orders and sales successfully reset.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reset orders and sales' });
   }
 });
 
