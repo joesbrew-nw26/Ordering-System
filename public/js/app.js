@@ -184,7 +184,7 @@ function initTableGateway() {
 function resolveTableFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const tableParam = params.get('table') || params.get('t');
-  const validTables = ['Top-01', 'Top-02', 'Top-03', 'Top-04', 'Ground-01', 'Ground-02', 'Ground-03', 'Ground-04'];
+  const validTables = ['Top-01', 'Top-02', 'Top-03', 'Top-04', 'Ground-01', 'Ground-02', 'Ground-03'];
 
   if (tableParam && validTables.includes(tableParam)) {
     // 1. Direct Table QR Code Scan: Lock in table, show toast, and bypass Gateway
@@ -243,7 +243,7 @@ function setTable(tableId) {
 // ====================================================================
 function buildTableSelectorModal() {
   const terrace = Array.from({ length: 4 }, (_, i) => `Top-${String(i + 1).padStart(2, '0')}`);
-  const ground = Array.from({ length: 4 }, (_, i) => `Ground-${String(i + 1).padStart(2, '0')}`);
+  const ground = Array.from({ length: 3 }, (_, i) => `Ground-${String(i + 1).padStart(2, '0')}`);
 
   if (modalActiveTableBadge) {
     modalActiveTableBadge.textContent = `${state.selectedTable} · ${state.selectedFloor}`;
@@ -1288,7 +1288,7 @@ function handleSocketMessage(msg) {
 function bindEventHandlers() {
   // Navigation Tabs & Links
   const navigateToHomeOrGateway = () => {
-    const validTables = ['Top-01', 'Top-02', 'Top-03', 'Top-04', 'Ground-01', 'Ground-02', 'Ground-03', 'Ground-04'];
+    const validTables = ['Top-01', 'Top-02', 'Top-03', 'Top-04', 'Ground-01', 'Ground-02', 'Ground-03'];
     const saved = localStorage.getItem('jb_table');
     if (saved && validTables.includes(saved)) {
       switchView('HOME');

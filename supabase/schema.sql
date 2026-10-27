@@ -19,7 +19,6 @@ insert into public.tables (id, floor, label) values
   ('Ground-01', 'Ground Floor', 'Ground - Table 1'),
   ('Ground-02', 'Ground Floor', 'Ground - Table 2'),
   ('Ground-03', 'Ground Floor', 'Ground - Table 3'),
-  ('Ground-04', 'Ground Floor', 'Ground - Table 4'),
   ('Top-01', 'Terrace', 'Terrace - Table 1'),
   ('Top-02', 'Terrace', 'Terrace - Table 2'),
   ('Top-03', 'Terrace', 'Terrace - Table 3'),
