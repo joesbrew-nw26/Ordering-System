@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe's Brew | Table QR Stand Generator & Print Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #120A06;
+      --card-bg: #1C110A;
+      --brass-gold: #C89D56;
+      --brass-bright: #E5C378;
+      --text-main: #FFF8E7;
+      --text-muted: #C4AD9A;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Header & Control Banner */
+    .suite-header {
+      background: var(--card-bg);
+      border: 1.5px solid var(--brass-gold);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .suite-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .suite-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--brass-gold);
+      object-fit: cover;
+    }
+
+    .suite-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.45rem;
+      color: var(--brass-bright);
+      font-weight: 700;
+    }
+
+    .suite-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .suite-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .url-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .url-input-label {
+      font-size: 0.75rem;
+      color: var(--brass-bright);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .url-input {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1.5px solid var(--brass-gold);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #FFF;
+      font-size: 0.88rem;
+      font-family: monospace;
+      min-width: 280px;
+      outline: none;
+    }
+
+    .url-input:focus {
+      border-color: var(--brass-bright);
+      box-shadow: 0 0 10px rgba(229, 195, 120, 0.3);
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, var(--brass-gold), #9E7432);
+      color: #1A0D05;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      background: linear-gradient(135deg, var(--brass-bright), var(--brass-gold));
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(200, 157, 86, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--brass-bright);
+      border: 1.5px solid var(--brass-gold);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(200, 157, 86, 0.2);
+    }
+
+    /* Section Tabs */
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      color: var(--brass-bright);
+      margin: 28px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(200, 157, 86, 0.5), transparent);
+    }
+
+    /* Grid of Table Stands */
+    .stands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    /* Individual Stand Card */
+    .stand-card {
+      background: #FFFFFF;
+      color: #1C110A;
+      border: 3px double #A8792C;
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+      position: relative;
+      page-break-inside: avoid;
+    }
+
+    .stand-header {
+      margin-bottom: 12px;
+    }
+
+    .stand-crest {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid #8B5E28;
+      margin: 0 auto 6px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .stand-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #24140B;
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+    }
+
+    .stand-subbrand {
+      font-size: 0.65rem;
+      color: #6B4925;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .stand-table-badge {
+      background: #24140B;
+      color: #F5DEB3;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: 1.5px solid #C89D56;
+      margin: 10px 0;
+      letter-spacing: 0.06em;
+      display: inline-block;
+    }
+
+    .stand-floor-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #8C5A18;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .stand-qr-wrap {
+      background: #FFFFFF;
+      padding: 8px;
+      border: 2px solid #24140B;
+      border-radius: 8px;
+      margin: 4px 0 12px;
+      display: inline-block;
+    }
+
+    .stand-qr-img {
+      width: 170px;
+      height: 170px;
+      display: block;
+    }
+
+    .stand-instruction {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #1A0D05;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .stand-tagline {
+      font-size: 0.68rem;
+      color: #5C4331;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+
+    .stand-url-hint {
+      font-family: monospace;
+      font-size: 0.65rem;
+      color: #7D5C40;
+      word-break: break-all;
+      background: #F9F4EB;
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: 1px solid #E5D5C0;
+      width: 100%;
+    }
+
+    .stand-test-link {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #8C5A18;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+
+      .suite-header,
+      .section-title,
+      .no-print {
+        display: none !important;
+      }
+
+      .container {
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+
+      .stands-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+        margin: 0 !important;
+        page-break-after: always;
+      }
+
+      .stand-card {
+        box-shadow: none !important;
+        border: 2.5px solid #24140B !important;
+        page-break-inside: avoid !important;
+      }
+
+      .stand-test-link {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Suite Controls Header -->
+    <header class="suite-header">
+      <div class="suite-title-wrap">
+        <img src="/assets/logo.jpg" alt="Joe's Brew" class="suite-logo">
+        <div>
+          <h1 class="suite-title">Joe's Brew · Table QR Stand Suite</h1>
+          <p class="suite-desc">Generate & print official table QR stands for in-house digital ordering (Estd 2006)</p>
+        </div>
+      </div>
+
+      <div class="suite-controls">
+        <div class="url-input-wrap">
+          <label class="url-input-label" for="baseUrlInput">Your Café Web Address:</label>
+          <input type="text" id="baseUrlInput" class="url-input" placeholder="https://your-domain.vercel.app">
+        </div>
+        <button class="btn-action" onclick="updateAllQRCodes()">
+          🔄 Refresh QRs
+        </button>
+        <button class="btn-action btn-secondary" onclick="window.print()">
+          🖨️ Print Table Stands
+        </button>
+        <a href="/" class="btn-action btn-secondary" style="background: transparent;">
+          ← Back to Café
+        </a>
+      </div>
+    </header>
+
+    <!-- Floor 1: Terrace Seating (Upstairs) -->
+    <h2 class="section-title">🌿 Terrace Seating (Upstairs Tables)</h2>
+    <div class="stands-grid" id="terraceGrid">
+      <!-- Generated via JS -->
+    </div>
+
+    <!-- Floor 2: Ground Floor Seating -->
+    <h2 class="section-title">☕ Ground Floor Seating & Espresso Bar</h2>
+    <div class="stands-grid" id="groundGrid">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <script>
+    const TABLES = [
+      { id: 'Top-01', floor: 'Terrace (Upstairs)', gridId: 'terraceGrid' },
+      { id: 'Top-02', floor: 'Terrace (Upstairs)', gridId: 'terraceGrid' },
+      { id: 'Top-03', floor: 'Terrace (Upstairs)', gridId: 'terraceGrid' },
+      { id: 'Top-04', floor: 'Terrace (Upstairs)', gridId: 'terraceGrid' },
+      { id: 'Ground-01', floor: 'Ground Floor Seating', gridId: 'groundGrid' },
+      { id: 'Ground-02', floor: 'Ground Floor Seating', gridId: 'groundGrid' },
+      { id: 'Ground-03', floor: 'Ground Floor Seating', gridId: 'groundGrid' },
+      { id: 'Ground-04', floor: 'Ground Floor Seating', gridId: 'groundGrid' },
+    ];
+
+    const baseUrlInput = document.getElementById('baseUrlInput');
+
+    // Default to the current window location origin
+    baseUrlInput.value = window.location.origin;
+
+    function renderStands() {
+      const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, '');
+
+      // Clear existing
+      document.getElementById('terraceGrid').innerHTML = '';
+      document.getElementById('groundGrid').innerHTML = '';
+
+      TABLES.forEach(table => {
+        const targetUrl = `${baseUrl}/?table=${table.id}&view=menu`;
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=4&data=${encodeURIComponent(targetUrl)}`;
+
+        const card = document.createElement('div');
+        card.className = 'stand-card';
+        card.innerHTML = `
+          <div class="stand-header">
+            <img src="/assets/logo.jpg" alt="Joe's Brew" class="stand-crest">
+            <h3 class="stand-brand">JOE'S BREW</h3>
+            <span class="stand-subbrand">Artisanal Café · Estd 2006</span>
+          </div>
+
+          <div class="stand-table-badge">${table.id}</div>
+          <div class="stand-floor-tag">${table.floor}</div>
+
+          <div class="stand-qr-wrap">
+            <img src="${qrApiUrl}" alt="QR Code for Table ${table.id}" class="stand-qr-img">
+          </div>
+
+          <div class="stand-instruction">
+            <span>📷</span>
+            <span>Scan with Camera to Order</span>
+          </div>
+          <p class="stand-tagline">Browse curated menu · Order directly to kitchen</p>
+
+          <div class="stand-url-hint">${targetUrl}</div>
+
+          <a href="${targetUrl}" target="_blank" class="stand-test-link no-print">
+            ↗ Test Scan / Open Table
+          </a>
+        `;
+
+        document.getElementById(table.gridId).appendChild(card);
+      });
+    }
+
+    function updateAllQRCodes() {
+      renderStands();
+    }
+
+    baseUrlInput.addEventListener('change', renderStands);
+    baseUrlInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') renderStands();
+    });
+
+    // Initial render
+    renderStands();
+  </script>
+
+</body>
+</html>
