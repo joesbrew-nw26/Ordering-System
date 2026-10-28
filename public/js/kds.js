@@ -78,6 +78,46 @@ function formatElapsedWait(mins) {
   return rem > 0 ? `${hrs}h ${rem}m` : `${hrs}h`;
 }
 
+// Build personalized WhatsApp notification with quotes & counter payment amount
+function buildWhatsAppOrderReadyMessage(order) {
+  const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
+  const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
+  const isTakeaway = order.orderMode === 'Takeaway' || order.orderMode === 'Parcel';
+  const isMixed = order.orderMode === 'Mixed';
+  const customerDisplayName = order.customerName && order.customerName !== 'Guest' ? order.customerName : '';
+  const greeting = customerDisplayName ? `Hello ${customerDisplayName}! 🌟` : 'Hello there! 🌟';
+  const floorText = (order.floor === 'Upstairs' ? 'Terrace' : order.floor) || (order.tableId?.startsWith('Top') ? 'Terrace' : 'Ground Floor');
+  const itemsSummary = (order.items || []).map(i => `${i.quantity}x ${i.name} (${i.mode || 'Dine-In'})`).join(', ');
+  const totalAmount = order.total || (order.subtotal + (order.packagingCharge || 0));
+
+  let pickupNotice = `🔔 *Kindly come and get your order from our service point in the kitchen!* 🍽️`;
+  if (isTakeaway) {
+    pickupNotice = `🔔 *Your Takeaway Parcel is packed in sealed containers & ready for pickup at our kitchen counter!* 🥡✨`;
+  } else if (isMixed) {
+    pickupNotice = `🔔 *Your order with dine-in and takeaway containers is ready at our service point!* 🍽️🥡`;
+  }
+
+  const messageText = 
+    `☕ *Joe's Brew (Estd 2006)* ☕\n` +
+    `_"Good Coffee, Better People"_\n\n` +
+    `${greeting}\n` +
+    `Great news! Your order *#${order.orderNumber || order.id}* for *Table ${order.tableId} (${floorText})* is freshly prepared, hot & delicious! 🎉✨\n\n` +
+    (isTakeaway ? `📦 *Type:* Takeaway / Parcel (Containers sealed)\n` : (isMixed ? `📦 *Type:* Mixed Order (Dine-in + Takeaway)\n` : '')) +
+    (itemsSummary ? `📋 *Order Items:* ${itemsSummary}\n\n` : '') +
+    `💰 *Amount to Pay at Counter: ₹${totalAmount}*\n` +
+    `_(Please pay ₹${totalAmount} at the counter via Cash or GPay / UPI)_\n\n` +
+    `${pickupNotice}\n\n` +
+    `_"Good Coffee makes Happier Days"_ 💛☕🍰\n` +
+    `We hope every bite and sip brings a bright smile to your day. Enjoy your blissful brew & treats! ✨`;
+
+  return {
+    waPhone,
+    totalAmount,
+    messageText,
+    encodedMessage: encodeURIComponent(messageText)
+  };
+}
+
 // Render Order Tickets
 function renderKdsTickets() {
   if (!kdsTicketsList) return;
@@ -114,10 +154,8 @@ function renderKdsTickets() {
 
     const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
     const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
-    const customerDisplayName = order.customerName && order.customerName !== 'Guest' ? order.customerName : '';
-    const greeting = customerDisplayName ? `Hello ${customerDisplayName}!` : 'Hello!';
-    const waMessage = encodeURIComponent(`☕ *Joe's Brew (Estd 2006)*\n\n${greeting} Your order *#${order.orderNumber || order.id}* for *Table ${order.tableId}* is freshly prepared and *READY TO SERVE*! 🎉\n\nOur service staff is bringing it to your table now. Enjoy your blissful brew! ✨`);
-    const waUrl = waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${waMessage}` : '';
+    const { encodedMessage } = buildWhatsAppOrderReadyMessage(order);
+    const waUrl = waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodedMessage}` : '';
 
     const isOrderTakeawayOnly = order.orderMode === 'Takeaway' || order.orderMode === 'Parcel';
     const items = order.items || [];
@@ -276,7 +314,7 @@ function renderKdsTickets() {
         <div class="ticket-customer-bar">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span class="customer-name">👤 ${order.customerName || 'Guest'}</span>
-            ${order.customerPhone ? `<span class="customer-phone">📞 +91 ${order.customerPhone}</span>` : ''}
+            ${order.customerPhone ? `<a href="${waUrl}" target="_blank" class="customer-phone" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;" title="Send WhatsApp alert">📞 +91 ${order.customerPhone} <span style="font-size: 0.75rem; color: #25D366;">💬</span></a>` : ''}
           </div>
           <span class="customer-pay-tag">💳 ${order.paymentMode || 'Counter'}</span>
         </div>
@@ -366,33 +404,9 @@ async function advanceOrderStatus(orderId, nextStatus) {
 
   // AUTOMATED 1-CLICK WHATSAPP DISPATCH ON 'READY' (synchronous)
   if (nextStatus === 'Ready to Serve' && order.customerPhone) {
-    const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
-    const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
+    const { waPhone, encodedMessage } = buildWhatsAppOrderReadyMessage(order);
     if (waPhone) {
-      const isTakeaway = order.orderMode === 'Takeaway' || order.orderMode === 'Parcel';
-      const isMixed = order.orderMode === 'Mixed';
-      const customerDisplayName = order.customerName && order.customerName !== 'Guest' ? order.customerName : '';
-      const greeting = customerDisplayName ? `Hello ${customerDisplayName}! 🌟` : 'Hello there! 🌟';
-      const floorText = (order.floor === 'Upstairs' ? 'Terrace' : order.floor) || (order.tableId?.startsWith('Top') ? 'Terrace' : 'Ground Floor');
-      const itemsSummary = order.items?.map(i => `${i.quantity}x ${i.name} (${i.mode || 'Dine-In'})`).join(', ') || '';
-      
-      let pickupNotice = `🔔 *Kindly come and get your order from our service point in the kitchen!* 🍽️`;
-      if (isTakeaway) {
-        pickupNotice = `🔔 *Your Takeaway Parcel is packed in sealed containers & ready for pickup at our kitchen counter!* 🥡✨`;
-      } else if (isMixed) {
-        pickupNotice = `🔔 *Your order with dine-in and takeaway containers is ready at our service point!* 🍽️🥡`;
-      }
-
-      const waMessage = encodeURIComponent(
-        `☕ *Joe's Brew (Estd 2006)* ☕\n\n` +
-        `${greeting}\n` +
-        `Great news! Your order *#${order.orderNumber || order.id}* for *Table ${order.tableId} (${floorText})* is freshly prepared, hot & delicious! 🎉✨\n\n` +
-        (isTakeaway ? `📦 *Type:* Takeaway / Parcel (Containers sealed)\n` : (isMixed ? `📦 *Type:* Mixed Order (Dine-in + Takeaway)\n` : '')) +
-        (itemsSummary ? `📋 *Order Items:* ${itemsSummary}\n\n` : '') +
-        `${pickupNotice}\n\n` +
-        `We hope every bite and sip brings a bright smile to your day. Enjoy your blissful brew & treats! 💛☕🍰`
-      );
-      const waUrl = `https://api.whatsapp.com/send?phone=${waPhone}&text=${waMessage}`;
+      const waUrl = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodedMessage}`;
       window.open(waUrl, '_blank');
     }
   }
@@ -2167,4 +2181,5 @@ window.saveOrderEdits = saveOrderEdits;
 window.promptOrderSettlement = promptOrderSettlement;
 window.closePaymentModal = closePaymentModal;
 window.confirmPaymentSettlement = confirmPaymentSettlement;
+window.buildWhatsAppOrderReadyMessage = buildWhatsAppOrderReadyMessage;
 
