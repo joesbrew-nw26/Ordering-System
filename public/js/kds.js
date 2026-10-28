@@ -243,9 +243,14 @@ function renderKdsTickets() {
             <span class="queue-time">⏱️ ${formatElapsedWait(elapsedMinutes)}</span>
           </div>
 
-          <div class="ticket-id-meta">
-            <div class="ticket-order-number">#${order.orderNumber || order.id}</div>
-            <div class="ticket-time-stamp">${timeFormatted}</div>
+          <div class="ticket-id-meta" style="display: flex; align-items: center; gap: 8px;">
+            <button class="kds-ticket-edit-btn" type="button" onclick="openOrderEditModal('${order.id}')" title="Edit Order Items">
+              ✏️ Edit
+            </button>
+            <div style="text-align: right;">
+              <div class="ticket-order-number">#${order.orderNumber || order.id}</div>
+              <div class="ticket-time-stamp">${timeFormatted}</div>
+            </div>
           </div>
         </div>
 
@@ -313,7 +318,7 @@ function renderKdsTickets() {
           <button class="kds-step-btn ${order.status === 'Ready to Serve' ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Ready to Serve')">
             Ready 🚀
           </button>
-          <button class="kds-step-btn" onclick="advanceOrderStatus('${order.id}', 'Completed')">
+          <button class="kds-step-btn kds-step-btn--done" onclick="promptOrderSettlement('${order.id}')">
             Done ✓
           </button>
         </div>
@@ -673,6 +678,14 @@ async function initKdsWebSocket() {
           if (existing) {
             existing.status = o.status;
             existing.statusHistory = o.status_history || [];
+            if (o.items) existing.items = o.items;
+            if (o.subtotal !== undefined) existing.subtotal = Number(o.subtotal);
+            if (o.total !== undefined) existing.total = Number(o.total);
+            if (o.packaging_charge !== undefined) existing.packagingCharge = Number(o.packaging_charge);
+            if (o.payment_mode) existing.paymentMode = o.payment_mode;
+            if (o.payment_status) existing.paymentStatus = o.payment_status;
+            if (o.order_mode) existing.orderMode = o.order_mode;
+            if (o.general_instructions !== undefined) existing.generalInstructions = o.general_instructions;
             renderKdsTickets();
             updateKdsCounts();
           }
@@ -747,9 +760,27 @@ function handleKdsSocketMessage(msg) {
 
     case 'ORDER_STATUS_UPDATE':
       const existing = kdsState.orders.find(o => o.id === msg.data.orderId);
-      if (existing) existing.status = msg.data.status;
+      if (existing) {
+        existing.status = msg.data.status;
+        if (msg.data.paymentMode) existing.paymentMode = msg.data.paymentMode;
+        if (msg.data.paymentStatus) existing.paymentStatus = msg.data.paymentStatus;
+      }
       renderKdsTickets();
       updateKdsCounts();
+      break;
+
+    case 'ORDER_UPDATED':
+      const updatedOrder = msg.data;
+      if (updatedOrder) {
+        const uIdx = kdsState.orders.findIndex(o => o.id === updatedOrder.id);
+        if (uIdx !== -1) {
+          kdsState.orders[uIdx] = { ...kdsState.orders[uIdx], ...updatedOrder };
+        } else {
+          kdsState.orders.push(updatedOrder);
+        }
+        renderKdsTickets();
+        updateKdsCounts();
+      }
       break;
 
     case 'CALL_WAITER':
@@ -1697,6 +1728,419 @@ window.printShiftSummary = printShiftSummary;
 window.finalizeShiftAndLogout = finalizeShiftAndLogout;
 window.startInlineRateEdit = startInlineRateEdit;
 window.cancelInlineRateEdit = cancelInlineRateEdit;
+// ==========================================
+// ORDER EDITING MODAL (Staff Edit on Mistakes)
+// ==========================================
+let currentEditingOrderId = null;
+let currentEditingItems = [];
+
+function openOrderEditModal(orderId) {
+  const order = kdsState.orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  currentEditingOrderId = orderId;
+  currentEditingItems = JSON.parse(JSON.stringify(order.items || []));
+
+  const modalTitle = document.getElementById('orderEditModalTitle');
+  if (modalTitle) modalTitle.textContent = `✏️ Order #${order.orderNumber || order.id}`;
+
+  const tableBadge = document.getElementById('orderEditTableBadge');
+  if (tableBadge) tableBadge.textContent = order.tableId || 'Table';
+
+  const floorBadge = document.getElementById('orderEditFloorBadge');
+  if (floorBadge) {
+    const isTerrace = order.floor === 'Terrace' || order.floor === 'Upstairs' || (order.tableId && order.tableId.startsWith('Top'));
+    floorBadge.textContent = isTerrace ? 'TERRACE' : 'GROUND FLOOR';
+    floorBadge.style.color = isTerrace ? '#F59E0B' : '#6EE7B7';
+  }
+
+  const custName = document.getElementById('orderEditCustomerName');
+  if (custName) custName.textContent = `👤 ${order.customerName || 'Guest'}`;
+
+  const modeBadge = document.getElementById('orderEditCurrentMode');
+  if (modeBadge) {
+    modeBadge.textContent = order.orderMode === 'Takeaway' ? '🥡 Takeaway Order' : (order.orderMode === 'Mixed' ? '🍽️ + 🥡 Mixed Order' : '🍽️ Dine-In Order');
+  }
+
+  const rawInstructions = (order.generalInstructions || '')
+    .replace(/\[🍽️\s*\+\s*🥡\s*MIXED\s*ORDER\]/gi, '')
+    .replace(/\[🥡\s*TAKEAWAY\s*\/\s*PARCEL\]/gi, '')
+    .replace(/\[🍽️\s*DINE-IN\s*ORDER\]/gi, '')
+    .trim();
+
+  const instructionsInput = document.getElementById('orderEditGeneralInstructions');
+  if (instructionsInput) instructionsInput.value = rawInstructions;
+
+  populateEditModalMenuSelect();
+  renderOrderEditItems();
+
+  const modal = document.getElementById('kdsOrderEditModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeOrderEditModal() {
+  currentEditingOrderId = null;
+  currentEditingItems = [];
+  const modal = document.getElementById('kdsOrderEditModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function populateEditModalMenuSelect() {
+  const select = document.getElementById('orderEditAddItemSelect');
+  if (!select) return;
+
+  const cats = [
+    { key: 'TEA', label: 'Artisan Teas' },
+    { key: 'COFFEE', label: 'Fresh Coffee' },
+    { key: 'SNACKS', label: 'Quick Bites' },
+    { key: 'EATS', label: 'Hearty Eats' },
+    { key: 'COOKIES', label: 'Biscuits & Cookies' },
+    { key: 'DRINKS', label: 'Cold Beverages' },
+    { key: 'MELT', label: 'Melt & Toast' }
+  ];
+
+  select.innerHTML = '<option value="">-- Choose Item from Menu --</option>';
+
+  cats.forEach(c => {
+    const items = (kdsState.menuItems || []).filter(item => (item.category || '').toUpperCase() === c.key);
+    if (items.length > 0) {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = c.label;
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = `${item.name} — ₹${item.price}`;
+        optgroup.appendChild(opt);
+      });
+      select.appendChild(optgroup);
+    }
+  });
+}
+
+function calculateOrderTotals(items) {
+  let subtotal = 0;
+  const bevMap = {};
+  let foodCount = 0;
+  let drinkCount = 0;
+  let hasTakeaway = false;
+  let hasDineIn = false;
+
+  items.forEach(item => {
+    const qty = Math.max(1, Number(item.quantity) || 1);
+    const price = Number(item.price) || 0;
+    subtotal += (price * qty);
+
+    if (item.mode === 'Takeaway') {
+      hasTakeaway = true;
+      const cat = (item.category || '').toUpperCase();
+      if (cat === 'TEA' || cat === 'COFFEE') {
+        const key = item.id || item.name;
+        if (!bevMap[key]) bevMap[key] = { qty: 0 };
+        bevMap[key].qty += qty;
+      } else if (cat === 'DRINKS' || cat === 'MELT') {
+        drinkCount += qty;
+      } else {
+        foodCount += qty;
+      }
+    } else {
+      hasDineIn = true;
+    }
+  });
+
+  let teaCoffeeContainers = 0;
+  Object.values(bevMap).forEach(b => {
+    teaCoffeeContainers += Math.ceil(b.qty / 5);
+  });
+
+  const packagingCharge = (teaCoffeeContainers * 25) + (foodCount * 10) + (drinkCount * 10);
+  const total = subtotal + packagingCharge;
+  const computedMode = (hasTakeaway && hasDineIn) ? 'Mixed' : (hasTakeaway ? 'Takeaway' : 'Dine-In');
+
+  return { subtotal, packagingCharge, total, computedMode };
+}
+
+function renderOrderEditItems() {
+  const container = document.getElementById('orderEditItemsContainer');
+  if (!container) return;
+
+  if (currentEditingItems.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 24px; color: #F87171; background: rgba(239, 68, 68, 0.1); border-radius: 8px; font-weight: 700; font-size: 0.88rem;">
+        ⚠️ No items left in this order! Please add at least 1 item below before saving.
+      </div>
+    `;
+  } else {
+    container.innerHTML = currentEditingItems.map((item, idx) => {
+      const isTakeaway = item.mode === 'Takeaway';
+      const itemTotal = (Number(item.price) || 0) * (Number(item.quantity) || 1);
+      return `
+        <div class="kds-edit-item-row" data-idx="${idx}">
+          <div class="kds-edit-item-top">
+            <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
+              <span class="kds-edit-item-name">${item.name}</span>
+              <span class="kds-edit-item-cat">${item.category || 'ITEM'}</span>
+            </div>
+            <div class="kds-edit-item-controls">
+              <button type="button" class="kds-edit-mode-pill ${isTakeaway ? 'is-takeaway' : 'is-dinein'}" onclick="toggleEditItemMode(${idx})" title="Click to switch Dine-In / Takeaway">
+                ${isTakeaway ? '🥡 Takeaway' : '🍽️ Dine-In'}
+              </button>
+              <div class="kds-edit-qty-group">
+                <button type="button" class="kds-edit-qty-btn" onclick="modifyEditItemQty(${idx}, -1)">−</button>
+                <span class="kds-edit-qty-val">${item.quantity}</span>
+                <button type="button" class="kds-edit-qty-btn" onclick="modifyEditItemQty(${idx}, 1)">+</button>
+              </div>
+              <span class="kds-edit-item-price">₹${itemTotal}</span>
+              <button type="button" class="kds-edit-del-btn" onclick="deleteEditItem(${idx})" title="Remove Item">&times;</button>
+            </div>
+          </div>
+          <input type="text" class="kds-edit-item-note-input" placeholder="Item note (e.g. less sweet, extra hot, sugar separate)" value="${item.note || ''}" onchange="updateEditItemNote(${idx}, this.value)">
+        </div>
+      `;
+    }).join('');
+  }
+
+  const totals = calculateOrderTotals(currentEditingItems);
+
+  const countBadge = document.getElementById('orderEditItemCountBadge');
+  if (countBadge) countBadge.textContent = `${currentEditingItems.length} ${currentEditingItems.length === 1 ? 'Item' : 'Items'}`;
+
+  const subtotalDisplay = document.getElementById('orderEditSubtotalDisplay');
+  if (subtotalDisplay) subtotalDisplay.textContent = `₹${totals.subtotal}`;
+
+  const pkgWrap = document.getElementById('orderEditPkgWrap');
+  const pkgDisplay = document.getElementById('orderEditPkgDisplay');
+  if (pkgWrap && pkgDisplay) {
+    if (totals.packagingCharge > 0) {
+      pkgWrap.style.display = 'inline';
+      pkgDisplay.textContent = `+₹${totals.packagingCharge}`;
+    } else {
+      pkgWrap.style.display = 'none';
+    }
+  }
+
+  const totalDisplay = document.getElementById('orderEditTotalDisplay');
+  if (totalDisplay) totalDisplay.textContent = `₹${totals.total}`;
+}
+
+function modifyEditItemQty(idx, delta) {
+  if (!currentEditingItems[idx]) return;
+  currentEditingItems[idx].quantity = (Number(currentEditingItems[idx].quantity) || 1) + delta;
+  if (currentEditingItems[idx].quantity <= 0) {
+    currentEditingItems.splice(idx, 1);
+  }
+  renderOrderEditItems();
+}
+
+function deleteEditItem(idx) {
+  if (!currentEditingItems[idx]) return;
+  currentEditingItems.splice(idx, 1);
+  renderOrderEditItems();
+}
+
+function toggleEditItemMode(idx) {
+  if (!currentEditingItems[idx]) return;
+  currentEditingItems[idx].mode = currentEditingItems[idx].mode === 'Takeaway' ? 'Dine-In' : 'Takeaway';
+  renderOrderEditItems();
+}
+
+function updateEditItemNote(idx, note) {
+  if (!currentEditingItems[idx]) return;
+  currentEditingItems[idx].note = (note || '').trim();
+}
+
+function addSelectedItemToEditOrder() {
+  const select = document.getElementById('orderEditAddItemSelect');
+  const modeSelect = document.getElementById('orderEditAddItemMode');
+  if (!select || !select.value) {
+    alert('Please choose an item from the menu first.');
+    return;
+  }
+
+  const itemId = select.value;
+  const mode = modeSelect ? modeSelect.value : 'Dine-In';
+  const menuItem = (kdsState.menuItems || []).find(m => m.id === itemId);
+  if (!menuItem) return;
+
+  const existingIdx = currentEditingItems.findIndex(i => i.id === menuItem.id && i.mode === mode && !i.note);
+  if (existingIdx !== -1) {
+    currentEditingItems[existingIdx].quantity += 1;
+  } else {
+    currentEditingItems.push({
+      id: menuItem.id,
+      name: menuItem.name,
+      category: (menuItem.category || 'SNACKS').toUpperCase(),
+      price: Number(menuItem.price || 0),
+      quantity: 1,
+      mode: mode,
+      note: '',
+      isSpecial: Boolean(menuItem.isSpecial)
+    });
+  }
+
+  select.value = '';
+  renderOrderEditItems();
+}
+
+async function saveOrderEdits() {
+  if (!currentEditingOrderId) return;
+  if (!currentEditingItems || currentEditingItems.length === 0) {
+    alert('Order must contain at least 1 item.');
+    return;
+  }
+
+  const order = kdsState.orders.find(o => o.id === currentEditingOrderId);
+  if (!order) return;
+
+  const instructionsInput = document.getElementById('orderEditGeneralInstructions');
+  const generalInstructions = instructionsInput ? instructionsInput.value.trim() : '';
+
+  const totals = calculateOrderTotals(currentEditingItems);
+  const itemsToSave = JSON.parse(JSON.stringify(currentEditingItems));
+  const orderId = order.id;
+
+  // 1. Optimistic UI update in KDS
+  order.items = JSON.parse(JSON.stringify(itemsToSave));
+  order.subtotal = totals.subtotal;
+  order.packagingCharge = totals.packagingCharge;
+  order.total = totals.total;
+  order.orderMode = totals.computedMode;
+
+  let modePrefix = '';
+  if (totals.computedMode === 'Takeaway') modePrefix = '[🥡 TAKEAWAY / PARCEL] ';
+  else if (totals.computedMode === 'Mixed') modePrefix = '[🍽️ + 🥡 MIXED ORDER] ';
+  order.generalInstructions = `${modePrefix}${generalInstructions}`.trim();
+
+  renderKdsTickets();
+  updateKdsCounts();
+  closeOrderEditModal();
+  showKdsToast(`✓ Order #${order.orderNumber || order.id} updated! Total: ₹${totals.total}`);
+
+  // 2. Sync to Backend
+  try {
+    const res = await fetch(`/api/orders/${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: itemsToSave,
+        generalInstructions: generalInstructions,
+        orderMode: totals.computedMode
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      console.error('Server PUT error:', res.status, errData);
+      throw new Error(errData.error || 'Failed to update order');
+    }
+    const data = await res.json();
+    if (data.order) {
+      const idx = kdsState.orders.findIndex(o => o.id === data.order.id);
+      if (idx !== -1) kdsState.orders[idx] = data.order;
+      renderKdsTickets();
+    }
+  } catch (err) {
+    console.error('Error saving order edits:', err);
+    alert('Failed to save changes to server. Please check connection.');
+  }
+}
+
+// ==========================================
+// PAYMENT METHOD SETTLEMENT MODAL (Done Click)
+// ==========================================
+let currentSettlingOrderId = null;
+
+function promptOrderSettlement(orderId) {
+  const order = kdsState.orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  currentSettlingOrderId = orderId;
+
+  const numEl = document.getElementById('paymentModalOrderNum');
+  if (numEl) numEl.textContent = `Order #${order.orderNumber || order.id}`;
+
+  const tableEl = document.getElementById('paymentModalTable');
+  if (tableEl) {
+    const isTerrace = order.floor === 'Terrace' || order.floor === 'Upstairs' || (order.tableId && order.tableId.startsWith('Top'));
+    tableEl.textContent = `${order.tableId || 'Table'} · ${isTerrace ? 'Terrace' : 'Ground Floor'}`;
+  }
+
+  const totalEl = document.getElementById('paymentModalTotal');
+  const totalVal = order.total || (order.subtotal + (order.packagingCharge || 0));
+  if (totalEl) totalEl.textContent = `₹${totalVal}`;
+
+  const modal = document.getElementById('kdsPaymentModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closePaymentModal() {
+  currentSettlingOrderId = null;
+  const modal = document.getElementById('kdsPaymentModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function confirmPaymentSettlement(paymentMode) {
+  if (!currentSettlingOrderId) return;
+  const orderId = currentSettlingOrderId;
+  const order = kdsState.orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  const mode = paymentMode === 'GPay' ? 'GPay' : 'Cash';
+  const paymentStatus = `Paid (${mode})`;
+
+  closePaymentModal();
+
+  // 1. Optimistic UI update: advance to Completed and set paymentMode
+  const prevStatus = order.status;
+  const prevPaymentMode = order.paymentMode;
+  const prevPaymentStatus = order.paymentStatus;
+
+  order.status = 'Completed';
+  order.paymentMode = mode;
+  order.paymentStatus = paymentStatus;
+  if (!order.statusHistory) order.statusHistory = [];
+  order.statusHistory.push({ status: 'Completed', timestamp: new Date().toISOString(), paymentMode: mode });
+
+  renderKdsTickets();
+  updateKdsCounts();
+  showKdsToast(`✓ Order #${order.orderNumber || order.id} closed & settled via ${mode}!`);
+
+  // 2. Sync to Backend
+  try {
+    const res = await fetch(`/api/orders/${orderId}/settle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentMode: mode })
+    });
+
+    if (!res.ok) throw new Error('Settlement sync failed');
+  } catch (err) {
+    console.error('Failed to sync settlement:', err);
+    order.status = prevStatus;
+    order.paymentMode = prevPaymentMode;
+    order.paymentStatus = prevPaymentStatus;
+    renderKdsTickets();
+    updateKdsCounts();
+    alert('Failed to settle order. Reverted.');
+  }
+}
+
+// Expose globals for onclick HTML handlers
+window.advanceOrderStatus = advanceOrderStatus;
+window.resolveWaiterCall = resolveWaiterCall;
+window.toggleItemStock = toggleItemStock;
+window.switchKdsAuthMode = switchKdsAuthMode;
+window.pressPinKey = pressPinKey;
+window.clearPinKey = clearPinKey;
+window.submitPinLogin = submitPinLogin;
+window.submitCredsLogin = submitCredsLogin;
+window.openShiftClosingModal = openShiftClosingModal;
+window.closeShiftClosingModal = closeShiftClosingModal;
+window.selectHistoryDate = selectHistoryDate;
+window.onCustomDateSelected = onCustomDateSelected;
+window.printShiftSummary = printShiftSummary;
+window.finalizeShiftAndLogout = finalizeShiftAndLogout;
+window.startInlineRateEdit = startInlineRateEdit;
+window.cancelInlineRateEdit = cancelInlineRateEdit;
 window.saveInlineRate = saveInlineRate;
 window.openAdminMenuModal = openAdminMenuModal;
 window.closeAdminMenuModal = closeAdminMenuModal;
@@ -1710,3 +2154,17 @@ window.submitItemForm = submitItemForm;
 window.confirmDeleteItem = confirmDeleteItem;
 window.closeDeleteConfirmModal = closeDeleteConfirmModal;
 window.promptEditRate = promptEditRate;
+
+// Order Edit & Payment Settlement globals
+window.openOrderEditModal = openOrderEditModal;
+window.closeOrderEditModal = closeOrderEditModal;
+window.modifyEditItemQty = modifyEditItemQty;
+window.deleteEditItem = deleteEditItem;
+window.toggleEditItemMode = toggleEditItemMode;
+window.updateEditItemNote = updateEditItemNote;
+window.addSelectedItemToEditOrder = addSelectedItemToEditOrder;
+window.saveOrderEdits = saveOrderEdits;
+window.promptOrderSettlement = promptOrderSettlement;
+window.closePaymentModal = closePaymentModal;
+window.confirmPaymentSettlement = confirmPaymentSettlement;
+

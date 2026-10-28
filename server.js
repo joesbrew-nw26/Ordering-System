@@ -14,6 +14,7 @@ import {
   getOrderById,
   getLatestOrderNumber,
   createOrder,
+  updateOrder,
   updateOrderStatus,
   getWaiterCalls,
   createWaiterCall,
@@ -193,6 +194,11 @@ async function calculateDailySummary(dateStr) {
     },
     paymentSummary: {
       mode: 'Pay at Counter',
+      cash: validOrders.filter(o => ((o.paymentMode || '') + ' ' + (o.paymentStatus || '')).toLowerCase().includes('cash')).reduce((s, o) => s + (o.total || 0), 0),
+      gpay: validOrders.filter(o => {
+        const m = ((o.paymentMode || '') + ' ' + (o.paymentStatus || '')).toLowerCase();
+        return m.includes('gpay') || m.includes('upi') || m.includes('google pay');
+      }).reduce((s, o) => s + (o.total || 0), 0),
       counterSettled: totalRevenue
     },
     itemSales,
@@ -430,15 +436,158 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
+// Edit existing order items & recalculate totals (KDS / Staff Edit)
+app.put('/api/orders/:id', async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { items, generalInstructions, orderMode } = req.body;
+    if (!items || !items.length) {
+      return res.status(400).json({ error: 'Order must contain at least one item' });
+    }
+
+    const menuItems = await getFastMenuItems();
+    const calculatedItems = items.map(cartItem => {
+      const menuItem = menuItems.find(m => m.id === cartItem.id) || cartItem;
+      const cat = (cartItem.category || menuItem?.category || '').toUpperCase();
+      const mode = cartItem.mode || 'Dine-In';
+      const quantity = Math.max(1, Number(cartItem.quantity) || 1);
+
+      return {
+        id: cartItem.id,
+        name: menuItem.name || cartItem.name,
+        category: cat,
+        price: Number(menuItem.price !== undefined ? menuItem.price : cartItem.price) || 0,
+        quantity: quantity,
+        mode: mode,
+        note: cartItem.note || '',
+        isSpecial: Boolean(menuItem.isSpecial)
+      };
+    });
+
+    const subtotal = calculatedItems.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+
+    const bevMap = {};
+    let foodCount = 0;
+    let drinkCount = 0;
+    let hasTakeaway = false;
+    let hasDineIn = false;
+
+    calculatedItems.forEach(item => {
+      if (item.mode === 'Takeaway') {
+        hasTakeaway = true;
+        const cat = (item.category || '').toUpperCase();
+        const qty = item.quantity || 1;
+        if (cat === 'TEA' || cat === 'COFFEE') {
+          const key = item.id || item.name;
+          if (!bevMap[key]) bevMap[key] = { id: key, name: item.name, qty: 0 };
+          bevMap[key].qty += qty;
+        } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES') {
+          foodCount += qty;
+        } else if (cat === 'DRINKS' || cat === 'MELT') {
+          drinkCount += qty;
+        } else {
+          foodCount += qty;
+        }
+      } else {
+        hasDineIn = true;
+      }
+    });
+
+    let teaCoffeeContainers = 0;
+    Object.values(bevMap).forEach(b => {
+      teaCoffeeContainers += Math.ceil(b.qty / 5);
+    });
+
+    const calculatedPackaging = (teaCoffeeContainers * 25) + (foodCount * 10) + (drinkCount * 10);
+    const computedOrderMode = (hasTakeaway && hasDineIn) 
+      ? 'Mixed' 
+      : (hasTakeaway ? 'Takeaway' : 'Dine-In');
+
+    const total = subtotal + calculatedPackaging;
+
+    let modePrefix = '';
+    if (computedOrderMode === 'Takeaway') {
+      modePrefix = '[🥡 TAKEAWAY / PARCEL] ';
+    } else if (computedOrderMode === 'Mixed') {
+      modePrefix = '[🍽️ + 🥡 MIXED ORDER] ';
+    }
+
+    const rawInstructions = (generalInstructions || '')
+      .replace(/\[🍽️\s*\+\s*🥡\s*MIXED\s*ORDER\]/gi, '')
+      .replace(/\[🥡\s*TAKEAWAY\s*\/\s*PARCEL\]/gi, '')
+      .replace(/\[🍽️\s*DINE-IN\s*ORDER\]/gi, '')
+      .trim();
+
+    const formattedInstructions = `${modePrefix}${rawInstructions}`.trim();
+
+    const updates = {
+      items: calculatedItems,
+      subtotal,
+      packagingCharge: calculatedPackaging,
+      total,
+      orderMode: computedOrderMode,
+      generalInstructions: formattedInstructions
+    };
+
+    const updated = await updateOrder(orderId, updates);
+    if (!updated) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    broadcast('ORDER_UPDATED', updated);
+    res.json({ success: true, order: updated });
+  } catch (err) {
+    console.error('Error editing order:', err);
+    res.status(500).json({ error: 'Failed to update order' });
+  }
+});
+
+// Settle and complete order with payment method popup (Cash or GPay)
+app.post('/api/orders/:id/settle', async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { paymentMode } = req.body;
+    const normalizedMode = (paymentMode === 'GPay' || paymentMode === 'UPI') ? 'GPay' : 'Cash';
+    const paymentStatus = `Paid (${normalizedMode})`;
+
+    const updated = await updateOrder(orderId, {
+      status: 'Completed',
+      paymentMode: normalizedMode,
+      paymentStatus: paymentStatus
+    });
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    broadcast('ORDER_STATUS_UPDATE', {
+      orderId: updated.id,
+      orderNumber: updated.orderNumber,
+      tableId: updated.tableId,
+      floor: updated.floor,
+      status: 'Completed',
+      paymentMode: normalizedMode,
+      paymentStatus: paymentStatus,
+      timestamp: new Date().toISOString()
+    });
+    broadcast('ORDER_UPDATED', updated);
+
+    res.json({ success: true, order: updated });
+  } catch (err) {
+    console.error('Error settling order:', err);
+    res.status(500).json({ error: 'Failed to settle order' });
+  }
+});
+
 app.patch('/api/orders/:id/status', async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, paymentMode } = req.body;
     const validStatuses = ['Received', 'Preparing', 'Ready to Serve', 'Completed', 'Cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
-    const updated = await updateOrderStatus(req.params.id, status);
+    const updated = await updateOrderStatus(req.params.id, status, paymentMode);
     if (!updated) {
       return res.status(404).json({ error: 'Order not found' });
     }
@@ -449,8 +598,11 @@ app.patch('/api/orders/:id/status', async (req, res) => {
       tableId: updated.tableId,
       floor: updated.floor,
       status: updated.status,
+      paymentMode: updated.paymentMode,
+      paymentStatus: updated.paymentStatus,
       timestamp: new Date().toISOString()
     });
+    broadcast('ORDER_UPDATED', updated);
 
     res.json({ success: true, order: updated });
   } catch (err) {
