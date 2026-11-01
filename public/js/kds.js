@@ -14,9 +14,345 @@ let adminMenuFilterCat = 'ALL';
 let adminMenuSearchQuery = '';
 let pendingDeleteItemId = null;
 
-// Sound effects
-const alertChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-const runnerChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3');
+// ==========================================
+// ROBUST KDS AUDIO ENGINE (Web Audio API + HTML5 Fallback)
+// Zero-latency, works offline, 100% immune to CDN / CORS failures
+// ==========================================
+let audioCtx = null;
+let isAudioUnlocked = false;
+
+// HTML5 audio elements (as secondary fallback)
+let alertChime = null;
+let runnerChime = null;
+try {
+  alertChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+  runnerChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3');
+} catch (e) {}
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass();
+    }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
+  return audioCtx;
+}
+
+function unlockKdsAudio() {
+  const ctx = getAudioContext();
+  if (ctx) {
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(() => {
+        isAudioUnlocked = true;
+        updateSoundStatusUI();
+      }).catch(() => {});
+    } else if (ctx.state === 'running') {
+      isAudioUnlocked = true;
+      updateSoundStatusUI();
+    }
+  } else {
+    isAudioUnlocked = true;
+    updateSoundStatusUI();
+  }
+
+  // Hide the unlock banner if visible
+  const banner = document.getElementById('kdsAudioUnlockBanner');
+  if (banner) banner.style.display = 'none';
+
+  // Pre-warm HTML5 audio element
+  try {
+    if (alertChime) alertChime.load();
+    if (runnerChime) runnerChime.load();
+  } catch (e) {}
+}
+
+// Global user interaction triggers to automatically unlock audio
+['click', 'touchstart', 'pointerdown', 'keydown'].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (!isAudioUnlocked || (audioCtx && audioCtx.state === 'suspended')) {
+      unlockKdsAudio();
+    }
+  }, { passive: true });
+});
+
+function playSynthesizedKitchenBell(isTerrace = false) {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return false;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+
+    const now = ctx.currentTime;
+
+    function playBellStroke(timeOffset, baseFreq, duration, volume) {
+      const strikeTime = now + timeOffset;
+
+      const strikeGain = ctx.createGain();
+      strikeGain.gain.setValueAtTime(0.0001, strikeTime);
+      strikeGain.gain.exponentialRampToValueAtTime(volume, strikeTime + 0.008);
+      strikeGain.gain.exponentialRampToValueAtTime(0.0001, strikeTime + duration);
+      strikeGain.connect(ctx.destination);
+
+      // Fundamental tone (clean sine)
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(baseFreq, strikeTime);
+
+      // Acoustic overtone (triangle at 2.4x)
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(baseFreq * 2.4, strikeTime);
+
+      // Sparkle overtone (sine at 3.8x)
+      const osc3 = ctx.createOscillator();
+      osc3.type = 'sine';
+      osc3.frequency.setValueAtTime(baseFreq * 3.8, strikeTime);
+
+      const g1 = ctx.createGain(); g1.gain.value = 0.65;
+      const g2 = ctx.createGain(); g2.gain.value = 0.25;
+      const g3 = ctx.createGain(); g3.gain.value = 0.15;
+
+      osc1.connect(g1); g1.connect(strikeGain);
+      osc2.connect(g2); g2.connect(strikeGain);
+      osc3.connect(g3); g3.connect(strikeGain);
+
+      osc1.start(strikeTime); osc1.stop(strikeTime + duration);
+      osc2.start(strikeTime); osc2.stop(strikeTime + duration);
+      osc3.start(strikeTime); osc3.stop(strikeTime + duration);
+    }
+
+    // Melodic Kitchen Chime:
+    // Stroke 1: D5 (587.33 Hz)
+    playBellStroke(0, 587.33, 0.9, 0.85);
+
+    // Stroke 2: A5 (880.00 Hz) - crisp ascending chime
+    playBellStroke(0.16, 880.00, 1.3, 0.95);
+
+    // If Terrace order or Waiter alert, add a high 3rd ping: D6 (1174.66 Hz)
+    if (isTerrace) {
+      playBellStroke(0.32, 1174.66, 1.6, 1.0);
+    }
+
+    return true;
+  } catch (err) {
+    console.warn('[KDS Audio] Web Audio error:', err);
+    return false;
+  }
+}
+
+function playSynthesizedRunnerChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return false;
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+
+    const now = ctx.currentTime;
+    function playBeep(timeOffset, freq, duration) {
+      const t = now + timeOffset;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.65, t + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + duration);
+    }
+    playBeep(0, 783.99, 0.18);
+    playBeep(0.14, 1046.50, 0.38);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function playKdsOrderNotificationChime(isTerrace = false) {
+  console.log(`🔔 Triggering KDS Order Chime (Terrace: ${isTerrace})`);
+
+  // 1. Primary: High-fidelity Web Audio API restaurant bell
+  const playedWebAudio = playSynthesizedKitchenBell(isTerrace);
+
+  // 2. Secondary fallback: HTML5 Audio element
+  if (!playedWebAudio && alertChime) {
+    try {
+      alertChime.currentTime = 0;
+      const p = alertChime.play();
+      if (p && p.catch) {
+        p.catch(err => {
+          console.warn('[KDS Audio] HTML5 audio also blocked by browser policy:', err);
+          const banner = document.getElementById('kdsAudioUnlockBanner');
+          if (banner) banner.style.display = 'block';
+        });
+      }
+    } catch (e) {}
+  }
+
+  // 3. Desktop/Tablet System Notification (if permitted)
+  try {
+    if (window.Notification && Notification.permission === 'granted') {
+      new Notification("Joe's Brew Kitchen", {
+        body: isTerrace ? '⚡ New Order from Terrace!' : '🔔 New Kitchen Order Received!',
+        icon: '/assets/logo.jpg'
+      });
+    }
+  } catch (e) {}
+}
+
+function playKdsRunnerChime() {
+  const played = playSynthesizedRunnerChime();
+  if (!played && runnerChime) {
+    try {
+      runnerChime.currentTime = 0;
+      const p = runnerChime.play();
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+  }
+}
+
+function updateSoundStatusUI() {
+  const icon = document.getElementById('kdsSoundIcon');
+  const text = document.getElementById('kdsSoundText');
+  const btn = document.getElementById('kdsSoundToggleBtn');
+  if (!btn) return;
+
+  const ctx = audioCtx;
+  const isRunning = (ctx && ctx.state === 'running') || isAudioUnlocked;
+
+  if (isRunning) {
+    if (icon) icon.textContent = '🔔';
+    if (text) {
+      text.textContent = 'Sound: ON';
+      text.style.color = '#34D399';
+    }
+    btn.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    btn.style.background = 'rgba(16, 185, 129, 0.15)';
+    btn.title = 'Kitchen sound active. Click to test chime.';
+  } else {
+    if (icon) icon.textContent = '🔕';
+    if (text) {
+      text.textContent = 'Sound: Tap to Enable';
+      text.style.color = '#FBBF24';
+    }
+    btn.style.borderColor = 'rgba(245, 158, 11, 0.6)';
+    btn.style.background = 'rgba(245, 158, 11, 0.18)';
+    btn.title = 'Click to activate kitchen audio alerts.';
+  }
+}
+
+function testOrToggleKdsAudio() {
+  unlockKdsAudio();
+  playKdsOrderNotificationChime(false);
+  showKdsToast('🔔 Kitchen alert sound tested successfully!');
+  if (window.Notification && Notification.permission === 'default') {
+    Notification.requestPermission().catch(() => {});
+  }
+}
+window.testOrToggleKdsAudio = testOrToggleKdsAudio;
+
+// Active Order ID tracking for new order detection & background polling
+const knownOrderIds = new Set();
+const knownWaiterCallIds = new Set();
+let hasCompletedInitialLoad = false;
+let isPollingKds = false;
+let kdsPollingInterval = null;
+
+async function pollKdsActiveOrders() {
+  if (isPollingKds) return;
+  isPollingKds = true;
+  try {
+    const [ordersRes, callsRes] = await Promise.all([
+      fetch('/api/orders'),
+      fetch('/api/call-waiter')
+    ]);
+
+    if (!ordersRes.ok) throw new Error('Failed to fetch orders');
+    const incomingOrders = await ordersRes.json();
+    const incomingCalls = callsRes.ok ? await callsRes.json() : [];
+
+    let hasNewOrder = false;
+    let hasOrderChanges = false;
+
+    incomingOrders.forEach(o => {
+      if (o.status === 'Archived') {
+        if (kdsState.orders.some(x => x.id === o.id)) {
+          kdsState.orders = kdsState.orders.filter(x => x.id !== o.id);
+          hasOrderChanges = true;
+        }
+        return;
+      }
+
+      if (!knownOrderIds.has(o.id)) {
+        knownOrderIds.add(o.id);
+        // Only trigger chime if this order arrived AFTER the initial page load!
+        if (hasCompletedInitialLoad) {
+          const exists = kdsState.orders.some(x => x.id === o.id);
+          if (!exists) {
+            kdsState.orders.push(o);
+            hasNewOrder = true;
+            console.log(`🔔 New order detected via sync poll: #${o.orderNumber || o.id}`);
+            const isTerrace = o.floor === 'Terrace' || o.floor === 'Upstairs' || (o.tableId && o.tableId.startsWith('Top'));
+            playKdsOrderNotificationChime(isTerrace);
+          }
+        }
+      } else {
+        // Sync any updates (items, total, status)
+        const existing = kdsState.orders.find(x => x.id === o.id);
+        if (existing) {
+          if (existing.status !== o.status || existing.total !== o.total || (o.items && existing.items && o.items.length !== existing.items.length)) {
+            Object.assign(existing, o);
+            hasOrderChanges = true;
+          }
+        }
+      }
+    });
+
+    // Check waiter calls
+    let hasNewCall = false;
+    incomingCalls.forEach(c => {
+      if (!knownWaiterCallIds.has(c.id)) {
+        knownWaiterCallIds.add(c.id);
+        if (hasCompletedInitialLoad && !c.resolved) {
+          kdsState.waiterCalls.unshift(c);
+          hasNewCall = true;
+          playKdsOrderNotificationChime(true);
+        }
+      } else {
+        const existingCall = kdsState.waiterCalls.find(x => x.id === c.id);
+        if (existingCall && existingCall.resolved !== c.resolved) {
+          existingCall.resolved = c.resolved;
+          hasOrderChanges = true;
+        }
+      }
+    });
+
+    if (hasNewOrder || hasOrderChanges || hasNewCall) {
+      renderKdsTickets();
+      if (hasNewCall || hasOrderChanges) renderWaiterCalls();
+      updateKdsCounts();
+      if (hasNewOrder) {
+        showKdsToast('🔔 New incoming order received!');
+      }
+    }
+  } catch (err) {
+    // Network hiccup, retry next tick
+  } finally {
+    isPollingKds = false;
+    hasCompletedInitialLoad = true;
+  }
+}
+
+function startKdsPolling() {
+  if (kdsPollingInterval) clearInterval(kdsPollingInterval);
+  kdsPollingInterval = setInterval(pollKdsActiveOrders, 4000);
+}
 
 // DOM References
 const kdsTicketsList = document.getElementById('kdsTicketsList');
@@ -93,10 +429,19 @@ async function loadKdsData() {
     kdsState.waiterCalls = await callsRes.json();
     kdsState.menuItems = await menuRes.json();
 
+    // Populate known IDs on initial load so pre-existing orders don't chime
+    (kdsState.orders || []).forEach(o => knownOrderIds.add(o.id));
+    (kdsState.waiterCalls || []).forEach(c => knownWaiterCallIds.add(c.id));
+    hasCompletedInitialLoad = true;
+
     renderKdsTickets();
     renderWaiterCalls();
     renderStockList();
     updateKdsCounts();
+    updateSoundStatusUI();
+
+    // Start robust background sync polling fallback
+    startKdsPolling();
   } catch (err) {
     console.error('Failed to load KDS data', err);
   }
@@ -605,7 +950,7 @@ async function advanceOrderStatus(orderId, nextStatus) {
   order.statusHistory.push({ status: nextStatus, timestamp: new Date().toISOString() });
 
   if (nextStatus === 'Ready to Serve') {
-    try { runnerChime.play(); } catch (e) {}
+    playKdsRunnerChime();
     showKdsToast(`☕ Table ${order.tableId} is READY! WhatsApp alert dispatched.`);
   } else if (nextStatus === 'Completed') {
     showKdsToast(`✓ Order #${order.orderNumber || order.id} marked Done!`);
@@ -885,9 +1230,11 @@ async function initKdsWebSocket() {
           // Avoid duplicate if already in list
           if (!kdsState.orders.some(item => item.id === formatted.id)) {
             kdsState.orders.push(formatted);
+            knownOrderIds.add(formatted.id);
             renderKdsTickets();
             updateKdsCounts();
-            try { alertChime.play(); } catch (e) {}
+            const isTerrace = formatted.floor === 'Terrace' || formatted.floor === 'Upstairs' || (formatted.tableId && formatted.tableId.startsWith('Top'));
+            playKdsOrderNotificationChime(isTerrace);
           }
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
@@ -934,9 +1281,10 @@ async function initKdsWebSocket() {
               timestamp: c.timestamp,
               resolved: c.resolved
             });
+            knownWaiterCallIds.add(c.id);
             renderWaiterCalls();
             updateKdsCounts();
-            try { alertChime.play(); } catch (e) {}
+            playKdsOrderNotificationChime(true);
           }
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'waiter_calls' }, (payload) => {
@@ -980,12 +1328,15 @@ async function initKdsWebSocket() {
 function handleKdsSocketMessage(msg) {
   switch (msg.type) {
     case 'NEW_ORDER':
-      if (!kdsState.orders.some(o => o.id === msg.data.id)) {
-        kdsState.orders.push(msg.data);
+      const newOrder = msg.data;
+      if (newOrder && !kdsState.orders.some(o => o.id === newOrder.id)) {
+        kdsState.orders.push(newOrder);
+        knownOrderIds.add(newOrder.id);
+        renderKdsTickets();
+        updateKdsCounts();
+        const isTerrace = newOrder.floor === 'Terrace' || newOrder.floor === 'Upstairs' || (newOrder.tableId && newOrder.tableId.startsWith('Top'));
+        playKdsOrderNotificationChime(isTerrace);
       }
-      renderKdsTickets();
-      updateKdsCounts();
-      try { alertChime.play(); } catch (e) {}
       break;
 
     case 'ORDER_STATUS_UPDATE':
@@ -1023,9 +1374,10 @@ function handleKdsSocketMessage(msg) {
 
     case 'CALL_WAITER':
       kdsState.waiterCalls.unshift(msg.data);
+      if (msg.data && msg.data.id) knownWaiterCallIds.add(msg.data.id);
       renderWaiterCalls();
       updateKdsCounts();
-      try { alertChime.play(); } catch (e) {}
+      playKdsOrderNotificationChime(true);
       break;
 
     case 'WAITER_CALL_RESOLVED':
@@ -1097,6 +1449,7 @@ async function initKdsAuth() {
     const data = await res.json();
     if (data.authenticated) {
       kdsState.currentUser = data.user || { name: 'Kitchen Staff', role: 'Staff' };
+      unlockKdsAudio();
       hideLoginPortal();
       updateKdsRoleUI();
       loadKdsData();
@@ -1269,6 +1622,7 @@ async function submitPinLogin() {
     if (res.ok && data.success) {
       localStorage.setItem(KDS_TOKEN_KEY, data.token);
       kdsState.currentUser = data.user || { name: 'Kitchen Staff', role: 'Staff' };
+      unlockKdsAudio();
       hideLoginPortal();
       updateKdsRoleUI();
       loadKdsData();
@@ -1314,6 +1668,7 @@ async function submitCredsLogin(e) {
     if (res.ok && data.success) {
       localStorage.setItem(KDS_TOKEN_KEY, data.token);
       kdsState.currentUser = data.user || { name: 'Manager / Admin', role: 'Admin' };
+      unlockKdsAudio();
       hideLoginPortal();
       updateKdsRoleUI();
       loadKdsData();

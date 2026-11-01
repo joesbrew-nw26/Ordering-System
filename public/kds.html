@@ -1257,6 +1257,10 @@
         <span class="sync-pulse"></span>
         <span style="color: #34D399;">Live WS</span>
       </div>
+      <button id="kdsSoundToggleBtn" class="kds-stat-pill" type="button" onclick="testOrToggleKdsAudio()" style="cursor: pointer; background: rgba(16, 185, 129, 0.15); border: 1.5px solid rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 6px; font-family: inherit; color: inherit;" title="Kitchen Audio Alerts. Click to test chime.">
+        <span id="kdsSoundIcon">🔔</span>
+        <span id="kdsSoundText" style="color: #6EE7B7; font-weight: 700;">Sound: ON</span>
+      </button>
 
       <!-- Admin Mode Badge & Menu Management Trigger (visible only to Admin role) -->
       <div id="kdsAdminRoleBadge" class="kds-stat-pill admin-badge-pill" style="display: none;">
@@ -1285,6 +1289,11 @@
   <!-- ==========================================
        KDS MAIN CONTENT GRID
        ========================================== -->
+  <!-- Audio Autoplay Unlock Banner (shows only when browser pauses sound until first user tap) -->
+  <div id="kdsAudioUnlockBanner" style="display: none; background: rgba(245, 158, 11, 0.15); border: 1.5px dashed #F59E0B; border-radius: 8px; padding: 10px 18px; margin: 12px 20px 0; color: #FDE68A; font-size: 0.88rem; font-weight: 700; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="testOrToggleKdsAudio()">
+    🔔 Audio alerts are paused by your browser. <u>Tap anywhere on this screen</u> or click here to activate loud kitchen order chimes!
+  </div>
+
   <main class="kds-main-grid" id="kdsMainGrid">
     <!-- Active & Completed Tickets Queue -->
     <section>
