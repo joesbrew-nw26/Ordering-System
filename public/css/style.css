@@ -4576,6 +4576,30 @@ input, select, textarea {
 /* PIN Display dots */
 .pin-display-wrapper {
   margin: 14px 0 20px 0;
+  position: relative;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1.5px dashed rgba(200, 157, 86, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.pin-display-wrapper:focus-within,
+.pin-display-wrapper:hover {
+  border-color: var(--brass-gold);
+  box-shadow: 0 0 16px rgba(200, 157, 86, 0.25);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.pin-hidden-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 16px;
 }
 
 .pin-dots-row {
@@ -4701,6 +4725,18 @@ input, select, textarea {
 .kds-submit-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(200, 157, 86, 0.35);
+}
+
+.kds-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-toggle-pw:hover {
+  color: var(--brass-gold) !important;
+  transform: scale(1.1);
 }
 
 .kds-error-msg {

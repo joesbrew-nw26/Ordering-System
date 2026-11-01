@@ -20,3 +20,4 @@
    - Added item name editing right from the 1-Tap Stock Management sidebar and within the item edit modal.
    - Added an **Active Queue vs. Completed / Done** tab switcher on the KDS display.
    - Enabled **`✏️ Edit Order`** and **`↩️ Re-open to Active`** on orders already marked as "Done".
+

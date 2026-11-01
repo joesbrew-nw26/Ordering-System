@@ -18,3 +18,4 @@
   - Add item name editing in stock list / admin modal
 - [ ] Task 5: Verify ordering, packaging charges, KDS ticket sync, token permanence, and order editing.
 - [ ] Task 6: Commit and push changes to GitHub.
+

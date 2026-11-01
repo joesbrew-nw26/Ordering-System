@@ -1179,14 +1179,16 @@
 
       <!-- Quick Touch PIN Pad (Default) -->
       <div id="kdsPinView">
-        <div class="pin-display-wrapper">
+        <div class="pin-display-wrapper" onclick="focusPinInput()" style="cursor: pointer; position: relative;" title="Click or tap to type PIN">
+          <!-- Hidden transparent input for seamless mobile and desktop keyboard typing -->
+          <input type="password" id="kdsPinHiddenInput" class="pin-hidden-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" aria-label="Station PIN" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; font-size: 16px;">
           <div class="pin-dots-row">
             <span class="pin-dot" id="dot0"></span>
             <span class="pin-dot" id="dot1"></span>
             <span class="pin-dot" id="dot2"></span>
             <span class="pin-dot" id="dot3"></span>
           </div>
-          <small style="font-size: 0.74rem; color: #D1C4B9;">Enter 4-digit Station PIN</small>
+          <small style="font-size: 0.74rem; color: #D1C4B9;">Tap here or use keypad to type 4-digit Station PIN</small>
         </div>
 
         <div class="pin-grid">
@@ -1209,8 +1211,11 @@
       <div id="kdsCredsView" style="display: none;">
         <form id="kdsCredsForm" class="kds-creds-form" onsubmit="submitCredsLogin(event)">
           <input type="text" id="kdsUsername" class="kds-input-field" placeholder="Username (e.g. admin)" autocomplete="username">
-          <input type="password" id="kdsPassword" class="kds-input-field" placeholder="Password" autocomplete="current-password">
-          <button type="submit" class="kds-submit-btn">Authorize & Open Station</button>
+          <div style="position: relative; display: flex; align-items: center; width: 100%;">
+            <input type="password" id="kdsPassword" class="kds-input-field" placeholder="Password" autocomplete="current-password" style="width: 100%; padding-right: 44px; box-sizing: border-box;">
+            <button type="button" id="btnTogglePw" class="btn-toggle-pw" onclick="toggleKdsPasswordVisibility()" title="Show/Hide Password" style="position: absolute; right: 10px; background: transparent; border: none; cursor: pointer; font-size: 1.15rem; color: #D1C4B9; padding: 4px; display: flex; align-items: center; justify-content: center;">👁️</button>
+          </div>
+          <button type="submit" id="kdsCredsSubmitBtn" class="kds-submit-btn">Authorize & Open Station</button>
         </form>
       </div>
 

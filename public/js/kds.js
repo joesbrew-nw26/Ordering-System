@@ -92,7 +92,7 @@ function switchKdsTicketView(view) {
   } else {
     doneBtn?.classList.add('active');
     activeBtn?.classList.remove('active');
-    if (noteEl) noteEl.textContent = 'Showing Today's Completed Orders';
+    if (noteEl) noteEl.textContent = "Showing Today's Completed Orders";
   }
 
   renderKdsTickets();
@@ -1057,12 +1057,54 @@ async function initKdsAuth() {
   }
 }
 
+function focusPinInput() {
+  const input = document.getElementById('kdsPinHiddenInput');
+  if (input) {
+    input.focus();
+  }
+}
+
+function handlePinHiddenInput(e) {
+  const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+  enteredPin = val;
+  e.target.value = val;
+  updatePinDots();
+  const errorEl = document.getElementById('kdsLoginError');
+  if (errorEl) errorEl.textContent = '';
+
+  if (enteredPin.length === 4) {
+    setTimeout(() => {
+      submitPinLogin();
+    }, 90);
+  }
+}
+
+function toggleKdsPasswordVisibility() {
+  const pwInput = document.getElementById('kdsPassword');
+  const btn = document.getElementById('btnTogglePw');
+  if (!pwInput) return;
+  if (pwInput.type === 'password') {
+    pwInput.type = 'text';
+    if (btn) btn.textContent = '🙈';
+  } else {
+    pwInput.type = 'password';
+    if (btn) btn.textContent = '👁️';
+  }
+}
+
 function showLoginPortal(errorMsg = '') {
   const portal = document.getElementById('kdsLoginPortal');
   if (portal) portal.classList.remove('hidden');
   resetPinState();
   const errorEl = document.getElementById('kdsLoginError');
   if (errorEl) errorEl.textContent = errorMsg;
+  setTimeout(() => {
+    if (currentAuthMode === 'pin') {
+      focusPinInput();
+    } else {
+      document.getElementById('kdsUsername')?.focus();
+    }
+  }, 100);
 }
 
 function hideLoginPortal() {
@@ -1088,18 +1130,28 @@ function switchKdsAuthMode(mode) {
     if (pinView) pinView.style.display = 'block';
     if (credsView) credsView.style.display = 'none';
     resetPinState();
+    setTimeout(() => focusPinInput(), 60);
   } else {
     if (credsBtn) credsBtn.classList.add('active');
     if (pinBtn) pinBtn.classList.remove('active');
     if (pinView) pinView.style.display = 'none';
     if (credsView) credsView.style.display = 'block';
     const usernameInput = document.getElementById('kdsUsername');
-    if (usernameInput) usernameInput.focus();
+    const passwordInput = document.getElementById('kdsPassword');
+    setTimeout(() => {
+      if (usernameInput && !usernameInput.value) {
+        usernameInput.focus();
+      } else if (passwordInput) {
+        passwordInput.focus();
+      }
+    }, 60);
   }
 }
 
 function resetPinState() {
   enteredPin = '';
+  const hiddenInput = document.getElementById('kdsPinHiddenInput');
+  if (hiddenInput) hiddenInput.value = '';
   updatePinDots();
 }
 
@@ -1119,6 +1171,8 @@ function updatePinDots() {
 function pressPinKey(digit) {
   if (enteredPin.length < 4) {
     enteredPin += digit;
+    const hiddenInput = document.getElementById('kdsPinHiddenInput');
+    if (hiddenInput) hiddenInput.value = enteredPin;
     updatePinDots();
 
     // Auto submit upon entering 4th digit
@@ -1133,6 +1187,8 @@ function pressPinKey(digit) {
 function clearPinKey() {
   if (enteredPin.length > 0) {
     enteredPin = enteredPin.slice(0, -1);
+    const hiddenInput = document.getElementById('kdsPinHiddenInput');
+    if (hiddenInput) hiddenInput.value = enteredPin;
     updatePinDots();
     const errorEl = document.getElementById('kdsLoginError');
     if (errorEl) errorEl.textContent = '';
@@ -1181,10 +1237,16 @@ async function submitCredsLogin(e) {
   const username = document.getElementById('kdsUsername')?.value || '';
   const password = document.getElementById('kdsPassword')?.value || '';
   const errorEl = document.getElementById('kdsLoginError');
+  const submitBtn = document.getElementById('kdsCredsSubmitBtn');
 
   if (!username || !password) {
     if (errorEl) errorEl.textContent = 'Please enter both username and password.';
     return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Authorizing...';
   }
 
   try {
@@ -1210,6 +1272,11 @@ async function submitCredsLogin(e) {
   } catch (err) {
     console.error(err);
     if (errorEl) errorEl.textContent = 'Connection error. Please try again.';
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Authorize & Open Station';
+    }
   }
 }
 
@@ -1221,18 +1288,33 @@ function shakeLoginCard() {
   card.style.animation = 'shakeError 0.4s ease';
 }
 
-// Physical Keyboard support for fast PIN entry
+// Physical Keyboard & Mobile Input support for fast PIN entry
 function setupKeyboardListener() {
+  const pinInput = document.getElementById('kdsPinHiddenInput');
+  if (pinInput) {
+    pinInput.addEventListener('input', handlePinHiddenInput);
+  }
+
   window.addEventListener('keydown', (e) => {
     const portal = document.getElementById('kdsLoginPortal');
     if (!portal || portal.classList.contains('hidden')) return;
 
     if (currentAuthMode === 'pin') {
+      if (document.activeElement === pinInput) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitPinLogin();
+        }
+        return;
+      }
+
       if (e.key >= '0' && e.key <= '9') {
         pressPinKey(e.key);
-      } else if (e.key === 'Backspace') {
+      } else if (e.code && e.code.startsWith('Numpad') && e.code.length === 7 && e.code.charAt(6) >= '0' && e.code.charAt(6) <= '9') {
+        pressPinKey(e.code.charAt(6));
+      } else if (e.key === 'Backspace' || e.key === 'Delete') {
         clearPinKey();
-      } else if (e.key === 'Enter') {
+      } else if (e.key === 'Enter' || e.code === 'NumpadEnter') {
         submitPinLogin();
       }
     }
@@ -1901,6 +1983,9 @@ window.advanceOrderStatus = advanceOrderStatus;
 window.resolveWaiterCall = resolveWaiterCall;
 window.toggleItemStock = toggleItemStock;
 window.switchKdsAuthMode = switchKdsAuthMode;
+window.focusPinInput = focusPinInput;
+window.handlePinHiddenInput = handlePinHiddenInput;
+window.toggleKdsPasswordVisibility = toggleKdsPasswordVisibility;
 window.pressPinKey = pressPinKey;
 window.clearPinKey = clearPinKey;
 window.submitPinLogin = submitPinLogin;
