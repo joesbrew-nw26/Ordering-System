@@ -171,9 +171,9 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             <span id="heroTableHint">Table Top-04 · Terrace Seating</span>
           </button>
-          <div class="hero__kitchen-live">
-            <span class="pulse-dot"></span>
-            Kitchen & Café Live
+          <div class="hero__kitchen-live" id="heroKitchenStatusPill">
+            <span class="pulse-dot" id="heroKitchenPulseDot"></span>
+            <span id="heroKitchenStatusText">Kitchen & Café Live</span>
           </div>
         </div>
 
@@ -322,13 +322,23 @@
             <span class="menu-header__change">Change</span>
           </div>
           <h2 class="menu-header__title">The Heritage Café Menu</h2>
-          <p class="menu-header__desc">24 Handcrafted Creations · Prices in ₹ · Taxes Included</p>
+          <p class="menu-header__desc">25 Handcrafted Creations · Prices in ₹ · Taxes Included</p>
         </div>
-        <div class="menu-header__status">
-          <span class="pulse-dot"></span>
-          Kitchen & Café Live
+        <div class="menu-header__status" id="menuKitchenStatusPill">
+          <span class="pulse-dot" id="menuKitchenPulseDot"></span>
+          <span id="menuKitchenStatusText">Kitchen & Café Live</span>
         </div>
       </div>
+    </div>
+
+        <!-- Kitchen Offline Schedule Notice (Shown automatically outside operating hours) -->
+    <div id="kitchenOfflineBanner" class="kitchen-offline-banner" style="display: none;">
+      <div class="offline-banner-icon">☕</div>
+      <div class="offline-banner-content">
+        <strong id="kitchenOfflineTitle">Kitchen is Currently Offline</strong>
+        <p id="kitchenOfflineHours">Operating Hours: Mon – Sat: 9:00 AM – 9:00 PM | Sunday: 4:00 PM – 9:00 PM</p>
+      </div>
+      <span class="offline-schedule-pill" id="kitchenNextOpenBadge">Opens at 9:00 AM</span>
     </div>
 
     <nav class="cat-bar">
@@ -510,6 +520,15 @@
         <div style="margin-top: 14px; background: rgba(33, 21, 14, 0.85); border: 1px solid rgba(200, 157, 86, 0.3); border-radius: var(--radius-xs); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
           <span style="font-size: 0.82rem; color: var(--text-muted);">Payment Method:</span>
           <span style="font-family: var(--font-vintage); font-size: 0.84rem; font-weight: 700; color: #FFF;">Cash / Card at Counter</span>
+        </div>
+
+        <!-- Offline Warning Inside Checkout Sheet -->
+        <div id="checkoutOfflineWarning" class="checkout-offline-notice" style="display: none;">
+          <span style="font-size: 1.3rem;">⚠️</span>
+          <div>
+            <strong style="display: block; color: #FECACA;">Kitchen is Currently Offline</strong>
+            <span style="font-size: 0.78rem; color: #E5E7EB;" id="checkoutOfflineMsg">Orders can only be placed during operating hours (Mon–Sat 9:00 AM – 9:00 PM, Sun 4:00 PM – 9:00 PM).</span>
+          </div>
         </div>
       </div>
       <div class="modal__foot">

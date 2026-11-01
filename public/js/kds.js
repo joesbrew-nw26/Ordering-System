@@ -35,14 +35,51 @@ let kdsSocket = null;
 document.addEventListener('DOMContentLoaded', () => {
   initKdsAuth();
   setupKeyboardListener();
+  updateKdsKitchenStatus();
 
-  // Keep active ticket queue elapsed wait times fresh in real time
+  // Keep active ticket queue elapsed wait times and kitchen schedule fresh
   setInterval(() => {
+    updateKdsKitchenStatus();
     if (kdsState.orders && kdsState.orders.length > 0) {
       renderKdsTickets();
     }
   }, 20000);
 });
+
+function updateKdsKitchenStatus() {
+  const pill = document.getElementById('kdsKitchenSchedulePill');
+  const dot = document.getElementById('kdsKitchenStatusDot');
+  const text = document.getElementById('kdsKitchenStatusText');
+  if (!text) return;
+
+  const now = new Date();
+  const utcMs = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+  const istDate = new Date(utcMs + (5.5 * 60 * 60 * 1000));
+  const day = istDate.getDay();
+  const currentTotalMins = istDate.getHours() * 60 + istDate.getMinutes();
+
+  let isOpen = false;
+  let nextOpenText = '';
+  if (day === 0) {
+    isOpen = currentTotalMins >= 16 * 60 && currentTotalMins < 21 * 60;
+    nextOpenText = currentTotalMins < 16 * 60 ? 'Opens 4:00 PM' : 'Opens Mon 9:00 AM';
+  } else {
+    isOpen = currentTotalMins >= 9 * 60 && currentTotalMins < 21 * 60;
+    nextOpenText = currentTotalMins < 9 * 60 ? 'Opens 9:00 AM' : (day === 6 ? 'Opens Sun 4:00 PM' : 'Opens 9:00 AM');
+  }
+
+  if (isOpen) {
+    if (dot) dot.style.background = '#10B981';
+    text.textContent = 'Kitchen Online';
+    text.style.color = '#34D399';
+    if (pill) pill.title = 'Kitchen is actively accepting customer orders (Mon–Sat 9AM–9PM, Sun 4PM–9PM)';
+  } else {
+    if (dot) dot.style.background = '#EF4444';
+    text.textContent = `Kitchen Offline (${nextOpenText})`;
+    text.style.color = '#FCA5A5';
+    if (pill) pill.title = 'Kitchen is closed for orders. Operating hours: Mon–Sat 9AM–9PM, Sun 4PM–9PM';
+  }
+}
 
 async function loadKdsData() {
   try {

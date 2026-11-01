@@ -5828,6 +5828,94 @@ body,
 
 /* ── KITCHEN KDS & STAFF ACCESS LINKS ── */
 
+/* ==========================================================================
+   Kitchen Online / Offline Operating Schedule Styles
+   Mon–Sat: 9:00 AM – 9:00 PM | Sun: 4:00 PM – 9:00 PM (IST)
+   ========================================================================== */
 
+.hero__kitchen-live.is-offline,
+.menu-header__status.is-offline {
+  background: rgba(45, 18, 14, 0.92) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  color: #FCA5A5 !important;
+}
 
+.pulse-dot.is-offline {
+  background: #EF4444 !important;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7) !important;
+  animation: pulse-offline 2s infinite !important;
+}
 
+@keyframes pulse-offline {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  70% { box-shadow: 0 0 0 7px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.kitchen-offline-banner {
+  background: linear-gradient(135deg, rgba(46, 20, 14, 0.96) 0%, rgba(28, 12, 8, 0.96) 100%);
+  border: 1.5px solid rgba(239, 68, 68, 0.5);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin: 12px 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(239, 68, 68, 0.15);
+}
+
+.offline-banner-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.offline-banner-content {
+  flex: 1;
+}
+
+.offline-banner-content strong {
+  display: block;
+  font-family: var(--font-vintage);
+  font-size: 1.05rem;
+  color: #FECACA;
+  margin-bottom: 3px;
+}
+
+.offline-banner-content p {
+  font-size: 0.82rem;
+  color: #D1C4B9;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.offline-schedule-pill {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1.5px solid rgba(239, 68, 68, 0.55);
+  color: #FDE68A;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.checkout-offline-notice {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1.5px solid rgba(239, 68, 68, 0.6);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.btn-disabled-offline {
+  opacity: 0.65;
+  cursor: not-allowed !important;
+  background: linear-gradient(135deg, #7F1D1D 0%, #450A0A 100%) !important;
+  color: #FECACA !important;
+  border-color: #EF4444 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}

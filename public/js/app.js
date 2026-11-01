@@ -145,7 +145,127 @@ document.addEventListener('DOMContentLoaded', () => {
   initWebSocket();
   initNavbarScroll();
   initScrollAnimations();
+  updateKitchenStatusUI();
+
+  // Periodically refresh kitchen schedule status every 30 seconds
+  setInterval(updateKitchenStatusUI, 30000);
 });
+
+// ====================================================================
+// KITCHEN OPERATING SCHEDULE SYSTEM
+// Mon–Sat: 9:00 AM – 9:00 PM | Sun: 4:00 PM – 9:00 PM (IST)
+// ====================================================================
+function getKitchenOperatingStatus() {
+  const now = new Date();
+  const utcMs = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+  const istDate = new Date(utcMs + (5.5 * 60 * 60 * 1000));
+
+  const day = istDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const currentTotalMins = istDate.getHours() * 60 + istDate.getMinutes();
+
+  let isOpen = false;
+  let scheduleText = '';
+  let nextOpenText = '';
+
+  if (day === 0) {
+    // Sunday: 4:00 PM to 9:00 PM (16:00 to 21:00)
+    const openMins = 16 * 60; // 960 (4:00 PM)
+    const closeMins = 21 * 60; // 1260 (9:00 PM)
+    isOpen = (currentTotalMins >= openMins && currentTotalMins < closeMins);
+    scheduleText = 'Sunday: 4:00 PM – 9:00 PM';
+    if (currentTotalMins < openMins) {
+      nextOpenText = 'Opens today at 4:00 PM';
+    } else {
+      nextOpenText = 'Opens tomorrow (Mon) at 9:00 AM';
+    }
+  } else {
+    // Monday – Saturday: 9:00 AM to 9:00 PM (09:00 to 21:00)
+    const openMins = 9 * 60; // 540 (9:00 AM)
+    const closeMins = 21 * 60; // 1260 (9:00 PM)
+    isOpen = (currentTotalMins >= openMins && currentTotalMins < closeMins);
+    scheduleText = 'Mon – Sat: 9:00 AM – 9:00 PM';
+    if (currentTotalMins < openMins) {
+      nextOpenText = 'Opens today at 9:00 AM';
+    } else {
+      nextOpenText = (day === 6) ? 'Opens tomorrow (Sun) at 4:00 PM' : 'Opens tomorrow at 9:00 AM';
+    }
+  }
+
+  return {
+    isOpen,
+    day,
+    scheduleText,
+    nextOpenText
+  };
+}
+
+function updateKitchenStatusUI() {
+  const status = getKitchenOperatingStatus();
+  state.kitchenStatus = status;
+
+  const heroPill = document.getElementById('heroKitchenStatusPill');
+  const heroDot = document.getElementById('heroKitchenPulseDot');
+  const heroText = document.getElementById('heroKitchenStatusText');
+
+  const menuPill = document.getElementById('menuKitchenStatusPill');
+  const menuDot = document.getElementById('menuKitchenPulseDot');
+  const menuText = document.getElementById('menuKitchenStatusText');
+
+  const banner = document.getElementById('kitchenOfflineBanner');
+  const bannerBadge = document.getElementById('kitchenNextOpenBadge');
+
+  const checkoutWarning = document.getElementById('checkoutOfflineWarning');
+  const checkoutMsg = document.getElementById('checkoutOfflineMsg');
+
+  if (status.isOpen) {
+    if (heroPill) heroPill.classList.remove('is-offline');
+    if (heroDot) heroDot.classList.remove('is-offline');
+    if (heroText) heroText.textContent = 'Kitchen & Café Live';
+
+    if (menuPill) menuPill.classList.remove('is-offline');
+    if (menuDot) menuDot.classList.remove('is-offline');
+    if (menuText) menuText.textContent = 'Kitchen & Café Live';
+
+    if (banner) banner.style.display = 'none';
+    if (checkoutWarning) checkoutWarning.style.display = 'none';
+
+    if (confirmOrderBtn && !confirmOrderBtn.disabled) {
+      confirmOrderBtn.disabled = false;
+      confirmOrderBtn.classList.remove('btn-disabled-offline');
+      confirmOrderBtn.innerHTML = `
+        <span>Place Order • Pay at Counter</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      `;
+    }
+  } else {
+    if (heroPill) heroPill.classList.add('is-offline');
+    if (heroDot) heroDot.classList.add('is-offline');
+    if (heroText) heroText.textContent = `Kitchen Offline (${status.nextOpenText})`;
+
+    if (menuPill) menuPill.classList.add('is-offline');
+    if (menuDot) menuDot.classList.add('is-offline');
+    if (menuText) menuText.textContent = `Kitchen Offline (${status.nextOpenText})`;
+
+    if (banner) {
+      banner.style.display = 'flex';
+      if (bannerBadge) bannerBadge.textContent = status.nextOpenText;
+    }
+
+    if (checkoutWarning) {
+      checkoutWarning.style.display = 'flex';
+      if (checkoutMsg) checkoutMsg.textContent = `Orders resume during operating hours (${status.scheduleText}). ${status.nextOpenText}.`;
+    }
+
+    if (confirmOrderBtn) {
+      confirmOrderBtn.disabled = true;
+      confirmOrderBtn.classList.add('btn-disabled-offline');
+      confirmOrderBtn.innerHTML = `
+        <span>Kitchen Offline (${status.nextOpenText})</span>
+      `;
+    }
+  }
+}
+
 
 // ====================================================================
 // 0. THEME SYSTEM (Permanently Locked to Vintage Speakeasy Nocturne)
@@ -1031,6 +1151,13 @@ function renderCartModal() {
 async function submitOrder() {
   if (state.cart.length === 0) return;
 
+  const kitchen = getKitchenOperatingStatus();
+  if (!kitchen.isOpen) {
+    showToast(`☕ Kitchen is currently offline. ${kitchen.nextOpenText}.`);
+    updateKitchenStatusUI();
+    return;
+  }
+
   const notes = orderGeneralNotes?.value.trim() || '';
   const packInfo = calculatePackagingCharges(state.cart);
   const packagingCharge = packInfo.totalPackaging;
@@ -1441,6 +1568,7 @@ function bindEventHandlers() {
 
     paymentModalBackdrop?.classList.add('is-open');
     paymentModalBackdrop?.classList.add('open');
+    updateKitchenStatusUI();
   });
 
   closePaymentBtn?.addEventListener('click', () => {

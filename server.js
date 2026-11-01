@@ -271,6 +271,57 @@ app.get('/api/tables', async (req, res) => {
   }
 });
 
+// Kitchen Operating Schedule (Mon–Sat 9:00 AM – 9:00 PM, Sun 4:00 PM – 9:00 PM IST)
+function getKitchenStatus() {
+  const now = new Date();
+  const utcMs = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+  const istDate = new Date(utcMs + (5.5 * 60 * 60 * 1000));
+
+  const day = istDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const currentTotalMins = istDate.getHours() * 60 + istDate.getMinutes();
+
+  let isOpen = false;
+  let scheduleText = '';
+  let nextOpenText = '';
+
+  if (day === 0) {
+    // Sunday: 4:00 PM to 9:00 PM (16:00 to 21:00)
+    const openMins = 16 * 60; // 960 (4:00 PM)
+    const closeMins = 21 * 60; // 1260 (9:00 PM)
+    isOpen = (currentTotalMins >= openMins && currentTotalMins < closeMins);
+    scheduleText = 'Sunday: 4:00 PM – 9:00 PM';
+    if (currentTotalMins < openMins) {
+      nextOpenText = 'Opens today at 4:00 PM';
+    } else {
+      nextOpenText = 'Opens tomorrow (Mon) at 9:00 AM';
+    }
+  } else {
+    // Monday – Saturday: 9:00 AM to 9:00 PM (09:00 to 21:00)
+    const openMins = 9 * 60; // 540 (9:00 AM)
+    const closeMins = 21 * 60; // 1260 (9:00 PM)
+    isOpen = (currentTotalMins >= openMins && currentTotalMins < closeMins);
+    scheduleText = 'Mon – Sat: 9:00 AM – 9:00 PM';
+    if (currentTotalMins < openMins) {
+      nextOpenText = 'Opens today at 9:00 AM';
+    } else {
+      nextOpenText = (day === 6) ? 'Opens tomorrow (Sun) at 4:00 PM' : 'Opens tomorrow at 9:00 AM';
+    }
+  }
+
+  return {
+    isOpen,
+    day,
+    dayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][day],
+    timeStr: istDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    scheduleText,
+    nextOpenText
+  };
+}
+
+app.get('/api/kitchen-status', (req, res) => {
+  res.json(getKitchenStatus());
+});
+
 app.get('/api/menu', async (req, res) => {
   try {
     const menu = await getMenuItems();
@@ -361,6 +412,19 @@ app.get('/api/orders/:id', async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
   try {
+    const kitchen = getKitchenStatus();
+    // Allow KDS staff/admin bypass if valid token is provided
+    const authHeader = req.headers['authorization'] || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '') || req.query.token;
+    const session = token ? verifyKdsToken(token) : null;
+
+    if (!kitchen.isOpen && !session) {
+      return res.status(403).json({
+        error: `Kitchen is currently offline. Operating hours: ${kitchen.scheduleText}. ${kitchen.nextOpenText}.`,
+        kitchenStatus: kitchen
+      });
+    }
+
     const { tableId, floor, items, instructions, paymentMode, paymentStatus, customerName, customerPhone, orderMode, packagingCharge } = req.body;
     if (!tableId || !items || !items.length) {
       return res.status(400).json({ error: 'Table and items are required' });
