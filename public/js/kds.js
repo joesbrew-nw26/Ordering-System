@@ -217,22 +217,25 @@ function renderKdsTickets() {
       const waUrl = waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodedMessage}` : '';
 
       const itemsHtml = items.map(item => `
-        <div class="ticket-item-row" style="opacity: 0.9;">
-          <div class="item-left-block">
-            <span class="item-quantity-pill">x${item.quantity || 1}</span>
-            <div class="item-details-stack">
-              <span class="item-name">${item.name}</span>
-              ${item.note ? `<div class="item-custom-note">Note: ${item.note}</div>` : ''}
+        <div class="clean-item-row" style="padding: 3px 0;">
+          <div class="item-left-cell">
+            <span class="item-qty-square ${item.mode === 'Takeaway' ? 'qty--takeaway' : 'qty--dinein'}" style="width: 24px; height: 24px; font-size: 0.82rem;">${item.quantity || 1}×</span>
+            <div class="item-name-block">
+              <span class="item-main-title" style="color: #FFFFFF !important; font-size: 0.88rem; font-weight: 700;">${item.name}</span>
+              ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
             </div>
           </div>
-          <span class="ticket-item-mode-badge ${item.mode === 'Takeaway' ? 'mode--takeaway' : 'mode--dinein'}">
-            ${item.mode === 'Takeaway' ? '🥡 Takeaway' : '🍽️ Dine-In'}
-          </span>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="item-price-tag" style="font-size: 0.84rem;">₹${(item.price || 0) * (item.quantity || 1)}</span>
+            <span class="banner-sub" style="font-size: 0.65rem; padding: 1px 6px;">
+              ${item.mode === 'Takeaway' ? '🥡 Takeaway' : '🍽️ Dine-In'}
+            </span>
+          </div>
         </div>
       `).join('');
 
       return `
-        <div class="kds-ticket-card" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(22, 14, 9, 0.95);" data-order-id="${order.id}">
+        <div class="kds-ticket-card" style="border-color: rgba(16, 185, 129, 0.45); background: rgba(22, 14, 9, 0.98);" data-order-id="${order.id}">
           <div class="ticket-top-bar">
             <div class="ticket-table-group">
               <span class="ticket-table-badge ${!isTerrace ? 'is-ground' : ''}">
@@ -240,10 +243,10 @@ function renderKdsTickets() {
               </span>
               <span class="ticket-floor-tag">${isTerrace ? 'TERRACE' : 'GROUND FLOOR'}</span>
             </div>
-            <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #A7F3D0; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; font-weight: 800;">
+            <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #A7F3D0; font-size: 0.70rem; padding: 2px 7px; border-radius: 5px; font-weight: 800;">
               ✓ DONE / COMPLETED
             </div>
-            <div class="ticket-id-meta" style="display: flex; align-items: center; gap: 8px;">
+            <div class="ticket-id-meta" style="display: flex; align-items: center; gap: 6px;">
               <button class="kds-ticket-edit-btn" type="button" onclick="openOrderEditModal('${order.id}')" title="Edit Order Items">
                 ✏️ Edit
               </button>
@@ -255,11 +258,11 @@ function renderKdsTickets() {
           </div>
 
           <div class="ticket-customer-bar">
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
               <span class="customer-name">👤 ${order.customerName || 'Guest'}</span>
-              ${order.customerPhone ? `<a href="${waUrl}" target="_blank" class="customer-phone" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;" title="Send WhatsApp alert">📞 +91 ${order.customerPhone} <span style="font-size: 0.75rem; color: #25D366;">💬</span></a>` : ''}
+              ${order.customerPhone ? `<a href="${waUrl}" target="_blank" class="customer-phone" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;" title="Send WhatsApp alert">📞 +91 ${order.customerPhone} <span style="font-size: 0.72rem; color: #25D366;">💬</span></a>` : ''}
             </div>
-            <span class="customer-pay-tag" style="background: rgba(16, 185, 129, 0.25); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.5);">
+            <span class="customer-pay-tag" style="background: rgba(16, 185, 129, 0.25); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.5); font-size: 0.70rem; padding: 2px 6px;">
               💳 ${order.paymentMode || 'Counter'} (Paid)
             </span>
           </div>
@@ -280,11 +283,11 @@ function renderKdsTickets() {
             <span class="total-value" style="color: #A7F3D0;">₹${totalAmount}</span>
           </div>
 
-          <div class="ticket-action-bar" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <button class="kds-ticket-edit-btn" style="padding: 9px 12px; font-size: 0.82rem; justify-content: center;" onclick="openOrderEditModal('${order.id}')">
+          <div class="ticket-action-bar" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;">
+            <button class="kds-ticket-edit-btn" style="height: 32px; font-size: 0.76rem; justify-content: center;" onclick="openOrderEditModal('${order.id}')">
               ✏️ Edit Order
             </button>
-            <button class="kds-ticket-btn btn--reopen" style="padding: 9px 12px; font-size: 0.82rem; justify-content: center;" onclick="reopenCompletedOrder('${order.id}')">
+            <button class="kds-ticket-btn btn--reopen" style="height: 32px; font-size: 0.76rem; justify-content: center; border-radius: 6px; font-weight: 800; cursor: pointer;" onclick="reopenCompletedOrder('${order.id}')">
               ↩️ Move to Active
             </button>
           </div>

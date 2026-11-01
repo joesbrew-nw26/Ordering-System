@@ -93,21 +93,21 @@
       align-items: center;
       justify-content: space-between;
     }
-    /* Clean, Spacious & High-Craft KDS Tickets */
+    /* Clean, Compact & Ultra-Legible KDS Tickets */
     .kds-tickets-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
     }
     .kds-ticket-card {
       background: linear-gradient(180deg, rgba(42, 23, 15, 0.98) 0%, rgba(28, 14, 9, 0.98) 100%);
-      border: 2px solid rgba(228, 191, 118, 0.4);
-      border-radius: 14px;
-      padding: 18px 20px;
+      border: 1.5px solid rgba(228, 191, 118, 0.4);
+      border-radius: 10px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 15px rgba(0, 0, 0, 0.3);
+      gap: 7px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 12px rgba(0, 0, 0, 0.3);
       position: relative;
       min-width: 0;
       box-sizing: border-box;
@@ -115,12 +115,12 @@
     }
     .kds-ticket-card:hover {
       border-color: var(--vintage-gold);
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(228, 191, 118, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 16px rgba(228, 191, 118, 0.2);
     }
     .kds-ticket-card.is-upstairs,
     .kds-ticket-card.is-terrace {
       border-color: #F59E0B;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 14px rgba(245, 158, 11, 0.25);
     }
 
     /* Ticket Header Bar */
@@ -128,35 +128,35 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding-bottom: 12px;
-      border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
     .ticket-table-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .ticket-table-badge {
       background: #F59E0B;
       color: #180E09;
-      font-size: 1.15rem;
+      font-size: 0.92rem;
       font-weight: 900;
-      padding: 6px 14px;
-      border-radius: 8px;
+      padding: 4px 9px;
+      border-radius: 6px;
       letter-spacing: 0.04em;
       white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
     }
     .ticket-table-badge.is-ground {
       background: #10B981;
       color: #FFF;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
     }
     .ticket-floor-tag {
-      font-size: 0.72rem;
+      font-size: 0.65rem;
       font-weight: 800;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: #D1C4B9;
       text-transform: uppercase;
     }
@@ -164,16 +164,16 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 4px 12px;
-      border-radius: 8px;
+      padding: 3px 8px;
+      border-radius: 6px;
       background: rgba(228, 191, 118, 0.12);
-      border: 1.5px solid rgba(228, 191, 118, 0.4);
+      border: 1px solid rgba(228, 191, 118, 0.4);
       white-space: nowrap;
     }
     .ticket-queue-badge.is-first {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(217, 119, 6, 0.45));
       border-color: #F59E0B;
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
     }
     .ticket-queue-badge.is-urgent {
       background: rgba(239, 68, 68, 0.3);
@@ -181,13 +181,13 @@
       animation: urgentBlink 1.4s infinite;
     }
     .ticket-queue-badge .queue-num {
-      font-size: 0.78rem;
+      font-size: 0.70rem;
       font-weight: 900;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       color: #FDE68A;
     }
     .ticket-queue-badge .queue-time {
-      font-size: 0.70rem;
+      font-size: 0.64rem;
       font-weight: 700;
       color: #D1C4B9;
     }
@@ -195,13 +195,13 @@
       text-align: right;
     }
     .ticket-order-number {
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       font-weight: 900;
       color: #FFFFFF;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
     }
     .ticket-time-stamp {
-      font-size: 0.76rem;
+      font-size: 0.70rem;
       font-weight: 600;
       color: #D1C4B9;
     }
@@ -211,38 +211,38 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 14px;
-      border-radius: 8px;
+      padding: 5px 9px;
+      border-radius: 6px;
       font-weight: 800;
-      font-size: 0.82rem;
-      letter-spacing: 0.04em;
+      font-size: 0.74rem;
+      letter-spacing: 0.03em;
     }
     .banner--takeaway {
       background: linear-gradient(90deg, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.12) 100%);
-      border: 1.5px solid rgba(245, 158, 11, 0.5);
+      border: 1px solid rgba(245, 158, 11, 0.5);
       color: #FDE68A;
     }
     .banner--dinein {
       background: linear-gradient(90deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.12) 100%);
-      border: 1.5px solid rgba(16, 185, 129, 0.5);
+      border: 1px solid rgba(16, 185, 129, 0.5);
       color: #A7F3D0;
     }
     .banner--mixed {
       background: linear-gradient(90deg, rgba(30, 58, 138, 0.35) 0%, rgba(245, 158, 11, 0.35) 100%);
-      border: 1.5px solid #F59E0B;
+      border: 1px solid #F59E0B;
       color: #FFF9EE;
-      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
     }
     .banner-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 800;
     }
     .banner-sub {
-      font-size: 0.70rem;
+      font-size: 0.65rem;
       font-weight: 900;
-      padding: 2px 8px;
+      padding: 1px 6px;
       border-radius: 4px;
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.15);
@@ -253,13 +253,13 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
+      padding: 5px 8px;
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.82rem;
+      font-size: 0.76rem;
       color: #E5E7EB;
-      gap: 8px;
+      gap: 6px;
     }
     .customer-name {
       font-weight: 700;
@@ -270,32 +270,32 @@
       color: #34D399;
     }
     .customer-pay-tag {
-      font-size: 0.74rem;
+      font-size: 0.70rem;
       font-weight: 700;
       color: #D1C4B9;
     }
 
-    /* Items Container & Rows (Hero - Big, Clear & Legible) */
+    /* Items Container & Rows */
     .ticket-items-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin: 4px 0;
+      gap: 4px;
+      margin: 2px 0;
       flex: 1;
     }
     .ticket-sub-section {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 3px;
     }
     .ticket-sub-heading {
-      font-size: 0.78rem;
+      font-size: 0.70rem;
       font-weight: 800;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
       border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
     .takeaway-heading {
       color: #FCD34D;
@@ -306,20 +306,20 @@
     .ticket-mixed-divider {
       height: 1px;
       background: dashed 1px rgba(228, 191, 118, 0.3);
-      margin: 4px 0;
+      margin: 3px 0;
     }
     .ticket-items-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
     .clean-item-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 3px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      gap: 12px;
+      gap: 8px;
     }
     .clean-item-row:last-child {
       border-bottom: none;
@@ -327,50 +327,53 @@
     .item-left-cell {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       flex: 1;
       min-width: 0;
     }
     .item-qty-square {
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.05rem;
+      font-size: 0.82rem;
       font-weight: 900;
       flex-shrink: 0;
     }
     .qty--dinein {
       background: #10B981;
       color: #FFFFFF;
-      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 2px 5px rgba(16, 185, 129, 0.4);
     }
     .qty--takeaway {
       background: #F59E0B;
       color: #180E09;
-      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 2px 5px rgba(245, 158, 11, 0.4);
     }
     .item-name-block {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
     }
-    .item-main-title {
-      color: #FFFFFF;
-      font-size: 1.10rem;
-      font-weight: 700;
-      line-height: 1.25;
+    /* Guarantee 100% Crisp White Legibility in All KDS Tickets */
+    .item-main-title,
+    .kds-ticket-card .item-name {
+      color: #FFFFFF !important;
+      font-size: 0.88rem !important;
+      font-weight: 700 !important;
+      line-height: 1.25 !important;
+      margin-bottom: 0 !important;
     }
     .item-special-note {
-      font-size: 0.80rem;
+      font-size: 0.70rem;
       color: #FCA5A5;
       font-weight: 600;
       font-style: italic;
     }
     .item-price-tag {
-      font-size: 0.98rem;
+      font-size: 0.84rem;
       font-weight: 800;
       color: #FFE399;
       white-space: nowrap;
@@ -379,23 +382,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 0;
+      padding: 3px 0;
       border-top: 1px dashed rgba(245, 158, 11, 0.35);
-      font-size: 0.82rem;
+      font-size: 0.74rem;
       font-weight: 700;
       color: #FDE68A;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     /* Customer Note Callout */
     .ticket-customer-note-callout {
       background: rgba(245, 158, 11, 0.12);
-      border-left: 4px solid #F59E0B;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.82rem;
+      border-left: 3px solid #F59E0B;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 0.74rem;
       color: #FDE68A;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     /* Bottom Total Row */
@@ -403,38 +406,38 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 10px;
-      margin-top: 6px;
-      border-top: 1.5px solid rgba(255, 255, 255, 0.12);
+      padding-top: 5px;
+      margin-top: 3px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
     }
     .total-label {
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       color: #D1C4B9;
     }
     .total-value {
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       font-weight: 900;
       color: #FFE399;
-      text-shadow: 0 0 10px rgba(255, 227, 153, 0.5);
+      text-shadow: 0 0 8px rgba(255, 227, 153, 0.4);
     }
 
     /* Action Stage Buttons */
     .ticket-action-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 6px;
+      gap: 5px;
+      margin-top: 4px;
     }
     .kds-step-btn {
-      height: 40px;
-      padding: 0 6px;
-      font-size: 0.84rem;
+      height: 32px;
+      padding: 0 4px;
+      font-size: 0.74rem;
       font-weight: 800;
-      border-radius: 8px;
-      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
       background: rgba(255, 255, 255, 0.08);
       color: #FFF;
       cursor: pointer;
@@ -448,7 +451,7 @@
       background: var(--vintage-gold);
       color: #180E09;
       border-color: var(--vintage-gold);
-      box-shadow: 0 0 14px rgba(201, 151, 56, 0.6);
+      box-shadow: 0 0 10px rgba(201, 151, 56, 0.6);
     }
     .kds-step-btn:hover {
       background: rgba(255, 255, 255, 0.25);
