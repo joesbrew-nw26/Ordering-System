@@ -401,15 +401,17 @@ function renderSpecialsShowcase() {
 function renderMenuList() {
   if (!menuItemsGrid) return;
 
-  // Prioritized Category Ordering: Artisan Tea -> Fresh Coffee -> Biscuits/Cookies -> Cold Beverages -> Melt -> Snacks -> Eats
+  // Prioritized Category Ordering: Artisan Tea -> Fresh Coffee -> Melt -> Biscuits/Cookies -> Snacks -> Joe's Brew Special -> Eats -> Cold Beverages -> Special Drinks
   const CATEGORY_PRIORITY = {
     'TEA': 1,
     'COFFEE': 2,
-    'COOKIES': 3,
-    'DRINKS': 4,
-    'MELT': 5,
-    'SNACKS': 6,
-    'EATS': 7
+    'MELT': 3,
+    'COOKIES': 4,
+    'SNACKS': 5,
+    "JOE'S BREW SPECIAL": 6,
+    'EATS': 7,
+    'DRINKS': 8,
+    'SPECIAL DRINKS': 9
   };
 
   let filtered = [...state.menuItems];
@@ -750,9 +752,9 @@ function calculatePackagingCharges(cart) {
           };
         }
         bevMap[key].qty += qty;
-      } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES') {
+      } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES' || cat === "JOE'S BREW SPECIAL") {
         foodCount += qty;
-      } else if (cat === 'DRINKS' || cat === 'MELT') {
+      } else if (cat === 'DRINKS' || cat === 'SPECIAL DRINKS' || cat === 'MELT') {
         drinkCount += qty;
       } else {
         foodCount += qty;

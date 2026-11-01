@@ -40,32 +40,33 @@ create table if not exists public.menu_items (
   updated_at timestamptz default now()
 );
 
--- Seed Joe's Brew 24 Curated Creations
+-- Seed Joe's Brew 25 Curated Creations
 insert into public.menu_items (id, name, category, price, is_special, description, in_stock, badge, type) values
   ('tea-01', 'Tea', 'TEA', 25, true, 'Slow-brewed traditional house milk chai with aromatic spices and velvety finish.', true, 'Joe''s Brew Special', 'hot'),
   ('tea-02', 'Black Tea', 'TEA', 20, false, 'Steeped premium Assam black tea with a warm amber finish.', true, null, 'hot'),
-  ('tea-03', 'Lemon tea', 'TEA', 25, false, 'Zesty black tea infused with fresh citrus lemon and honeyed warmth.', true, null, 'hot'),
+  ('tea-03', 'Lemon tea', 'TEA', 30, false, 'Zesty black tea infused with fresh citrus lemon and honeyed warmth.', true, null, 'hot'),
   ('coffee-01', 'Coffee', 'COFFEE', 30, true, 'Signature vintage roast filter coffee, thick froth and deep chicory aroma.', true, 'Joe''s Brew Special', 'hot'),
   ('coffee-02', 'Black coffee', 'COFFEE', 25, false, 'Intense dark drip coffee with a clean, bold roast note.', true, null, 'hot'),
-  ('melt-01', 'Hot chocolate', 'MELT', 70, true, 'Rich Belgian molten chocolate melted into velvety steamed whole milk.', true, 'Joe''s Brew Special', 'hot'),
-  ('cookie-01', 'Nutra biscuit (2 pcs)', 'COOKIES', 10, true, 'Crunchy whole-wheat baked tea-dunking biscuits (2 pieces).', true, 'Joe''s Brew Special', 'snack'),
-  ('cookie-02', 'Sazzy biscuit (3 pcs)', 'COOKIES', 10, true, 'Golden buttery melt-in-the-mouth heritage tea biscuits (3 pieces).', true, 'Joe''s Brew Special', 'snack'),
-  ('drink-01', 'Biscoff milkshake', 'DRINKS', 130, true, 'Decadent milkshake blended with Lotus Biscoff spread and cookie crumbs.', true, 'Joe''s Brew Special', 'cold'),
-  ('drink-02', 'Cold milo', 'DRINKS', 100, true, 'Iced chocolate malt drink crowned with a mound of crunchy raw Milo.', true, 'Joe''s Brew Special', 'cold'),
-  ('drink-03', 'Iced tea', 'DRINKS', 100, true, 'Crisp freshly brewed tea shaken over crushed ice with fresh mint and citrus.', true, 'Joe''s Brew Special', 'cold'),
-  ('drink-04', 'Cold coffee', 'DRINKS', 100, true, 'Classic thick iced coffee blended with sweet milk and ice cream froth.', true, 'Joe''s Brew Special', 'cold'),
-  ('drink-05', 'Chocolate milkshake', 'DRINKS', 80, false, 'Thick creamy chocolate shake finished with rich chocolate drizzle.', true, null, 'cold'),
-  ('drink-06', 'Oreo milkshake', 'DRINKS', 80, false, 'Churned cream shake with chocolate cookies and crunchy Oreo crumble.', true, null, 'cold'),
-  ('drink-07', 'Lassi', 'DRINKS', 50, false, 'Authentic thick sweetened yogurt lassi dusted with fragrant cardamom.', true, null, 'cold'),
-  ('snack-01', 'Joe''s brew special BUN MILKELLA', 'SNACKS', 65, true, 'Our legendary warm toasted brioche bun loaded with Nutella and condensed milk.', true, 'Joe''s Brew Special', 'snack'),
-  ('snack-02', 'Veg samosa (2 pcs)', 'SNACKS', 20, false, 'Crisp flaky triangular pastries filled with savory spiced potatoes (2 pieces).', true, null, 'snack'),
-  ('snack-03', 'Crispy nuggets (3 pcs)', 'SNACKS', 30, true, 'Crunchy golden nuggets served hot with seasoned dip (3 pieces).', true, 'Joe''s Brew Special', 'snack'),
-  ('snack-04', 'Cutlets (3 pcs)', 'SNACKS', 30, false, 'Hearty spiced potato-veggie patties pan-crisped to perfection (3 pieces).', true, null, 'snack'),
+  ('melt-01', 'Hot chocolate', 'MELT', 90, true, 'Rich Belgian molten chocolate melted into velvety steamed whole milk.', true, 'Joe''s Brew Special', 'hot'),
+  ('cookie-01', 'Nutra biscuit (2 pcs)', 'COOKIES', 15, true, 'Crunchy whole-wheat baked tea-dunking biscuits (2 pieces).', true, 'Joe''s Brew Special', 'snack'),
+  ('cookie-02', 'Sazzy biscuit (3 pcs)', 'COOKIES', 15, true, 'Golden buttery melt-in-the-mouth heritage tea biscuits (3 pieces).', true, 'Joe''s Brew Special', 'snack'),
+  ('snack-02', 'Veg samosa (2 pcs)', 'SNACKS', 25, false, 'Crisp flaky triangular pastries filled with savory spiced potatoes (2 pieces).', true, null, 'snack'),
+  ('snack-03', 'Cheese corn nuggets (2 pcs)', 'SNACKS', 30, true, 'Golden crispy nuggets with molten cheese and sweet corn (2 pieces).', true, 'Joe''s Brew Special', 'snack'),
+  ('snack-04', 'Cutlets (2 pcs)', 'SNACKS', 30, false, 'Hearty spiced potato-veggie patties pan-crisped to perfection (2 pieces).', true, null, 'snack'),
   ('snack-05', 'Crispy roll', 'SNACKS', 20, true, 'Crispy fried savory roll stuffed with seasoned spiced vegetables.', true, 'Joe''s Brew Special', 'snack'),
+  ('snack-01', 'BUN MILKELLA', 'JOE''S BREW SPECIAL', 60, true, 'Our legendary warm toasted brioche bun loaded with Nutella and condensed milk.', true, 'Joe''s Brew Special', 'snack'),
   ('eat-01', 'French fries', 'EATS', 90, false, 'Classic salted golden crispy potato fries with tomato dip.', true, null, 'snack'),
   ('eat-02', 'Peri peri fries', 'EATS', 110, true, 'Hot crisp fries dusted generously with our fiery house peri-peri seasoning.', true, 'Joe''s Brew Special', 'snack'),
-  ('eat-03', 'Panner momos', 'EATS', 60, true, 'Steamed delicate dumplings stuffed with spiced paneer, served with spicy dip.', true, 'Joe''s Brew Special', 'snack'),
-  ('eat-04', 'Happy Bites', 'EATS', 60, false, 'Golden smiley potato bites fried crispy and seasoned with sea salt.', true, null, 'snack')
+  ('eat-03', 'Panner momos', 'EATS', 70, true, 'Steamed delicate dumplings stuffed with spiced paneer, served with spicy dip.', true, 'Joe''s Brew Special', 'snack'),
+  ('eat-04', 'Happy Bites', 'EATS', 70, false, 'Golden smiley potato bites fried crispy and seasoned with sea salt.', true, null, 'snack'),
+  ('drink-03', 'Iced tea', 'DRINKS', 90, true, 'Crisp freshly brewed tea shaken over crushed ice with fresh mint and citrus.', true, 'Joe''s Brew Special', 'cold'),
+  ('drink-04', 'Cold coffee', 'DRINKS', 100, true, 'Classic thick iced coffee blended with sweet milk and ice cream froth.', true, 'Joe''s Brew Special', 'cold'),
+  ('drink-05', 'Chocolate milkshake', 'DRINKS', 100, false, 'Thick creamy chocolate shake finished with rich chocolate drizzle.', true, null, 'cold'),
+  ('drink-06', 'Oreo milkshake', 'DRINKS', 80, false, 'Churned cream shake with chocolate cookies and crunchy Oreo crumble.', true, null, 'cold'),
+  ('drink-07', 'Lassi', 'DRINKS', 50, false, 'Authentic thick sweetened yogurt lassi dusted with fragrant cardamom.', true, null, 'cold'),
+  ('drink-01', 'Biscoff milkshake', 'SPECIAL DRINKS', 150, true, 'Decadent milkshake blended with Lotus Biscoff spread and cookie crumbs.', true, 'Joe''s Brew Special', 'cold'),
+  ('drink-08', 'Nutella milkshake', 'SPECIAL DRINKS', 150, true, 'Velvety gourmet milkshake blended with rich Nutella cocoa and hazelnut swirl.', true, 'Joe''s Brew Special', 'cold'),
+  ('drink-02', 'Cold milo', 'SPECIAL DRINKS', 120, true, 'Iced chocolate malt drink crowned with a mound of crunchy raw Milo.', true, 'Joe''s Brew Special', 'cold')
 on conflict (id) do update set
   name = excluded.name,
   category = excluded.category,

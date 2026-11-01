@@ -918,6 +918,42 @@
       transform: translateY(-1px);
     }
 
+    /* KDS View Switcher Tabs (Active vs Completed) */
+    .kds-view-tab-btn {
+      background: rgba(200, 157, 86, 0.12);
+      border: 1.5px solid rgba(200, 157, 86, 0.4);
+      color: #E6D7C3;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .kds-view-tab-btn.active {
+      background: var(--brass-gold);
+      color: #120A05;
+      border-color: var(--brass-gold);
+      box-shadow: 0 0 12px rgba(200, 157, 86, 0.5);
+    }
+    .kds-view-tab-btn:hover:not(.active) {
+      background: rgba(200, 157, 86, 0.25);
+      color: #FFF;
+    }
+    .kds-ticket-btn.btn--reopen {
+      border-color: #F59E0B;
+      color: #FCD34D;
+      background: rgba(245, 158, 11, 0.15);
+    }
+    .kds-ticket-btn.btn--reopen:hover {
+      background: #F59E0B;
+      color: #180E09;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+
     .kds-step-btn--done {
       border-color: #10B981;
       color: #A7F3D0;
@@ -1238,11 +1274,18 @@
        KDS MAIN CONTENT GRID
        ========================================== -->
   <main class="kds-main-grid" id="kdsMainGrid">
-    <!-- Active Tickets Queue -->
+    <!-- Active & Completed Tickets Queue -->
     <section>
-      <div class="kds-section-title">
-        <span>Incoming & Active Tickets</span>
-        <span style="font-size: 0.8rem; color: #D1C4B9;">Auto-Refreshes Instantly</span>
+      <div class="kds-section-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button id="tabActiveQueueBtn" class="kds-view-tab-btn active" type="button" onclick="switchKdsTicketView('active')">
+            <span>🔥 Active Queue (<span id="kdsActiveQueueCount">0</span>)</span>
+          </button>
+          <button id="tabDoneQueueBtn" class="kds-view-tab-btn" type="button" onclick="switchKdsTicketView('completed')">
+            <span>✅ Completed / Done (<span id="kdsCompletedQueueCount">0</span>)</span>
+          </button>
+        </div>
+        <span style="font-size: 0.8rem; color: #D1C4B9;" id="kdsQueueRefreshNote">Auto-Refreshes Instantly</span>
       </div>
       <div class="kds-tickets-container" id="kdsTicketsList">
         <!-- Rendered by kds.js -->
@@ -1442,11 +1485,13 @@
           <button class="history-date-tab active" data-cat="ALL" onclick="filterAdminMenu('ALL')">All (<span id="adminMenuTotalCount">0</span>)</button>
           <button class="history-date-tab" data-cat="TEA" onclick="filterAdminMenu('TEA')">Teas</button>
           <button class="history-date-tab" data-cat="COFFEE" onclick="filterAdminMenu('COFFEE')">Coffee</button>
-          <button class="history-date-tab" data-cat="COOKIES" onclick="filterAdminMenu('COOKIES')">Biscuits & Cookies</button>
-          <button class="history-date-tab" data-cat="DRINKS" onclick="filterAdminMenu('DRINKS')">Cold Beverages</button>
-          <button class="history-date-tab" data-cat="MELT" onclick="filterAdminMenu('MELT')">Melt & Toast</button>
-          <button class="history-date-tab" data-cat="SNACKS" onclick="filterAdminMenu('SNACKS')">Quick Bites</button>
-          <button class="history-date-tab" data-cat="EATS" onclick="filterAdminMenu('EATS')">Hearty Eats</button>
+          <button class="history-date-tab" data-cat="MELT" onclick="filterAdminMenu('MELT')">Melt</button>
+          <button class="history-date-tab" data-cat="COOKIES" onclick="filterAdminMenu('COOKIES')">Cookies</button>
+          <button class="history-date-tab" data-cat="SNACKS" onclick="filterAdminMenu('SNACKS')">Snacks</button>
+          <button class="history-date-tab" data-cat="JOE'S BREW SPECIAL" onclick="filterAdminMenu('JOE'S BREW SPECIAL')">Joe's Special</button>
+          <button class="history-date-tab" data-cat="EATS" onclick="filterAdminMenu('EATS')">Eats</button>
+          <button class="history-date-tab" data-cat="DRINKS" onclick="filterAdminMenu('DRINKS')">Drinks</button>
+          <button class="history-date-tab" data-cat="SPECIAL DRINKS" onclick="filterAdminMenu('SPECIAL DRINKS')">Special Drinks</button>
         </div>
         <div style="min-width: 220px;">
           <input type="text" id="adminMenuSearchInput" placeholder="🔍 Search creation name..." style="width: 100%; box-sizing: border-box; background: rgba(20, 10, 6, 0.9); border: 1.5px solid rgba(228, 191, 118, 0.5); border-radius: 8px; padding: 6px 10px; color: #FFF; font-size: 0.80rem; outline: none;" oninput="filterAdminMenuSearch(this.value)">
@@ -1508,11 +1553,13 @@
             <select id="itemFormCategory" class="admin-form-select" required onchange="onCategorySelectChange(this.value)">
               <option value="TEA">Artisan Teas</option>
               <option value="COFFEE">Fresh Coffee</option>
+              <option value="MELT">Melt</option>
               <option value="COOKIES">Biscuits & Cookies</option>
-              <option value="DRINKS">Cold Beverages</option>
-              <option value="MELT">Melt & Toast</option>
               <option value="SNACKS">Quick Bites</option>
+              <option value="JOE'S BREW SPECIAL">Joe's Brew Special</option>
               <option value="EATS">Hearty Eats</option>
+              <option value="DRINKS">Cold Beverages</option>
+              <option value="SPECIAL DRINKS">Special Drinks</option>
             </select>
           </div>
 

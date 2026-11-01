@@ -65,10 +65,73 @@ async function loadKdsData() {
   }
 }
 
+let currentTicketView = 'active'; // 'active' | 'completed'
+
 function updateKdsCounts() {
   const activeOrders = kdsState.orders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled' && o.status !== 'Archived');
+  const completedOrders = kdsState.orders.filter(o => o.status === 'Completed');
   if (kdsActiveCount) kdsActiveCount.textContent = activeOrders.length;
   if (kdsAlertCount) kdsAlertCount.textContent = kdsState.waiterCalls.filter(c => !c.resolved).length;
+
+  const activeQueueCount = document.getElementById('kdsActiveQueueCount');
+  const doneQueueCount = document.getElementById('kdsCompletedQueueCount');
+  if (activeQueueCount) activeQueueCount.textContent = activeOrders.length;
+  if (doneQueueCount) doneQueueCount.textContent = completedOrders.length;
+}
+
+function switchKdsTicketView(view) {
+  currentTicketView = view;
+  const activeBtn = document.getElementById('tabActiveQueueBtn');
+  const doneBtn = document.getElementById('tabDoneQueueBtn');
+  const noteEl = document.getElementById('kdsQueueRefreshNote');
+
+  if (view === 'active') {
+    activeBtn?.classList.add('active');
+    doneBtn?.classList.remove('active');
+    if (noteEl) noteEl.textContent = 'Auto-Refreshes Instantly';
+  } else {
+    doneBtn?.classList.add('active');
+    activeBtn?.classList.remove('active');
+    if (noteEl) noteEl.textContent = 'Showing Today's Completed Orders';
+  }
+
+  renderKdsTickets();
+}
+
+async function reopenCompletedOrder(orderId) {
+  const order = kdsState.orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  const confirmReopen = confirm(`Reopen Order #${order.orderNumber || order.id} (Table ${order.tableId}) back to Active Kitchen Queue?`);
+  if (!confirmReopen) return;
+
+  const prevStatus = order.status;
+  order.status = 'Preparing';
+  if (!order.statusHistory) order.statusHistory = [];
+  order.statusHistory.push({ status: 'Preparing', timestamp: new Date().toISOString(), paymentMode: order.paymentMode || '' });
+
+  updateKdsCounts();
+  renderKdsTickets();
+  showKdsToast(`↩️ Order #${order.orderNumber || order.id} moved back to Preparing!`);
+
+  try {
+    const res = await fetch(`/api/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'Preparing' })
+    });
+    if (!res.ok) {
+      order.status = prevStatus;
+      renderKdsTickets();
+      updateKdsCounts();
+      alert('Failed to reopen order on server.');
+    }
+  } catch (e) {
+    order.status = prevStatus;
+    renderKdsTickets();
+    updateKdsCounts();
+    alert('Network error reopening order.');
+  }
 }
 
 function formatElapsedWait(mins) {
@@ -121,6 +184,115 @@ function buildWhatsAppOrderReadyMessage(order) {
 // Render Order Tickets
 function renderKdsTickets() {
   if (!kdsTicketsList) return;
+
+  if (currentTicketView === 'completed') {
+    const completedOrders = kdsState.orders
+      .filter(o => o.status === 'Completed')
+      .sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+
+    if (completedOrders.length === 0) {
+      kdsTicketsList.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9CA3AF;">
+          <h3 style="color: var(--vintage-gold-glow);">No Completed Orders Yet</h3>
+          <p style="margin-top: 4px;">Orders marked as Done will appear here for review and editing.</p>
+        </div>
+      `;
+      return;
+    }
+
+    kdsTicketsList.innerHTML = completedOrders.map(order => {
+      const isTerrace = order.floor === 'Terrace' || order.floor === 'Upstairs' || (order.tableId && order.tableId.startsWith('Top'));
+      const timeFormatted = order.createdAt ? new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      const items = order.items || [];
+      const grandTotalQty = items.reduce((acc, i) => acc + (i.quantity || 1), 0);
+      const totalAmount = order.total || (order.subtotal + (order.packagingCharge || 0));
+
+      const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
+      const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
+      const { encodedMessage } = buildWhatsAppOrderReadyMessage(order);
+      const waUrl = waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodedMessage}` : '';
+
+      const itemsHtml = items.map(item => `
+        <div class="ticket-item-row" style="opacity: 0.9;">
+          <div class="item-left-block">
+            <span class="item-quantity-pill">x${item.quantity || 1}</span>
+            <div class="item-details-stack">
+              <span class="item-name">${item.name}</span>
+              ${item.note ? `<div class="item-custom-note">Note: ${item.note}</div>` : ''}
+            </div>
+          </div>
+          <span class="ticket-item-mode-badge ${item.mode === 'Takeaway' ? 'mode--takeaway' : 'mode--dinein'}">
+            ${item.mode === 'Takeaway' ? '🥡 Takeaway' : '🍽️ Dine-In'}
+          </span>
+        </div>
+      `).join('');
+
+      return `
+        <div class="kds-ticket-card" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(22, 14, 9, 0.95);" data-order-id="${order.id}">
+          <div class="ticket-top-bar">
+            <div class="ticket-table-group">
+              <span class="ticket-table-badge ${!isTerrace ? 'is-ground' : ''}">
+                ${order.tableId || 'Table'}
+              </span>
+              <span class="ticket-floor-tag">${isTerrace ? 'TERRACE' : 'GROUND FLOOR'}</span>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #A7F3D0; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; font-weight: 800;">
+              ✓ DONE / COMPLETED
+            </div>
+            <div class="ticket-id-meta" style="display: flex; align-items: center; gap: 8px;">
+              <button class="kds-ticket-edit-btn" type="button" onclick="openOrderEditModal('${order.id}')" title="Edit Order Items">
+                ✏️ Edit
+              </button>
+              <div style="text-align: right;">
+                <div class="ticket-order-number">#${order.orderNumber || order.id}</div>
+                <div class="ticket-time-stamp">${timeFormatted}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-customer-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="customer-name">👤 ${order.customerName || 'Guest'}</span>
+              ${order.customerPhone ? `<a href="${waUrl}" target="_blank" class="customer-phone" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;" title="Send WhatsApp alert">📞 +91 ${order.customerPhone} <span style="font-size: 0.75rem; color: #25D366;">💬</span></a>` : ''}
+            </div>
+            <span class="customer-pay-tag" style="background: rgba(16, 185, 129, 0.25); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.5);">
+              💳 ${order.paymentMode || 'Counter'} (Paid)
+            </span>
+          </div>
+
+          <div class="ticket-items-container">
+            ${itemsHtml}
+          </div>
+
+          ${order.packagingCharge ? `
+            <div class="ticket-packaging-row">
+              <span>🥡 Container Packaging</span>
+              <span>+₹${order.packagingCharge}</span>
+            </div>
+          ` : ''}
+
+          <div class="ticket-bottom-total-row">
+            <span class="total-label">Total Paid (${grandTotalQty} items)</span>
+            <span class="total-value" style="color: #A7F3D0;">₹${totalAmount}</span>
+          </div>
+
+          <div class="ticket-action-bar" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button class="kds-ticket-edit-btn" style="padding: 9px 12px; font-size: 0.82rem; justify-content: center;" onclick="openOrderEditModal('${order.id}')">
+              ✏️ Edit Order
+            </button>
+            <button class="kds-ticket-btn btn--reopen" style="padding: 9px 12px; font-size: 0.82rem; justify-content: center;" onclick="reopenCompletedOrder('${order.id}')">
+              ↩️ Move to Active
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return;
+  }
 
   // Enforce chronological FIFO sorting: earliest customer order appears FIRST (#1 in Queue), subsequent orders follow
   const activeOrders = kdsState.orders
@@ -535,16 +707,14 @@ function renderStockList() {
   kdsStockList.innerHTML = items.map(item => `
     <div class="stock-item-row" data-id="${item.id}">
       <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px; flex: 1; min-width: 0;">
-        <strong class="stock-item-name">${item.name}</strong>
+        <strong class="stock-item-name" style="cursor: pointer;" onclick="openEditItemModal('${item.id}')" title="Click to edit creation name & details">${item.name}</strong>
         <span class="stock-item-price" id="rateDisplay_${item.id}">₹${item.price}</span>
-        ${isAdmin ? `
-          <button class="btn-stock-edit-rate" id="btnEditRate_${item.id}" onclick="startInlineRateEdit('${item.id}', ${item.price})" title="Quick edit rate (₹)">✏️</button>
-          <div id="inlineRateBox_${item.id}" class="inline-rate-box" style="display: none;">
-            <input type="number" id="inlineRateInput_${item.id}" class="inline-rate-input" value="${item.price}" min="0" max="9999" onkeydown="if(event.key==='Enter') saveInlineRate('${item.id}')">
-            <button class="btn-inline-rate-save" onclick="saveInlineRate('${item.id}')" title="Save Rate">✓</button>
-            <button class="btn-inline-rate-cancel" onclick="cancelInlineRateEdit('${item.id}')" title="Cancel">✕</button>
-          </div>
-        ` : ''}
+        <button class="btn-stock-edit-rate" onclick="openEditItemModal('${item.id}')" title="Edit name, price & category">✏️</button>
+        <div id="inlineRateBox_${item.id}" class="inline-rate-box" style="display: none;">
+          <input type="number" id="inlineRateInput_${item.id}" class="inline-rate-input" value="${item.price}" min="0" max="9999" onkeydown="if(event.key==='Enter') saveInlineRate('${item.id}')">
+          <button class="btn-inline-rate-save" onclick="saveInlineRate('${item.id}')" title="Save Rate">✓</button>
+          <button class="btn-inline-rate-cancel" onclick="cancelInlineRateEdit('${item.id}')" title="Cancel">✕</button>
+        </div>
       </div>
       <button class="stock-toggle-switch ${!item.inStock ? 'is-out' : ''}" onclick="toggleItemStock('${item.id}')">
         ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
@@ -848,14 +1018,15 @@ function handleKdsSocketMessage(msg) {
 // ==========================================================================
 
 function updateKdsRoleUI() {
+  const isAuth = Boolean(kdsState.currentUser);
   const isAdmin = kdsState.currentUser && kdsState.currentUser.role === 'Admin';
   const badge = document.getElementById('kdsAdminRoleBadge');
   const menuBtn = document.getElementById('kdsAdminMenuBtn');
   const quickAddBtn = document.getElementById('kdsQuickAddStockBtn');
 
   if (badge) badge.style.display = isAdmin ? 'inline-flex' : 'none';
-  if (menuBtn) menuBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-  if (quickAddBtn) quickAddBtn.style.display = isAdmin ? 'inline-block' : 'none';
+  if (menuBtn) menuBtn.style.display = isAuth ? 'inline-flex' : 'none';
+  if (quickAddBtn) quickAddBtn.style.display = isAuth ? 'inline-block' : 'none';
 
   renderStockList();
 }
@@ -1580,9 +1751,9 @@ function closeItemFormModal() {
 function onCategorySelectChange(cat) {
   const typeInput = document.getElementById('itemFormType');
   if (!typeInput) return;
-  if (cat === 'TEA' || cat === 'COFFEE') {
+  if (cat === 'TEA' || cat === 'COFFEE' || cat === 'MELT') {
     typeInput.value = 'hot';
-  } else if (cat === 'DRINKS') {
+  } else if (cat === 'DRINKS' || cat === 'SPECIAL DRINKS') {
     typeInput.value = 'cold';
   } else {
     typeInput.value = 'snack';
@@ -1806,11 +1977,13 @@ function populateEditModalMenuSelect() {
   const cats = [
     { key: 'TEA', label: 'Artisan Teas' },
     { key: 'COFFEE', label: 'Fresh Coffee' },
-    { key: 'SNACKS', label: 'Quick Bites' },
-    { key: 'EATS', label: 'Hearty Eats' },
+    { key: 'MELT', label: 'Melt' },
     { key: 'COOKIES', label: 'Biscuits & Cookies' },
+    { key: 'SNACKS', label: 'Quick Bites' },
+    { key: "JOE'S BREW SPECIAL", label: "Joe's Brew Special" },
+    { key: 'EATS', label: 'Hearty Eats' },
     { key: 'DRINKS', label: 'Cold Beverages' },
-    { key: 'MELT', label: 'Melt & Toast' }
+    { key: 'SPECIAL DRINKS', label: 'Special Drinks' }
   ];
 
   select.innerHTML = '<option value="">-- Choose Item from Menu --</option>';
@@ -1851,8 +2024,10 @@ function calculateOrderTotals(items) {
         const key = item.id || item.name;
         if (!bevMap[key]) bevMap[key] = { qty: 0 };
         bevMap[key].qty += qty;
-      } else if (cat === 'DRINKS' || cat === 'MELT') {
+      } else if (cat === 'DRINKS' || cat === 'SPECIAL DRINKS' || cat === 'MELT') {
         drinkCount += qty;
+      } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES' || cat === "JOE'S BREW SPECIAL") {
+        foodCount += qty;
       } else {
         foodCount += qty;
       }
@@ -2182,4 +2357,6 @@ window.promptOrderSettlement = promptOrderSettlement;
 window.closePaymentModal = closePaymentModal;
 window.confirmPaymentSettlement = confirmPaymentSettlement;
 window.buildWhatsAppOrderReadyMessage = buildWhatsAppOrderReadyMessage;
+window.switchKdsTicketView = switchKdsTicketView;
+window.reopenCompletedOrder = reopenCompletedOrder;
 

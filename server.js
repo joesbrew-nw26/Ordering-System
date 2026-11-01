@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
@@ -39,13 +40,52 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// Active KDS Session tokens in-memory (token -> userSession)
+// Active KDS Session tokens in-memory (token -> userSession) & Stateless Token Secrets
 const activeSessions = new Map();
 const KDS_DEFAULT_PIN = process.env.KDS_PIN || '2006';
 const KDS_CREDENTIALS = {
   username: process.env.KDS_USER || 'admin',
   password: process.env.KDS_PASSWORD || 'brew2006'
 };
+const KDS_AUTH_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.KDS_PIN || 'joes_brew_kds_secure_secret_2006';
+
+function signKdsToken(payload) {
+  const json = JSON.stringify({
+    ...payload,
+    issuedAt: Date.now(),
+    exp: Date.now() + (24 * 60 * 60 * 1000) // 24 hours validity
+  });
+  const data = Buffer.from(json).toString('base64url');
+  const sig = crypto.createHmac('sha256', KDS_AUTH_SECRET).update(data).digest('base64url');
+  return `kds_jwt_${data}.${sig}`;
+}
+
+function verifyKdsToken(token) {
+  if (!token || typeof token !== 'string') return null;
+
+  if (token.startsWith('kds_jwt_')) {
+    const raw = token.slice(8);
+    const parts = raw.split('.');
+    if (parts.length !== 2) return null;
+    const [data, sig] = parts;
+    const expectedSig = crypto.createHmac('sha256', KDS_AUTH_SECRET).update(data).digest('base64url');
+    if (sig !== expectedSig) return null;
+    try {
+      const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
+      if (payload.exp && Date.now() > payload.exp) return null;
+      return payload;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Fallback to activeSessions in-memory map
+  if (activeSessions.has(token)) {
+    return activeSessions.get(token);
+  }
+
+  return null;
+}
 
 // High-speed in-memory cache for menu items during order submission
 let cachedMenuItems = null;
@@ -66,20 +106,17 @@ function invalidateMenuCache() {
   cachedMenuItems = null;
 }
 
-// Middleware: Enforce Admin Role for menu & rate mutations
+// Middleware: Authorize KDS Staff or Admin for menu mutations & rate updates
 function requireAdminRole(req, res, next) {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : req.query.token;
 
-  if (!token || !activeSessions.has(token)) {
-    return res.status(401).json({ error: 'Unauthorized: Admin authentication token required' });
+  const session = verifyKdsToken(token);
+  if (!session) {
+    return res.status(401).json({ error: 'Unauthorized: Valid KDS authentication token required' });
   }
 
-  const session = activeSessions.get(token);
-  if (session.role !== 'Admin') {
-    return res.status(403).json({ error: 'Forbidden: Admin role privileges required to modify menu & rates' });
-  }
-
+  // Both Station Staff and Floor Manager Admin are authorized to manage menu & rates
   req.adminUser = session;
   next();
 }
@@ -369,9 +406,9 @@ app.post('/api/orders', async (req, res) => {
             bevMap[key] = { id: key, name: item.name, qty: 0 };
           }
           bevMap[key].qty += qty;
-        } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES') {
+        } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES' || cat === "JOE'S BREW SPECIAL") {
           foodCount += qty;
-        } else if (cat === 'DRINKS' || cat === 'MELT') {
+        } else if (cat === 'DRINKS' || cat === 'SPECIAL DRINKS' || cat === 'MELT') {
           drinkCount += qty;
         } else {
           foodCount += qty;
@@ -481,9 +518,9 @@ app.put('/api/orders/:id', async (req, res) => {
           const key = item.id || item.name;
           if (!bevMap[key]) bevMap[key] = { id: key, name: item.name, qty: 0 };
           bevMap[key].qty += qty;
-        } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES') {
+        } else if (cat === 'SNACKS' || cat === 'EATS' || cat === 'COOKIES' || cat === "JOE'S BREW SPECIAL") {
           foodCount += qty;
-        } else if (cat === 'DRINKS' || cat === 'MELT') {
+        } else if (cat === 'DRINKS' || cat === 'SPECIAL DRINKS' || cat === 'MELT') {
           drinkCount += qty;
         } else {
           foodCount += qty;
@@ -679,12 +716,12 @@ app.post('/api/kds/login', (req, res) => {
     });
   }
 
-  const token = `kds_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
   const userSession = {
     name: operatorRole,
     role: role,
     authenticatedAt: new Date().toISOString()
   };
+  const token = signKdsToken(userSession);
   activeSessions.set(token, userSession);
 
   res.json({
@@ -698,8 +735,9 @@ app.get('/api/kds/auth-check', (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : req.query.token;
 
-  if (token && activeSessions.has(token)) {
-    return res.json({ authenticated: true, user: activeSessions.get(token) });
+  const session = verifyKdsToken(token);
+  if (session) {
+    return res.json({ authenticated: true, user: session });
   }
   return res.json({ authenticated: false });
 });
