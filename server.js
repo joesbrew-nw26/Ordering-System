@@ -432,9 +432,9 @@ app.post('/api/orders', async (req, res) => {
 
     const menuItems = await getFastMenuItems();
     const calculatedItems = items.map(cartItem => {
-      const menuItem = menuItems.find(m => m.id === cartItem.id) || cartItem;
-      const cat = (cartItem.category || menuItem?.category || '').toUpperCase();
-      const mode = cartItem.mode || (orderMode === 'Parcel' ? 'Takeaway' : 'Dine-In');
+      const menuItem = menuItems.find(m => m.id === cartItem.id || (m.name && cartItem.name && m.name.toLowerCase() === cartItem.name.toLowerCase())) || cartItem;
+      const cat = (cartItem.category || menuItem?.category || 'SNACKS').trim().toUpperCase();
+      const mode = cartItem.mode || (orderMode === 'Takeaway' || orderMode === 'Parcel' ? 'Takeaway' : 'Dine-In');
       const quantity = Math.max(1, Number(cartItem.quantity) || 1);
 
       return {
@@ -494,7 +494,8 @@ app.post('/api/orders', async (req, res) => {
       ? 'Mixed' 
       : (hasTakeaway ? 'Takeaway' : 'Dine-In');
 
-    const total = subtotal + calculatedPackaging;
+    const finalPackaging = calculatedPackaging > 0 ? calculatedPackaging : (packagingCharge !== undefined ? Number(packagingCharge) : 0);
+    const total = subtotal + finalPackaging;
     const latestNum = await getLatestOrderNumber();
     const orderNumber = (latestNum + 1).toString().padStart(4, '0');
 
@@ -513,7 +514,7 @@ app.post('/api/orders', async (req, res) => {
       floor: floor || (tableId.startsWith('Top') ? 'Terrace' : 'Ground Floor'),
       items: calculatedItems,
       orderMode: computedOrderMode,
-      packagingCharge: calculatedPackaging,
+      packagingCharge: finalPackaging,
       generalInstructions: formattedInstructions,
       subtotal,
       total,
@@ -541,16 +542,17 @@ app.post('/api/orders', async (req, res) => {
 app.put('/api/orders/:id', async (req, res) => {
   try {
     const orderId = req.params.id;
-    const { items, generalInstructions, orderMode } = req.body;
+    const { items, generalInstructions, orderMode, packagingCharge } = req.body;
     if (!items || !items.length) {
       return res.status(400).json({ error: 'Order must contain at least one item' });
     }
 
     const menuItems = await getFastMenuItems();
     const calculatedItems = items.map(cartItem => {
-      const menuItem = menuItems.find(m => m.id === cartItem.id) || cartItem;
-      const cat = (cartItem.category || menuItem?.category || '').toUpperCase();
-      const mode = cartItem.mode || 'Dine-In';
+      const menuItem = menuItems.find(m => m.id === cartItem.id || (m.name && cartItem.name && m.name.toLowerCase() === cartItem.name.toLowerCase())) || cartItem;
+      const cat = (cartItem.category || menuItem?.category || 'SNACKS').trim().toUpperCase();
+      const isTakeawayOrder = orderMode === 'Takeaway' || orderMode === 'Parcel';
+      const mode = cartItem.mode || (isTakeawayOrder ? 'Takeaway' : 'Dine-In');
       const quantity = Math.max(1, Number(cartItem.quantity) || 1);
 
       return {
@@ -604,7 +606,8 @@ app.put('/api/orders/:id', async (req, res) => {
       ? 'Mixed' 
       : (hasTakeaway ? 'Takeaway' : 'Dine-In');
 
-    const total = subtotal + calculatedPackaging;
+    const finalPackaging = calculatedPackaging > 0 ? calculatedPackaging : (packagingCharge !== undefined ? Number(packagingCharge) : 0);
+    const total = subtotal + finalPackaging;
 
     let modePrefix = '';
     if (computedOrderMode === 'Takeaway') {
@@ -624,7 +627,7 @@ app.put('/api/orders/:id', async (req, res) => {
     const updates = {
       items: calculatedItems,
       subtotal,
-      packagingCharge: calculatedPackaging,
+      packagingCharge: finalPackaging,
       total,
       orderMode: computedOrderMode,
       generalInstructions: formattedInstructions

@@ -308,7 +308,7 @@ function renderKdsTickets() {
             ${itemsHtml}
           </div>
 
-          ${order.packagingCharge ? `
+          ${Number(order.packagingCharge || 0) > 0 ? `
             <div class="ticket-packaging-row">
               <span>🥡 Container Packaging</span>
               <span>+₹${order.packagingCharge}</span>
@@ -537,7 +537,7 @@ function renderKdsTickets() {
         </div>
 
         <!-- Packaging Charge (if applicable) -->
-        ${order.packagingCharge ? `
+        ${Number(order.packagingCharge || 0) > 0 ? `
           <div class="ticket-packaging-row">
             <span>🥡 Container Packaging</span>
             <span>+₹${order.packagingCharge}</span>
@@ -554,7 +554,7 @@ function renderKdsTickets() {
         <!-- Total Price Row -->
         <div class="ticket-bottom-total-row">
           <span class="total-label">Total (${grandTotalQty} ${grandTotalQty === 1 ? 'item' : 'items'})</span>
-          <span class="total-value">₹${order.total || (order.subtotal + (order.packagingCharge || 0))}</span>
+          <span class="total-value">₹${Number(order.total || 0) || (Number(order.subtotal || 0) + Number(order.packagingCharge || 0))}</span>
         </div>
 
         <!-- Action Buttons -->
@@ -905,10 +905,16 @@ async function initKdsWebSocket() {
             if (o.items) existing.items = o.items;
             if (o.subtotal !== undefined) existing.subtotal = Number(o.subtotal);
             if (o.total !== undefined) existing.total = Number(o.total);
-            if (o.packaging_charge !== undefined) existing.packagingCharge = Number(o.packaging_charge);
+            if (o.packaging_charge !== undefined && o.packaging_charge !== null) {
+              existing.packagingCharge = Number(o.packaging_charge);
+            } else if (o.packagingCharge !== undefined && o.packagingCharge !== null) {
+              existing.packagingCharge = Number(o.packagingCharge);
+            } else if (o.total !== undefined && o.subtotal !== undefined && Number(o.total) > Number(o.subtotal)) {
+              existing.packagingCharge = Number(o.total) - Number(o.subtotal);
+            }
             if (o.payment_mode) existing.paymentMode = o.payment_mode;
             if (o.payment_status) existing.paymentStatus = o.payment_status;
-            if (o.order_mode) existing.orderMode = o.order_mode;
+            if (o.order_mode || o.orderMode) existing.orderMode = o.order_mode || o.orderMode;
             if (o.general_instructions !== undefined) existing.generalInstructions = o.general_instructions;
             renderKdsTickets();
             updateKdsCounts();
@@ -998,7 +1004,15 @@ function handleKdsSocketMessage(msg) {
       if (updatedOrder) {
         const uIdx = kdsState.orders.findIndex(o => o.id === updatedOrder.id);
         if (uIdx !== -1) {
-          kdsState.orders[uIdx] = { ...kdsState.orders[uIdx], ...updatedOrder };
+          const existingOrder = kdsState.orders[uIdx];
+          const resolvedPkg = updatedOrder.packagingCharge !== undefined && updatedOrder.packagingCharge !== null
+            ? Number(updatedOrder.packagingCharge)
+            : (updatedOrder.packaging_charge !== undefined && updatedOrder.packaging_charge !== null
+              ? Number(updatedOrder.packaging_charge)
+              : (Number(updatedOrder.total || 0) > Number(updatedOrder.subtotal || 0)
+                ? Number(updatedOrder.total || 0) - Number(updatedOrder.subtotal || 0)
+                : Number(existingOrder.packagingCharge || 0)));
+          kdsState.orders[uIdx] = { ...existingOrder, ...updatedOrder, packagingCharge: resolvedPkg };
         } else {
           kdsState.orders.push(updatedOrder);
         }
@@ -2049,7 +2063,20 @@ function openOrderEditModal(orderId) {
   if (!order) return;
 
   currentEditingOrderId = orderId;
-  currentEditingItems = JSON.parse(JSON.stringify(order.items || []));
+  const isTakeawayOrder = order.orderMode === 'Takeaway' || order.orderMode === 'Parcel' || (order.generalInstructions && /takeaway|parcel/i.test(order.generalInstructions));
+  currentEditingItems = JSON.parse(JSON.stringify(order.items || [])).map(item => {
+    const menuItem = (kdsState.menuItems || []).find(m => m.id === item.id || (m.name && item.name && m.name.toLowerCase() === item.name.toLowerCase()));
+    return {
+      ...item,
+      category: (item.category || menuItem?.category || 'SNACKS').trim().toUpperCase(),
+      mode: item.mode || (isTakeawayOrder ? 'Takeaway' : 'Dine-In')
+    };
+  });
+
+  const addModeSelect = document.getElementById('orderEditAddItemMode');
+  if (addModeSelect) {
+    addModeSelect.value = isTakeawayOrder ? 'Takeaway' : 'Dine-In';
+  }
 
   const modalTitle = document.getElementById('orderEditModalTitle');
   if (modalTitle) modalTitle.textContent = `✏️ Order #${order.orderNumber || order.id}`;
@@ -2144,7 +2171,8 @@ function calculateOrderTotals(items) {
 
     if (item.mode === 'Takeaway') {
       hasTakeaway = true;
-      const cat = (item.category || '').toUpperCase();
+      const menuItem = (kdsState.menuItems || []).find(m => m.id === item.id || (m.name && item.name && m.name.toLowerCase() === item.name.toLowerCase()));
+      const cat = (item.category || menuItem?.category || 'SNACKS').trim().toUpperCase();
       if (cat === 'TEA' || cat === 'COFFEE') {
         const key = item.id || item.name;
         if (!bevMap[key]) bevMap[key] = { qty: 0 };
@@ -2215,6 +2243,20 @@ function renderOrderEditItems() {
 
   const totals = calculateOrderTotals(currentEditingItems);
 
+  const modeBadge = document.getElementById('orderEditCurrentMode');
+  if (modeBadge) {
+    if (totals.computedMode === 'Takeaway') {
+      modeBadge.textContent = '🥡 Takeaway Order';
+      modeBadge.style.color = '#F59E0B';
+    } else if (totals.computedMode === 'Mixed') {
+      modeBadge.textContent = '🍽️ + 🥡 Mixed Order';
+      modeBadge.style.color = '#FDE68A';
+    } else {
+      modeBadge.textContent = '🍽️ Dine-In Order';
+      modeBadge.style.color = '#6EE7B7';
+    }
+  }
+
   const countBadge = document.getElementById('orderEditItemCountBadge');
   if (countBadge) countBadge.textContent = `${currentEditingItems.length} ${currentEditingItems.length === 1 ? 'Item' : 'Items'}`;
 
@@ -2271,18 +2313,21 @@ function addSelectedItemToEditOrder() {
   }
 
   const itemId = select.value;
-  const mode = modeSelect ? modeSelect.value : 'Dine-In';
+  const currentOrder = kdsState.orders.find(o => o.id === currentEditingOrderId);
+  const isTakeawayOrder = currentOrder && (currentOrder.orderMode === 'Takeaway' || currentOrder.orderMode === 'Parcel' || /takeaway|parcel/i.test(currentOrder.generalInstructions || ''));
+  const fallbackMode = isTakeawayOrder ? 'Takeaway' : 'Dine-In';
+  const mode = modeSelect ? (modeSelect.value || fallbackMode) : fallbackMode;
   const menuItem = (kdsState.menuItems || []).find(m => m.id === itemId);
   if (!menuItem) return;
 
-  const existingIdx = currentEditingItems.findIndex(i => i.id === menuItem.id && i.mode === mode && !i.note);
+  const existingIdx = currentEditingItems.findIndex(i => (i.id === menuItem.id || i.name === menuItem.name) && i.mode === mode && !i.note);
   if (existingIdx !== -1) {
     currentEditingItems[existingIdx].quantity += 1;
   } else {
     currentEditingItems.push({
       id: menuItem.id,
       name: menuItem.name,
-      category: (menuItem.category || 'SNACKS').toUpperCase(),
+      category: (menuItem.category || 'SNACKS').trim().toUpperCase(),
       price: Number(menuItem.price || 0),
       quantity: 1,
       mode: mode,
@@ -2309,6 +2354,20 @@ async function saveOrderEdits() {
   const generalInstructions = instructionsInput ? instructionsInput.value.trim() : '';
 
   const totals = calculateOrderTotals(currentEditingItems);
+
+  const modeBadge = document.getElementById('orderEditCurrentMode');
+  if (modeBadge) {
+    if (totals.computedMode === 'Takeaway') {
+      modeBadge.textContent = '🥡 Takeaway Order';
+      modeBadge.style.color = '#F59E0B';
+    } else if (totals.computedMode === 'Mixed') {
+      modeBadge.textContent = '🍽️ + 🥡 Mixed Order';
+      modeBadge.style.color = '#FDE68A';
+    } else {
+      modeBadge.textContent = '🍽️ Dine-In Order';
+      modeBadge.style.color = '#6EE7B7';
+    }
+  }
   const itemsToSave = JSON.parse(JSON.stringify(currentEditingItems));
   const orderId = order.id;
 
@@ -2337,7 +2396,10 @@ async function saveOrderEdits() {
       body: JSON.stringify({
         items: itemsToSave,
         generalInstructions: generalInstructions,
-        orderMode: totals.computedMode
+        orderMode: totals.computedMode,
+        packagingCharge: totals.packagingCharge,
+        subtotal: totals.subtotal,
+        total: totals.total
       })
     });
 
@@ -2349,7 +2411,16 @@ async function saveOrderEdits() {
     const data = await res.json();
     if (data.order) {
       const idx = kdsState.orders.findIndex(o => o.id === data.order.id);
-      if (idx !== -1) kdsState.orders[idx] = data.order;
+      if (idx !== -1) {
+        kdsState.orders[idx] = {
+          ...kdsState.orders[idx],
+          ...data.order,
+          packagingCharge: Number(data.order.packagingCharge !== undefined && data.order.packagingCharge !== null ? data.order.packagingCharge : totals.packagingCharge),
+          subtotal: Number(data.order.subtotal !== undefined && data.order.subtotal !== null ? data.order.subtotal : totals.subtotal),
+          total: Number(data.order.total !== undefined && data.order.total !== null ? data.order.total : totals.total),
+          orderMode: data.order.orderMode || totals.computedMode
+        };
+      }
       renderKdsTickets();
     }
   } catch (err) {
