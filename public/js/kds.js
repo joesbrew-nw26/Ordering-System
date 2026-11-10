@@ -373,6 +373,28 @@ document.addEventListener('DOMContentLoaded', () => {
   setupKeyboardListener();
   updateKdsKitchenStatus();
 
+  // Register PWA Service Worker for standalone iPad & mobile app caching
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/kds-sw.js')
+        .then(reg => console.log('KDS ServiceWorker registered with scope:', reg.scope))
+        .catch(err => console.warn('KDS ServiceWorker registration failed:', err));
+    });
+  }
+
+  // Restore iPad Side Panel and View Mode preferences
+  if (localStorage.getItem('jb_kds_hide_side_panel') === '1') {
+    const grid = document.querySelector('.kds-main-grid');
+    if (grid) grid.classList.add('side-panel-hidden');
+    const icon = document.getElementById('kdsSidePanelToggleIcon');
+    const text = document.getElementById('kdsSidePanelToggleText');
+    if (icon && text) {
+      icon.textContent = '👁️‍🗨️';
+      text.textContent = 'Show Panel';
+    }
+  }
+  updateKdsViewModeButtons();
+
   // Keep active ticket queue elapsed wait times and kitchen schedule fresh
   setInterval(() => {
     updateKdsKitchenStatus();
@@ -381,6 +403,136 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 20000);
 });
+
+// ==========================================
+// IPAD SCREEN WAKE LOCK ENGINE
+// Keeps iPad screen permanently awake during service
+// ==========================================
+let kdsWakeLock = null;
+
+async function requestScreenWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      kdsWakeLock = await navigator.wakeLock.request('screen');
+      kdsWakeLock.addEventListener('release', () => {
+        updateWakeLockUI(false);
+      });
+      updateWakeLockUI(true);
+    } catch (err) {
+      updateWakeLockUI(false);
+    }
+  } else {
+    updateWakeLockUI(false);
+  }
+}
+
+async function toggleScreenWakeLock() {
+  if (kdsWakeLock) {
+    try {
+      await kdsWakeLock.release();
+    } catch (e) {}
+    kdsWakeLock = null;
+    updateWakeLockUI(false);
+    showKdsToast('☀️ Screen Wake Lock: Disabled (Screen can sleep)');
+  } else {
+    await requestScreenWakeLock();
+    if (kdsWakeLock) {
+      showKdsToast('☀️ Screen Wake Lock: Active (Screen stays ON)');
+    } else {
+      showKdsToast('⚠️ Screen Wake Lock not supported on this browser');
+    }
+  }
+}
+
+function updateWakeLockUI(isActive) {
+  const icon = document.getElementById('kdsWakeLockIcon');
+  const text = document.getElementById('kdsWakeLockText');
+  const btn = document.getElementById('kdsWakeLockBtn');
+  if (!btn) return;
+  if (isActive) {
+    if (icon) icon.textContent = '☀️';
+    if (text) {
+      text.textContent = 'Screen: ON';
+      text.style.color = '#FCD34D';
+    }
+    btn.style.background = 'rgba(245, 158, 11, 0.2)';
+    btn.style.borderColor = '#F59E0B';
+    btn.title = 'Screen Wake Lock active: iPad display stays awake.';
+  } else {
+    if (icon) icon.textContent = '🌙';
+    if (text) {
+      text.textContent = 'Screen: AUTO';
+      text.style.color = '#9CA3AF';
+    }
+    btn.style.background = 'rgba(255, 255, 255, 0.05)';
+    btn.style.borderColor = 'rgba(200, 157, 86, 0.25)';
+    btn.title = 'Screen Wake Lock off: Click to keep iPad awake.';
+  }
+}
+
+// Re-acquire lock when user switches back to Safari / browser tab
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible') {
+    await requestScreenWakeLock();
+  }
+});
+
+// Auto-request lock upon first user touch or click
+let hasAttemptedInitialWakeLock = false;
+function tryInitialWakeLock() {
+  if (!hasAttemptedInitialWakeLock) {
+    hasAttemptedInitialWakeLock = true;
+    requestScreenWakeLock();
+  }
+}
+window.addEventListener('click', tryInitialWakeLock, { once: true });
+window.addEventListener('touchstart', tryInitialWakeLock, { once: true });
+
+// ==========================================
+// IPAD & MOBILE VIEW MODE & SIDE PANEL CONTROLS
+// ==========================================
+let currentKdsViewMode = localStorage.getItem('jb_kds_view_mode') || 'board';
+
+function setKdsViewMode(mode) {
+  currentKdsViewMode = mode;
+  localStorage.setItem('jb_kds_view_mode', mode);
+  updateKdsViewModeButtons();
+  renderKdsTickets();
+}
+
+function updateKdsViewModeButtons() {
+  const btnBoard = document.getElementById('btnViewBoard');
+  const btnStream = document.getElementById('btnViewStream');
+  if (currentKdsViewMode === 'board') {
+    btnBoard?.classList.add('active');
+    btnStream?.classList.remove('active');
+  } else {
+    btnStream?.classList.add('active');
+    btnBoard?.classList.remove('active');
+  }
+}
+
+function toggleKdsSidePanel() {
+  const grid = document.querySelector('.kds-main-grid');
+  const icon = document.getElementById('kdsSidePanelToggleIcon');
+  const text = document.getElementById('kdsSidePanelToggleText');
+  if (!grid) return;
+  const isHidden = grid.classList.toggle('side-panel-hidden');
+  localStorage.setItem('jb_kds_hide_side_panel', isHidden ? '1' : '0');
+  if (icon && text) {
+    icon.textContent = isHidden ? '👁️‍🗨️' : '👁️';
+    text.textContent = isHidden ? 'Show Panel' : 'Side Panel';
+  }
+}
+
+let currentUrgentCallId = null;
+
+function resolveUrgentWaiterCall() {
+  if (currentUrgentCallId) {
+    resolveWaiterCall(currentUrgentCallId);
+  }
+}
+
 
 function updateKdsKitchenStatus() {
   const pill = document.getElementById('kdsKitchenSchedulePill');
@@ -466,15 +618,18 @@ function switchKdsTicketView(view) {
   const activeBtn = document.getElementById('tabActiveQueueBtn');
   const doneBtn = document.getElementById('tabDoneQueueBtn');
   const noteEl = document.getElementById('kdsQueueRefreshNote');
+  const boardGroup = document.getElementById('kdsBoardViewGroup');
 
   if (view === 'active') {
     activeBtn?.classList.add('active');
     doneBtn?.classList.remove('active');
     if (noteEl) noteEl.textContent = 'Auto-Refreshes Instantly';
+    if (boardGroup) boardGroup.style.display = 'inline-flex';
   } else {
     doneBtn?.classList.add('active');
     activeBtn?.classList.remove('active');
     if (noteEl) noteEl.textContent = "Showing Today's Completed Orders";
+    if (boardGroup) boardGroup.style.display = 'none';
   }
 
   renderKdsTickets();
@@ -563,7 +718,256 @@ function buildWhatsAppOrderReadyMessage(order) {
   };
 }
 
-// Render Order Tickets
+// Render Individual KDS Ticket Card (Ergonomic for iPad & Mobile)
+function renderKdsTicketCardHtml(order, queueNumber, isKanban) {
+  const isTerrace = order.floor === 'Terrace' || order.floor === 'Upstairs' || (order.tableId && order.tableId.startsWith('Top'));
+  const timeFormatted = order.createdAt ? new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+  const elapsedMinutes = order.createdAt ? Math.max(0, Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000)) : 0;
+  const isUrgent = elapsedMinutes >= 12;
+
+  const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
+  const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
+  const { encodedMessage } = buildWhatsAppOrderReadyMessage(order);
+  const waUrl = waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodedMessage}` : '';
+
+  const isOrderTakeawayOnly = order.orderMode === 'Takeaway' || order.orderMode === 'Parcel';
+  const items = order.items || [];
+
+  // Segregate items strictly for clear visual buckets
+  const takeawayItems = items.filter(item => item.mode === 'Takeaway' || (isOrderTakeawayOnly && item.mode !== 'Dine-In'));
+  const dineInItems = items.filter(item => item.mode !== 'Takeaway' && !(isOrderTakeawayOnly && item.mode !== 'Dine-In'));
+
+  const isMixedOrder = (takeawayItems.length > 0 && dineInItems.length > 0) || order.orderMode === 'Mixed' || (order.generalInstructions && order.generalInstructions.includes('MIXED ORDER'));
+
+  // Strip redundant mode tag from general customer instructions for clean presentation
+  const cleanCustomerNote = (order.generalInstructions || '')
+    .replace(/\[🍽️\s*\+\s*🥡\s*MIXED\s*ORDER\]/gi, '')
+    .replace(/\[🥡\s*TAKEAWAY\s*\/\s*PARCEL\]/gi, '')
+    .replace(/\[🍽️\s*DINE-IN\s*ORDER\]/gi, '')
+    .trim();
+
+  // Compute totals for clean UI badges
+  const takeawayTotalQty = takeawayItems.reduce((acc, i) => acc + (i.quantity || 1), 0);
+  const dineInTotalQty = dineInItems.reduce((acc, i) => acc + (i.quantity || 1), 0);
+  const grandTotalQty = items.reduce((acc, i) => acc + (i.quantity || 1), 0);
+
+  // Build Items Markup cleanly without clumsy nested box over-layering
+  let itemsHtml = '';
+
+  if (takeawayItems.length > 0 && dineInItems.length > 0) {
+    itemsHtml = `
+      <div class="ticket-sub-section">
+        <div class="ticket-sub-heading takeaway-heading">
+          🥡 TAKEAWAY / PARCEL (${takeawayTotalQty} ${takeawayTotalQty === 1 ? 'item' : 'items'} — Pack in Bag)
+        </div>
+        <div class="ticket-items-list">
+          ${takeawayItems.map(item => `
+            <div class="clean-item-row">
+              <div class="item-left-cell">
+                <span class="item-qty-square qty--takeaway">${item.quantity}×</span>
+                <div class="item-name-block">
+                  <span class="item-main-title">${item.name}</span>
+                  ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
+                </div>
+              </div>
+              <span class="item-price-tag">₹${item.price * item.quantity}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="ticket-mixed-divider"></div>
+
+      <div class="ticket-sub-section">
+        <div class="ticket-sub-heading dinein-heading">
+          🍽️ DINE-IN SERVICE (${dineInTotalQty} ${dineInTotalQty === 1 ? 'item' : 'items'} — Serve at Table)
+        </div>
+        <div class="ticket-items-list">
+          ${dineInItems.map(item => `
+            <div class="clean-item-row">
+              <div class="item-left-cell">
+                <span class="item-qty-square qty--dinein">${item.quantity}×</span>
+                <div class="item-name-block">
+                  <span class="item-main-title">${item.name}</span>
+                  ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
+                </div>
+              </div>
+              <span class="item-price-tag">₹${item.price * item.quantity}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (takeawayItems.length > 0) {
+    itemsHtml = `
+      <div class="ticket-items-list">
+        ${takeawayItems.map(item => `
+          <div class="clean-item-row">
+            <div class="item-left-cell">
+              <span class="item-qty-square qty--takeaway">${item.quantity}×</span>
+              <div class="item-name-block">
+                <span class="item-main-title">${item.name}</span>
+                ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
+              </div>
+            </div>
+            <span class="item-price-tag">₹${item.price * item.quantity}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    const renderItems = dineInItems.length > 0 ? dineInItems : items;
+    itemsHtml = `
+      <div class="ticket-items-list">
+        ${renderItems.map(item => `
+          <div class="clean-item-row">
+            <div class="item-left-cell">
+              <span class="item-qty-square qty--dinein">${item.quantity}×</span>
+              <div class="item-name-block">
+                <span class="item-main-title">${item.name}</span>
+                ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
+              </div>
+            </div>
+            <span class="item-price-tag">₹${item.price * item.quantity}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // 1-Touch Quick Advance Button for iPad & Mobile operation
+  let quickAdvanceHtml = '';
+  if (order.status === 'Preparing') {
+    quickAdvanceHtml = `
+      <div class="ticket-primary-action">
+        <button class="kds-quick-advance-btn btn--mark-ready" type="button" onclick="advanceOrderStatus('${order.id}', 'Ready to Serve')" title="Advance order to Ready and notify customer">
+          <span>📲</span> <span>Mark Ready & WhatsApp</span>
+        </button>
+      </div>
+    `;
+  } else if (order.status === 'Ready to Serve') {
+    quickAdvanceHtml = `
+      <div class="ticket-primary-action">
+        <button class="kds-quick-advance-btn btn--settle-done" type="button" onclick="promptOrderSettlement('${order.id}')" title="Collect payment and mark Done">
+          <span>💰</span> <span>Settle & Done ✓</span>
+        </button>
+      </div>
+    `;
+  } else {
+    // Received or initial
+    quickAdvanceHtml = `
+      <div class="ticket-primary-action">
+        <button class="kds-quick-advance-btn btn--start-prep" type="button" onclick="advanceOrderStatus('${order.id}', 'Preparing')" title="Start cooking this order">
+          <span>▶</span> <span>Start Prep</span>
+        </button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="kds-ticket-card ${isTerrace ? 'is-terrace' : ''}" data-id="${order.id}">
+      <!-- Top Bar: Table & Floor, Queue Status, Order ID & Time -->
+      <div class="ticket-top-bar">
+        <div class="ticket-table-group">
+          <span class="ticket-table-badge ${!isTerrace ? 'is-ground' : ''}">
+            ${order.tableId || 'Table'}
+          </span>
+          <span class="ticket-floor-tag">${isTerrace ? 'TERRACE' : 'GROUND FLOOR'}</span>
+        </div>
+
+        <div class="ticket-queue-badge ${queueNumber === 1 ? 'is-first' : ''} ${isUrgent ? 'is-urgent' : ''}">
+          <span class="queue-num">#${queueNumber} IN QUEUE</span>
+          <span class="queue-time">⏱️ ${formatElapsedWait(elapsedMinutes)}</span>
+        </div>
+
+        <div class="ticket-id-meta" style="display: flex; align-items: center; gap: 8px;">
+          <button class="kds-ticket-edit-btn" type="button" onclick="openOrderEditModal('${order.id}')" title="Edit Order Items">
+            ✏️ Edit
+          </button>
+          <div style="text-align: right;">
+            <div class="ticket-order-number">#${order.orderNumber || order.id}</div>
+            <div class="ticket-time-stamp">${timeFormatted}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Ribbon -->
+      ${isMixedOrder ? `
+        <div class="ticket-service-banner banner--mixed">
+          <span class="banner-title">🍽️ DINE-IN + 🥡 TAKEAWAY</span>
+          <span class="banner-sub">SPLIT ORDER</span>
+        </div>
+      ` : (isOrderTakeawayOnly ? `
+        <div class="ticket-service-banner banner--takeaway">
+          <span class="banner-title">🥡 ALL TAKEAWAY / PARCEL</span>
+          <span class="banner-sub">PACK IN BAG</span>
+        </div>
+      ` : `
+        <div class="ticket-service-banner banner--dinein">
+          <span class="banner-title">🍽️ TABLE DINE-IN SERVICE</span>
+          <span class="banner-sub">SERVE AT TABLE</span>
+        </div>
+      `)}
+
+      <!-- Customer & Payment Bar -->
+      <div class="ticket-customer-bar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="customer-name">👤 ${order.customerName || 'Guest'}</span>
+          ${order.customerPhone ? `<a href="${waUrl}" target="_blank" class="customer-phone" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;" title="Send WhatsApp alert">📞 +91 ${order.customerPhone} <span style="font-size: 0.75rem; color: #25D366;">💬</span></a>` : ''}
+        </div>
+        <span class="customer-pay-tag">💳 ${order.paymentMode || 'Counter'}</span>
+      </div>
+
+      <!-- Items Container -->
+      <div class="ticket-items-container">
+        ${itemsHtml}
+      </div>
+
+      <!-- Packaging Charge (if applicable) -->
+      ${Number(order.packagingCharge || 0) > 0 ? `
+        <div class="ticket-packaging-row">
+          <span>🥡 Container Packaging</span>
+          <span>+₹${order.packagingCharge}</span>
+        </div>
+      ` : ''}
+
+      <!-- Special Request Note (if applicable) -->
+      ${cleanCustomerNote ? `
+        <div class="ticket-customer-note-callout">
+          <strong>Special Request:</strong> ${cleanCustomerNote}
+        </div>
+      ` : ''}
+
+      <!-- Total Price Row -->
+      <div class="ticket-bottom-total-row">
+        <span class="total-label">Total (${grandTotalQty} ${grandTotalQty === 1 ? 'item' : 'items'})</span>
+        <span class="total-value">₹${Number(order.total || 0) || (Number(order.subtotal || 0) + Number(order.packagingCharge || 0))}</span>
+      </div>
+
+      <!-- 1-Touch Quick Advance Button for iPad -->
+      ${quickAdvanceHtml}
+
+      <!-- Action Buttons -->
+      <div class="ticket-action-bar" style="margin-top: 6px;">
+        <button class="kds-step-btn ${order.status === 'Received' || !order.status ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Received')">
+          Received
+        </button>
+        <button class="kds-step-btn ${order.status === 'Preparing' ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Preparing')">
+          Prep
+        </button>
+        <button class="kds-step-btn ${order.status === 'Ready to Serve' ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Ready to Serve')">
+          Ready 🚀
+        </button>
+        <button class="kds-step-btn kds-step-btn--done" onclick="promptOrderSettlement('${order.id}')">
+          Done ✓
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+
+// Render Order Tickets (Kanban Board or Stream Queue)
 function renderKdsTickets() {
   if (!kdsTicketsList) return;
 
@@ -702,225 +1106,81 @@ function renderKdsTickets() {
     return;
   }
 
-  kdsTicketsList.innerHTML = activeOrders.map((order, index) => {
-    const queueNumber = index + 1;
-    const isTerrace = order.floor === 'Terrace' || order.floor === 'Upstairs' || (order.tableId && order.tableId.startsWith('Top'));
-    const timeFormatted = order.createdAt ? new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-    const elapsedMinutes = order.createdAt ? Math.max(0, Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000)) : 0;
-    const isUrgent = elapsedMinutes >= 12;
+  // 3-Column Kitchen Kanban Board Mode for iPad & Tablets
+  if (currentKdsViewMode === 'board') {
+    const receivedOrders = activeOrders.filter(o => !o.status || o.status === 'Received');
+    const preparingOrders = activeOrders.filter(o => o.status === 'Preparing');
+    const readyOrders = activeOrders.filter(o => o.status === 'Ready to Serve');
 
-    const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
-    const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : (cleanPhone.startsWith('91') ? cleanPhone : (cleanPhone ? `91${cleanPhone}` : ''));
-    const { encodedMessage } = buildWhatsAppOrderReadyMessage(order);
-    const waUrl = waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodedMessage}` : '';
-
-    const isOrderTakeawayOnly = order.orderMode === 'Takeaway' || order.orderMode === 'Parcel';
-    const items = order.items || [];
-
-    // Segregate items strictly for clear visual buckets
-    const takeawayItems = items.filter(item => item.mode === 'Takeaway' || (isOrderTakeawayOnly && item.mode !== 'Dine-In'));
-    const dineInItems = items.filter(item => item.mode !== 'Takeaway' && !(isOrderTakeawayOnly && item.mode !== 'Dine-In'));
-
-    const isMixedOrder = (takeawayItems.length > 0 && dineInItems.length > 0) || order.orderMode === 'Mixed' || (order.generalInstructions && order.generalInstructions.includes('MIXED ORDER'));
-
-    // Strip redundant mode tag from general customer instructions for clean presentation
-    const cleanCustomerNote = (order.generalInstructions || '')
-      .replace(/\[🍽️\s*\+\s*🥡\s*MIXED\s*ORDER\]/gi, '')
-      .replace(/\[🥡\s*TAKEAWAY\s*\/\s*PARCEL\]/gi, '')
-      .replace(/\[🍽️\s*DINE-IN\s*ORDER\]/gi, '')
-      .trim();
-
-    // Compute totals for clean UI badges
-    const takeawayTotalQty = takeawayItems.reduce((acc, i) => acc + (i.quantity || 1), 0);
-    const dineInTotalQty = dineInItems.reduce((acc, i) => acc + (i.quantity || 1), 0);
-    const grandTotalQty = items.reduce((acc, i) => acc + (i.quantity || 1), 0);
-
-    // Build Items Markup cleanly without clumsy nested box over-layering
-    let itemsHtml = '';
-
-    if (takeawayItems.length > 0 && dineInItems.length > 0) {
-      // MIXED ORDER: 2 clear sub-sections
-      itemsHtml = `
-        <div class="ticket-sub-section">
-          <div class="ticket-sub-heading takeaway-heading">
-            🥡 TAKEAWAY / PARCEL (${takeawayTotalQty} ${takeawayTotalQty === 1 ? 'item' : 'items'} — Pack in Bag)
-          </div>
-          <div class="ticket-items-list">
-            ${takeawayItems.map(item => `
-              <div class="clean-item-row">
-                <div class="item-left-cell">
-                  <span class="item-qty-square qty--takeaway">${item.quantity}×</span>
-                  <div class="item-name-block">
-                    <span class="item-main-title">${item.name}</span>
-                    ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
-                  </div>
-                </div>
-                <span class="item-price-tag">₹${item.price * item.quantity}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div class="ticket-mixed-divider"></div>
-
-        <div class="ticket-sub-section">
-          <div class="ticket-sub-heading dinein-heading">
-            🍽️ DINE-IN SERVICE (${dineInTotalQty} ${dineInTotalQty === 1 ? 'item' : 'items'} — Serve at Table)
-          </div>
-          <div class="ticket-items-list">
-            ${dineInItems.map(item => `
-              <div class="clean-item-row">
-                <div class="item-left-cell">
-                  <span class="item-qty-square qty--dinein">${item.quantity}×</span>
-                  <div class="item-name-block">
-                    <span class="item-main-title">${item.name}</span>
-                    ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
-                  </div>
-                </div>
-                <span class="item-price-tag">₹${item.price * item.quantity}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    } else if (takeawayItems.length > 0) {
-      // 100% TAKEAWAY
-      itemsHtml = `
-        <div class="ticket-items-list">
-          ${takeawayItems.map(item => `
-            <div class="clean-item-row">
-              <div class="item-left-cell">
-                <span class="item-qty-square qty--takeaway">${item.quantity}×</span>
-                <div class="item-name-block">
-                  <span class="item-main-title">${item.name}</span>
-                  ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
-                </div>
-              </div>
-              <span class="item-price-tag">₹${item.price * item.quantity}</span>
+    kdsTicketsList.innerHTML = `
+      <div class="kds-kanban-board">
+        <!-- 🟡 RECEIVED COLUMN -->
+        <div class="kanban-col kanban-col--received">
+          <div class="kanban-col-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>🟡</span>
+              <span>Received</span>
             </div>
-          `).join('')}
+            <span class="kanban-count-badge badge--received">${receivedOrders.length}</span>
+          </div>
+          <div class="kanban-cards-list">
+            ${receivedOrders.length === 0 ? `
+              <div class="kanban-empty-msg">No new orders waiting</div>
+            ` : receivedOrders.map(order => {
+              const queueNum = activeOrders.findIndex(o => o.id === order.id) + 1;
+              return renderKdsTicketCardHtml(order, queueNum, true);
+            }).join('')}
+          </div>
         </div>
-      `;
-    } else {
-      // 100% DINE-IN (or fallback items)
-      const renderItems = dineInItems.length > 0 ? dineInItems : items;
-      itemsHtml = `
-        <div class="ticket-items-list">
-          ${renderItems.map(item => `
-            <div class="clean-item-row">
-              <div class="item-left-cell">
-                <span class="item-qty-square qty--dinein">${item.quantity}×</span>
-                <div class="item-name-block">
-                  <span class="item-main-title">${item.name}</span>
-                  ${item.note ? `<span class="item-special-note">Note: ${item.note}</span>` : ''}
-                </div>
-              </div>
-              <span class="item-price-tag">₹${item.price * item.quantity}</span>
+
+        <!-- 🟠 PREPARING COLUMN -->
+        <div class="kanban-col kanban-col--preparing">
+          <div class="kanban-col-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>🟠</span>
+              <span>Preparing</span>
             </div>
-          `).join('')}
+            <span class="kanban-count-badge badge--preparing">${preparingOrders.length}</span>
+          </div>
+          <div class="kanban-cards-list">
+            ${preparingOrders.length === 0 ? `
+              <div class="kanban-empty-msg">No orders being prepped</div>
+            ` : preparingOrders.map(order => {
+              const queueNum = activeOrders.findIndex(o => o.id === order.id) + 1;
+              return renderKdsTicketCardHtml(order, queueNum, true);
+            }).join('')}
+          </div>
         </div>
-      `;
-    }
 
-    return `
-      <div class="kds-ticket-card ${isTerrace ? 'is-terrace' : ''}" data-id="${order.id}">
-        <!-- Top Bar: Table & Floor, Queue Status, Order ID & Time -->
-        <div class="ticket-top-bar">
-          <div class="ticket-table-group">
-            <span class="ticket-table-badge ${!isTerrace ? 'is-ground' : ''}">
-              ${order.tableId || 'Table'}
-            </span>
-            <span class="ticket-floor-tag">${isTerrace ? 'TERRACE' : 'GROUND FLOOR'}</span>
-          </div>
-
-          <div class="ticket-queue-badge ${queueNumber === 1 ? 'is-first' : ''} ${isUrgent ? 'is-urgent' : ''}">
-            <span class="queue-num">#${queueNumber} IN QUEUE</span>
-            <span class="queue-time">⏱️ ${formatElapsedWait(elapsedMinutes)}</span>
-          </div>
-
-          <div class="ticket-id-meta" style="display: flex; align-items: center; gap: 8px;">
-            <button class="kds-ticket-edit-btn" type="button" onclick="openOrderEditModal('${order.id}')" title="Edit Order Items">
-              ✏️ Edit
-            </button>
-            <div style="text-align: right;">
-              <div class="ticket-order-number">#${order.orderNumber || order.id}</div>
-              <div class="ticket-time-stamp">${timeFormatted}</div>
+        <!-- 🟢 READY FOR PICKUP COLUMN -->
+        <div class="kanban-col kanban-col--ready">
+          <div class="kanban-col-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>🟢</span>
+              <span>Ready for Pickup</span>
             </div>
+            <span class="kanban-count-badge badge--ready">${readyOrders.length}</span>
           </div>
-        </div>
-
-        <!-- Service Ribbon -->
-        ${isMixedOrder ? `
-          <div class="ticket-service-banner banner--mixed">
-            <span class="banner-title">🍽️ DINE-IN + 🥡 TAKEAWAY</span>
-            <span class="banner-sub">SPLIT ORDER</span>
+          <div class="kanban-cards-list">
+            ${readyOrders.length === 0 ? `
+              <div class="kanban-empty-msg">No orders awaiting pickup</div>
+            ` : readyOrders.map(order => {
+              const queueNum = activeOrders.findIndex(o => o.id === order.id) + 1;
+              return renderKdsTicketCardHtml(order, queueNum, true);
+            }).join('')}
           </div>
-        ` : (isOrderTakeawayOnly ? `
-          <div class="ticket-service-banner banner--takeaway">
-            <span class="banner-title">🥡 ALL TAKEAWAY / PARCEL</span>
-            <span class="banner-sub">PACK IN BAG</span>
-          </div>
-        ` : `
-          <div class="ticket-service-banner banner--dinein">
-            <span class="banner-title">🍽️ TABLE DINE-IN SERVICE</span>
-            <span class="banner-sub">SERVE AT TABLE</span>
-          </div>
-        `)}
-
-        <!-- Customer & Payment Bar -->
-        <div class="ticket-customer-bar">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="customer-name">👤 ${order.customerName || 'Guest'}</span>
-            ${order.customerPhone ? `<a href="${waUrl}" target="_blank" class="customer-phone" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;" title="Send WhatsApp alert">📞 +91 ${order.customerPhone} <span style="font-size: 0.75rem; color: #25D366;">💬</span></a>` : ''}
-          </div>
-          <span class="customer-pay-tag">💳 ${order.paymentMode || 'Counter'}</span>
-        </div>
-
-        <!-- Items Container -->
-        <div class="ticket-items-container">
-          ${itemsHtml}
-        </div>
-
-        <!-- Packaging Charge (if applicable) -->
-        ${Number(order.packagingCharge || 0) > 0 ? `
-          <div class="ticket-packaging-row">
-            <span>🥡 Container Packaging</span>
-            <span>+₹${order.packagingCharge}</span>
-          </div>
-        ` : ''}
-
-        <!-- Special Request Note (if applicable) -->
-        ${cleanCustomerNote ? `
-          <div class="ticket-customer-note-callout">
-            <strong>Special Request:</strong> ${cleanCustomerNote}
-          </div>
-        ` : ''}
-
-        <!-- Total Price Row -->
-        <div class="ticket-bottom-total-row">
-          <span class="total-label">Total (${grandTotalQty} ${grandTotalQty === 1 ? 'item' : 'items'})</span>
-          <span class="total-value">₹${Number(order.total || 0) || (Number(order.subtotal || 0) + Number(order.packagingCharge || 0))}</span>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="ticket-action-bar">
-          <button class="kds-step-btn ${order.status === 'Received' ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Received')">
-            Received
-          </button>
-          <button class="kds-step-btn ${order.status === 'Preparing' ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Preparing')">
-            Prep
-          </button>
-          <button class="kds-step-btn ${order.status === 'Ready to Serve' ? 'active' : ''}" onclick="advanceOrderStatus('${order.id}', 'Ready to Serve')">
-            Ready 🚀
-          </button>
-          <button class="kds-step-btn kds-step-btn--done" onclick="promptOrderSettlement('${order.id}')">
-            Done ✓
-          </button>
         </div>
       </div>
     `;
+    return;
+  }
+
+  // Single Queue Stream Mode
+  kdsTicketsList.innerHTML = activeOrders.map((order, index) => {
+    return renderKdsTicketCardHtml(order, index + 1, false);
   }).join('');
 }
+
 
 // Visual Toast in KDS
 function showKdsToast(msg) {
@@ -992,6 +1252,24 @@ function renderWaiterCalls() {
   const activeCalls = kdsState.waiterCalls.filter(c => !c.resolved);
   const livePill = document.getElementById('kdsWaiterLivePill');
   const waiterSection = document.querySelector('.kds-waiter-section');
+
+  // Urgent Terrace Waiter Call Banner for iPad Display
+  const urgentTicker = document.getElementById('kdsUrgentWaiterTicker');
+  const urgentText = document.getElementById('kdsUrgentWaiterText');
+  if (urgentTicker) {
+    if (activeCalls.length > 0) {
+      const topCall = activeCalls[0];
+      currentUrgentCallId = topCall.id;
+      const fl = topCall.floor === 'Upstairs' ? 'TERRACE' : (topCall.floor || 'TERRACE').toUpperCase();
+      if (urgentText) {
+        urgentText.textContent = `Table ${topCall.tableId} (${fl}): ${topCall.reason || 'Assistance Needed'}${activeCalls.length > 1 ? ` (+${activeCalls.length - 1} more)` : ''}`;
+      }
+      urgentTicker.style.display = 'flex';
+    } else {
+      currentUrgentCallId = null;
+      urgentTicker.style.display = 'none';
+    }
+  }
 
   if (livePill) {
     livePill.textContent = activeCalls.length > 0 ? `🚨 ${activeCalls.length} Urgent` : '0 Pending';
@@ -2910,4 +3188,9 @@ window.confirmPaymentSettlement = confirmPaymentSettlement;
 window.buildWhatsAppOrderReadyMessage = buildWhatsAppOrderReadyMessage;
 window.switchKdsTicketView = switchKdsTicketView;
 window.reopenCompletedOrder = reopenCompletedOrder;
+window.toggleScreenWakeLock = toggleScreenWakeLock;
+window.requestScreenWakeLock = requestScreenWakeLock;
+window.setKdsViewMode = setKdsViewMode;
+window.toggleKdsSidePanel = toggleKdsSidePanel;
+window.resolveUrgentWaiterCall = resolveUrgentWaiterCall;
 

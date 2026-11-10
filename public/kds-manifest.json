@@ -1,0 +1,25 @@
+{
+  "name": "Joe's Brew Kitchen Display System",
+  "short_name": "Joe's KDS",
+  "start_url": "/kds.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#120A06",
+  "theme_color": "#180E09",
+  "description": "Commercial Kitchen Display System & Order Dispatch for Joe's Brew",
+  "icons": [
+    {
+      "src": "/assets/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

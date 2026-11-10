@@ -1,0 +1,16 @@
+{
+  "appId": "com.joesbrew.kds",
+  "appName": "Joe's Brew KDS",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": true,
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#180E09"
+    }
+  }
+}
