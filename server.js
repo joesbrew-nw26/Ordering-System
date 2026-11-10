@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import crypto from 'crypto';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
@@ -904,6 +905,85 @@ app.post('/api/kds/reset-all', async (req, res) => {
     res.json({ success: true, message: 'All orders and sales successfully reset.' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to reset orders and sales' });
+  }
+});
+
+// Standalone iPad Apple WebClip Configuration Profile (.mobileconfig)
+// Installs Joe's Brew KDS as a native-feel standalone app directly on iPad home screen
+app.get(['/api/install-ipad-profile', '/install-kds.mobileconfig'], (req, res) => {
+  try {
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = req.get('host') || 'joesbrew-ordering.vercel.app';
+    const targetUrl = `${protocol}://${host}/kds.html`;
+
+    let base64Icon = '';
+    try {
+      const iconPath = path.join(__dirname, 'public', 'assets', 'logo.jpg');
+      if (fs.existsSync(iconPath)) {
+        base64Icon = fs.readFileSync(iconPath).toString('base64');
+      }
+    } catch (e) {
+      console.warn('Could not read logo icon for mobileconfig', e);
+    }
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>FullScreen</key>
+      <true/>
+      ${base64Icon ? `<key>Icon</key>\n      <data>${base64Icon}</data>` : ''}
+      <key>IsRemovable</key>
+      <true/>
+      <key>Label</key>
+      <string>Joe\'s KDS</string>
+      <key>PayloadDescription</key>
+      <string>Kitchen Display System Standalone App for Joe\'s Brew</string>
+      <key>PayloadDisplayName</key>
+      <string>Joe\'s Brew KDS Web Clip</string>
+      <key>PayloadIdentifier</key>
+      <string>com.joesbrew.kds.webclip</string>
+      <key>PayloadType</key>
+      <string>com.apple.webClip.managed</string>
+      <key>PayloadUUID</key>
+      <string>2F4E21D1-71BE-4A63-9097-90AA0B7EB010</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+      <key>Precomposed</key>
+      <true/>
+      <key>URL</key>
+      <string>${targetUrl}</string>
+    </dict>
+  </array>
+  <key>PayloadDescription</key>
+  <string>Installs Joe\'s Brew KDS Standalone App on iPad</string>
+  <key>PayloadDisplayName</key>
+  <string>Joe\'s Brew KDS Standalone App</string>
+  <key>PayloadIdentifier</key>
+  <string>com.joesbrew.kds.profile</string>
+  <key>PayloadOrganization</key>
+  <string>Joe\'s Brew</string>
+  <key>PayloadRemovalDisallowed</key>
+  <false/>
+  <key>PayloadType</key>
+  <string>Configuration</string>
+  <key>PayloadUUID</key>
+  <string>6305FA27-0B45-4284-8848-18501FA0B020</string>
+  <key>PayloadVersion</key>
+  <integer>1</integer>
+</dict>
+</plist>`;
+
+    res.set({
+      'Content-Type': 'application/x-apple-aspen-config',
+      'Content-Disposition': 'attachment; filename="JoesBrewKDS.mobileconfig"'
+    });
+    res.send(xml);
+  } catch (err) {
+    res.status(500).send('Failed to generate iPad profile');
   }
 });
 

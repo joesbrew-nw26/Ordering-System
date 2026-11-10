@@ -50,3 +50,4 @@ self.addEventListener('fetch', (evt) => {
       .catch(() => caches.match(evt.request))
   );
 });
+

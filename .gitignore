@@ -7,3 +7,9 @@ node_modules/
 .vercel
 scratch/
 
+
+# iOS / Capacitor build artifacts
+ios/App/Pods/
+ios/App/build/
+ios/App/CapApp-SPM/.build/
+ios/App/CapApp-SPM/.swiftpm/

@@ -4,8 +4,12 @@
   "webDir": "public",
   "bundledWebRuntime": false,
   "server": {
+    "url": "https://joesbrew-ordering.vercel.app/kds.html",
     "cleartext": true,
     "androidScheme": "https"
+  },
+  "ios": {
+    "scheme": "JoesBrewKDS"
   },
   "plugins": {
     "SplashScreen": {
