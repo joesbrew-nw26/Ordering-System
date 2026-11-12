@@ -1,0 +1,25 @@
+{
+  "name": "Joe's Brew Coffee & Table Ordering",
+  "short_name": "Joe's Brew",
+  "start_url": "/?view=menu",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#120A06",
+  "theme_color": "#180E09",
+  "description": "Browse menu and order coffee directly from your table at Joe's Brew",
+  "icons": [
+    {
+      "src": "/assets/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
