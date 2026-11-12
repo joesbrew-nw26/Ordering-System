@@ -3337,27 +3337,26 @@ window.closePaymentModal = closePaymentModal;
 window.confirmPaymentSettlement = confirmPaymentSettlement;
 window.buildWhatsAppOrderReadyMessage = buildWhatsAppOrderReadyMessage;
 
-function openIpadInstallModal() {
-  const modal = document.getElementById('kdsIpadInstallModal');
-  const qrImg = document.getElementById('kdsIpadQrImg');
-  const urlText = document.getElementById('kdsIpadUrlText');
-  const profileLink = document.getElementById('kdsDownloadProfileLink');
+function openAndroidInstallModal() {
+  const modal = document.getElementById('kdsAndroidInstallModal') || document.getElementById('kdsIpadInstallModal');
+  const qrImg = document.getElementById('kdsAndroidQrImg') || document.getElementById('kdsIpadQrImg');
+  const urlText = document.getElementById('kdsAndroidUrlText') || document.getElementById('kdsIpadUrlText');
 
   const currentUrl = window.location.href;
   if (urlText) urlText.textContent = currentUrl;
   if (qrImg) {
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=4&data=${encodeURIComponent(currentUrl)}`;
   }
-  if (profileLink) {
-    profileLink.href = `/api/install-ipad-profile`;
-  }
   if (modal) modal.classList.remove('hidden');
 }
 
-function closeIpadInstallModal() {
-  const modal = document.getElementById('kdsIpadInstallModal');
+function closeAndroidInstallModal() {
+  const modal = document.getElementById('kdsAndroidInstallModal') || document.getElementById('kdsIpadInstallModal');
   if (modal) modal.classList.add('hidden');
 }
+
+const openIpadInstallModal = openAndroidInstallModal;
+const closeIpadInstallModal = closeAndroidInstallModal;
 
 // ==========================================
 // PWA & DEVICE APP INSTALLATION CONTROLLER
@@ -3425,5 +3424,7 @@ window.toggleKdsSidePanel = toggleKdsSidePanel;
 window.resolveUrgentWaiterCall = resolveUrgentWaiterCall;
 
 
+window.openAndroidInstallModal = openAndroidInstallModal;
+window.closeAndroidInstallModal = closeAndroidInstallModal;
 window.openIpadInstallModal = openIpadInstallModal;
 window.closeIpadInstallModal = closeIpadInstallModal;

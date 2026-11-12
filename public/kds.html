@@ -1438,10 +1438,10 @@
         <span id="kdsWakeLockIcon">☀️</span>
         <span id="kdsWakeLockText" style="color: #FCD34D; font-weight: 700;">Screen: ON</span>
       </button>
-      <!-- Standalone iPad App Installer Trigger -->
-      <button id="kdsIpadAppBtn" class="kds-stat-pill" type="button" onclick="openIpadInstallModal()" style="cursor: pointer; background: rgba(59, 130, 246, 0.15); border: 1.5px solid rgba(59, 130, 246, 0.4); display: inline-flex; align-items: center; gap: 6px; font-family: inherit; color: inherit;" title="Install Standalone App on iPad">
-        <span>📲</span>
-        <span style="color: #93C5FD; font-weight: 700;">iPad App</span>
+      <!-- Standalone Android App Installer Trigger -->
+      <button id="kdsAndroidAppBtn" class="kds-stat-pill" type="button" onclick="openAndroidInstallModal()" style="cursor: pointer; background: rgba(16, 185, 129, 0.15); border: 1.5px solid rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 6px; font-family: inherit; color: inherit;" title="Install Android App / Download APK">
+        <span>🤖</span>
+        <span style="color: #6EE7B7; font-weight: 700;">Android App</span>
       </button>
 
       <!-- Link to Customer Ordering Page / Take Order -->
@@ -2013,76 +2013,69 @@
     </div>
   </div>
 
-  <!-- Standalone iPad Application Installer Modal -->
-  <div id="kdsIpadInstallModal" class="kds-admin-modal-backdrop hidden" style="z-index: 2500;">
+  <!-- Standalone Android Application Installer Modal -->
+  <div id="kdsAndroidInstallModal" class="kds-admin-modal-backdrop hidden" style="z-index: 2500;">
     <div class="kds-admin-modal-card" style="max-width: 640px; padding: 24px; max-height: 90vh; overflow-y: auto;">
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid rgba(200, 157, 86, 0.3); padding-bottom: 14px; margin-bottom: 18px;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 1.6rem;">📱</span>
+          <span style="font-size: 1.8rem;">🤖</span>
           <div>
-            <h3 style="font-family: 'Cinzel', serif; color: var(--vintage-gold); font-size: 1.25rem; margin: 0;">Joe's Brew KDS for iPad</h3>
-            <span style="font-size: 0.8rem; color: #9CA3AF;">Standalone Kitchen Display Application</span>
+            <h3 style="font-family: 'Cinzel', serif; color: var(--vintage-gold); font-size: 1.25rem; margin: 0;">Joe's Brew KDS for Android</h3>
+            <span style="font-size: 0.8rem; color: #9CA3AF;">Standalone Commercial Kitchen Display App & Direct APK</span>
           </div>
         </div>
-        <button type="button" class="kds-item-modal-close" onclick="closeIpadInstallModal()">✕</button>
+        <button type="button" class="kds-item-modal-close" onclick="closeAndroidInstallModal()">✕</button>
       </div>
 
       <!-- Live Connection QR Code Section -->
       <div style="background: rgba(0, 0, 0, 0.4); border: 1.5px solid rgba(200, 157, 86, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
-        <img id="kdsIpadQrImg" src="" alt="Scan with iPad Camera" style="width: 130px; height: 130px; border-radius: 8px; border: 2px solid var(--vintage-gold); background: #ffffff; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <img id="kdsAndroidQrImg" src="" alt="Scan with Android Camera" style="width: 130px; height: 130px; border-radius: 8px; border: 2px solid var(--vintage-gold); background: #ffffff; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
         <div style="flex: 1; min-width: 220px;">
-          <span style="display: inline-block; background: rgba(16, 185, 129, 0.2); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; margin-bottom: 6px;">📷 SCAN WITH IPAD</span>
-          <h4 style="margin: 0 0 6px 0; color: #F3F4F6; font-size: 0.95rem;">Open Camera on your iPad</h4>
-          <p style="margin: 0 0 8px 0; font-size: 0.82rem; color: #D1C4B9; line-height: 1.4;">Point your iPad's camera directly at this QR code to open the KDS instantly without typing any IP address.</p>
-          <div id="kdsIpadUrlText" style="font-family: monospace; font-size: 0.78rem; color: var(--vintage-gold-glow); word-break: break-all;"></div>
+          <span style="display: inline-block; background: rgba(16, 185, 129, 0.2); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; margin-bottom: 6px;">📷 SCAN WITH ANDROID</span>
+          <h4 style="margin: 0 0 6px 0; color: #F3F4F6; font-size: 0.95rem;">Open Camera on your Phone/Tablet</h4>
+          <p style="margin: 0 0 8px 0; font-size: 0.82rem; color: #D1C4B9; line-height: 1.4;">Point your camera at this QR code to download the APK or open the KDS instantly on your Android device.</p>
+          <div id="kdsAndroidUrlText" style="font-family: monospace; font-size: 0.78rem; color: var(--vintage-gold-glow); word-break: break-all;"></div>
         </div>
       </div>
 
-      <!-- Installation Method 1: Apple Standalone WebClip Profile -->
-      <div style="background: rgba(59, 130, 246, 0.08); border: 1.5px solid rgba(59, 130, 246, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+      <!-- Option 1: Direct Android APK Installer -->
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <span style="font-size: 1.2rem;">⚡</span>
-          <h4 style="margin: 0; color: #93C5FD; font-size: 1rem;">Option 1: 1-Tap Standalone iPad App Profile (Recommended)</h4>
+          <span style="font-size: 1.3rem;">📦</span>
+          <h4 style="margin: 0; color: #A7F3D0; font-size: 1.02rem;">Option 1: Direct Android APK Package (Recommended)</h4>
         </div>
         <p style="font-size: 0.83rem; color: #E5E7EB; margin: 0 0 12px 0; line-height: 1.4;">
-          Installs a dedicated <strong>Joe's KDS</strong> application icon directly onto your iPad Home Screen that launches in edge-to-edge full screen with zero Safari browser address bars.
+          Install the official compiled Android package (APK) directly onto any Android tablet or smartphone for native performance and full-screen kitchen operation.
         </p>
 
-        <a id="kdsDownloadProfileLink" href="/api/install-ipad-profile" class="kds-quick-advance-btn" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #FFFFFF; text-decoration: none; justify-content: center; font-size: 0.92rem; min-height: 46px; margin-bottom: 12px;">
-          <span>📲</span> <span>Download Standalone iPad Profile</span>
+        <a href="/downloads/JoesBrewKDS.apk" download="JoesBrewKDS.apk" class="kds-quick-advance-btn" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; text-decoration: none; justify-content: center; font-size: 0.94rem; min-height: 48px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+          <span>⬇️</span> <span>Download Android APK (6.8 MB)</span>
         </a>
 
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #D1D5DB; line-height: 1.5;">
-          <strong>Quick 3-Step iPad Activation:</strong><br>
-          1. Tap <strong>Download Profile</strong> above, then tap <strong>"Allow"</strong> when iPadOS prompts.<br>
-          2. Open iPad <strong>Settings</strong> ➔ tap <strong>"Profile Downloaded"</strong> near the top ➔ tap <strong>"Install"</strong>.<br>
-          3. Return to your iPad Home Screen and open <strong>Joe's KDS</strong>!
+          <strong>Quick Android Installation Steps:</strong><br>
+          1. Tap <strong>Download Android APK</strong> above.<br>
+          2. Tap the downloaded file notification on your device.<br>
+          3. Tap <strong>Install</strong> (enable <em>"Allow from this source"</em> if prompted by Android).<br>
+          4. Open <strong>Joe's Brew KDS</strong> from your app drawer!
         </div>
       </div>
 
-      <!-- Installation Method 2: Safari Add to Home Screen -->
-      <div style="background: rgba(245, 158, 11, 0.08); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+      <!-- Option 2: 1-Click Chrome App Install -->
+      <div style="background: rgba(245, 158, 11, 0.08); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 16px; margin-bottom: 18px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
           <span style="font-size: 1.2rem;">🌐</span>
-          <h4 style="margin: 0; color: #FDE68A; font-size: 0.95rem;">Option 2: Safari "Add to Home Screen"</h4>
+          <h4 style="margin: 0; color: #FDE68A; font-size: 0.95rem;">Option 2: 1-Click Chrome Web App (PWA)</h4>
         </div>
-        <p style="font-size: 0.82rem; color: #D1C4B9; margin: 0 0 8px 0; line-height: 1.4;">
-          If viewing in Safari on iPad: tap the <strong>Share icon</strong> (square with arrow ↑) at the top right of Safari, then scroll down and tap <strong>"Add to Home Screen"</strong> (<strong>+</strong>).
+        <p style="font-size: 0.82rem; color: #D1C4B9; margin: 0 0 10px 0; line-height: 1.4;">
+          Add to your home screen instantly without downloading files. Launches in full-screen standalone mode with Screen Wake Lock.
         </p>
+        <button type="button" onclick="triggerDeviceAppInstall()" class="kds-quick-advance-btn" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #180E09; justify-content: center; font-size: 0.90rem; min-height: 44px;">
+          <span>📲</span> <span>Install via Chrome (1-Click)</span>
+        </button>
       </div>
 
-      <!-- Installation Method 3: Native Xcode / Capacitor Package -->
-      <div style="background: rgba(255, 255, 255, 0.04); border: 1.5px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-          <span style="font-size: 1.1rem;">🛠️</span>
-          <h4 style="margin: 0; color: #E5E7EB; font-size: 0.88rem;">Option 3: Native Xcode Project (`ios/App`)</h4>
-        </div>
-        <p style="font-size: 0.78rem; color: #9CA3AF; margin: 0; line-height: 1.4;">
-          The repository includes a complete Capacitor native Xcode project in <code style="color: var(--brass-gold);">ios/App/App.xcodeproj</code> configured with automatic GitHub Actions CI.
-        </p>
-      </div>
-
-      <button type="button" class="ledger-btn-secondary" onclick="closeIpadInstallModal()" style="width: 100%; padding: 11px; font-weight: 700;">
+      <button type="button" class="ledger-btn-secondary" onclick="closeAndroidInstallModal()" style="width: 100%; padding: 11px; font-weight: 700;">
         Close
       </button>
     </div>
