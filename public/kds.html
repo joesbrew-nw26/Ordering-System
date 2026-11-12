@@ -2088,6 +2088,19 @@
     </div>
   </div>
 
+  <!-- Floating 1-Click App Install Banner for Mobile & Tablet Devices -->
+  <div id="kdsAppInstallBanner" class="kds-install-banner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(24, 14, 9, 0.95); border: 2px solid var(--vintage-gold); border-radius: 14px; padding: 12px 18px; box-shadow: 0 8px 32px rgba(0,0,0,0.85); align-items: center; gap: 14px; backdrop-filter: blur(12px); max-width: 92vw; width: 520px;">
+    <img src="/assets/logo.jpg" style="width: 42px; height: 42px; border-radius: 8px; border: 1.5px solid var(--brass-gold); flex-shrink: 0;" alt="Joe's Brew Logo">
+    <div style="flex: 1; min-width: 0;">
+      <div style="font-weight: 800; font-size: 0.92rem; color: var(--vintage-gold-glow); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Install Joe's Brew KDS App</div>
+      <div style="font-size: 0.76rem; color: #D1C4B9;">Full-screen standalone app for iPad, tablet & phone</div>
+    </div>
+    <button id="btnInstallKdsApp" type="button" onclick="triggerDeviceAppInstall()" style="padding: 9px 16px; font-size: 0.85rem; border-radius: 8px; font-weight: 800; background: linear-gradient(135deg, #F59E0B, #D97706); color: #180E09; border: none; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); font-family: inherit; display: inline-flex; align-items: center; gap: 6px;">
+      <span>📲</span> <span>Install App</span>
+    </button>
+    <button type="button" onclick="dismissInstallBanner()" style="background: none; border: none; color: #9CA3AF; font-size: 1.25rem; cursor: pointer; padding: 4px; line-height: 1; margin-left: 2px;" title="Dismiss">✕</button>
+  </div>
+
   <div id="kdsToastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column-reverse; gap: 8px; pointer-events: none;"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

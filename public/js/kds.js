@@ -3359,6 +3359,63 @@ function closeIpadInstallModal() {
   if (modal) modal.classList.add('hidden');
 }
 
+// ==========================================
+// PWA & DEVICE APP INSTALLATION CONTROLLER
+// Prompts installation on Android, tablet & iOS
+// ==========================================
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBannerIfAppropriate();
+});
+
+function isAppInstalledOrStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true ||
+         document.referrer.includes('android-app://');
+}
+
+function showInstallBannerIfAppropriate() {
+  if (isAppInstalledOrStandalone()) return;
+  if (sessionStorage.getItem('jb_dismiss_install_banner') === '1') return;
+
+  const banner = document.getElementById('kdsAppInstallBanner');
+  if (banner) {
+    banner.style.display = 'flex';
+  }
+}
+
+function dismissInstallBanner() {
+  const banner = document.getElementById('kdsAppInstallBanner');
+  if (banner) banner.style.display = 'none';
+  sessionStorage.setItem('jb_dismiss_install_banner', '1');
+}
+
+async function triggerDeviceAppInstall() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      dismissInstallBanner();
+      showKdsToast('✓ Joe\'s KDS App installed successfully!');
+    }
+    deferredInstallPrompt = null;
+  } else {
+    // On iOS or browsers without beforeinstallprompt, open modal
+    openIpadInstallModal();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(showInstallBannerIfAppropriate, 1200);
+});
+
+window.triggerDeviceAppInstall = triggerDeviceAppInstall;
+window.dismissInstallBanner = dismissInstallBanner;
+window.isAppInstalledOrStandalone = isAppInstalledOrStandalone;
+
 window.switchKdsTicketView = switchKdsTicketView;
 window.reopenCompletedOrder = reopenCompletedOrder;
 window.toggleScreenWakeLock = toggleScreenWakeLock;

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Joe\'s Brew KDS</string>
+    <string name="title_activity_main">Joe\'s Brew KDS</string>
+    <string name="package_name">com.joesbrew.kds</string>
+    <string name="custom_url_scheme">com.joesbrew.kds</string>
+</resources>
