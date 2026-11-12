@@ -1,5 +1,6 @@
 import UIKit
 import Capacitor
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -7,30 +8,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // High-Priority Audio Session for Kitchen Order Notifications over Bluetooth
+        configureAudioSession()
         return true
     }
 
+    private func configureAudioSession() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            // .playback category ensures audio plays even if silent switch is on or other media is playing
+            // .duckOthers lowers background music volume so KDS notification cuts through with high priority!
+            // .mixWithOthers allows playing simultaneously without killing background music app
+            // .allowBluetooth & .allowBluetoothA2DP routes audio through connected Bluetooth speakers
+            try session.setCategory(
+                .playback,
+                mode: .default,
+                options: [.duckOthers, .mixWithOthers, .allowBluetooth, .allowBluetoothA2DP]
+            )
+            try session.setActive(true, options: [])
+            print("[KDS Audio] AVAudioSession successfully configured for Bluetooth ducking and high priority playback.")
+        } catch {
+            print("[KDS Audio] Failed to configure AVAudioSession: \(error)")
+        }
+    }
+
     func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        // Sent when the application is about to move from active to inactive state.
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        // Use this method to release shared resources, save user data, invalidate timers.
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        // Re-prime audio session when returning to foreground
+        configureAudioSession()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        // Re-prime audio session when active
+        configureAudioSession()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // Called when the application is about to terminate.
     }
 
     func application(_ application: UIApplication,

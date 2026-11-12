@@ -29,7 +29,152 @@ let currentDetailItem = null;
 let currentDetailQty = 1;
 let currentDetailMode = 'Dine-In';
 
-const chimeAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+// ==========================================
+// HIGH-PRIORITY BLUETOOTH-READY ORDER AUDIO ENGINE
+// In-memory offline acoustic chime capable of cutting through background music
+// ==========================================
+let appAudioCtx = null;
+let isAppAudioUnlocked = false;
+
+function setAppPlaybackAudioSession() {
+  if ('audioSession' in navigator) {
+    try {
+      navigator.audioSession.type = 'playback';
+    } catch (e) {}
+  }
+}
+setAppPlaybackAudioSession();
+
+function buildCustomerOrderChimeWavUri() {
+  const sampleRate = 22050;
+  const duration = 1.25;
+  const totalSamples = Math.floor(sampleRate * duration);
+  const buffer = new Int16Array(totalSamples);
+
+  function addStroke(startSec, baseFreq, decaySec, amp) {
+    const startSample = Math.floor(startSec * sampleRate);
+    const strokeSamples = Math.floor(decaySec * sampleRate);
+    for (let i = 0; i < strokeSamples && (startSample + i) < totalSamples; i++) {
+      const t = i / sampleRate;
+      const env = Math.exp(-t * (4.2 / decaySec)) * Math.min(1.0, i / (sampleRate * 0.008));
+      const s1 = Math.sin(2 * Math.PI * baseFreq * t) * 0.65;
+      const s2 = Math.sin(2 * Math.PI * (baseFreq * 2.4) * t) * 0.25;
+      const s3 = Math.sin(2 * Math.PI * (baseFreq * 3.8) * t) * 0.15;
+      const sampleVal = (s1 + s2 + s3) * env * amp;
+      const idx = startSample + i;
+      buffer[idx] = Math.max(-32768, Math.min(32767, buffer[idx] + Math.floor(sampleVal * 29000)));
+    }
+  }
+
+  // Harmonic ascending chime: D5 (587Hz) -> A5 (880Hz) -> D6 (1175Hz)
+  addStroke(0, 587.33, 0.75, 0.90);
+  addStroke(0.14, 880.00, 0.95, 0.95);
+  addStroke(0.28, 1174.66, 1.15, 1.0);
+
+  const byteLength = totalSamples * 2;
+  const header = new ArrayBuffer(44);
+  const view = new DataView(header);
+  view.setUint32(0, 0x52494646, false); // 'RIFF'
+  view.setUint32(4, 36 + byteLength, true);
+  view.setUint8(8, 0x57); view.setUint8(9, 0x41); view.setUint8(10, 0x56); view.setUint8(11, 0x45); // 'WAVE'
+  view.setUint8(12, 0x66); view.setUint8(13, 0x6d); view.setUint8(14, 0x74); view.setUint8(15, 0x20); // 'fmt '
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // Mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  view.setUint8(36, 0x64); view.setUint8(37, 0x61); view.setUint8(38, 0x74); view.setUint8(39, 0x61); // 'data'
+  view.setUint32(40, byteLength, true);
+
+  const fullBytes = new Uint8Array(44 + byteLength);
+  fullBytes.set(new Uint8Array(header), 0);
+  fullBytes.set(new Uint8Array(buffer.buffer), 44);
+
+  let binary = '';
+  const len = fullBytes.byteLength;
+  for (let i = 0; i < len; i += 8192) {
+    const chunk = fullBytes.subarray(i, Math.min(i + 8192, len));
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return 'data:audio/wav;base64,' + (typeof btoa !== 'undefined' ? btoa(binary) : Buffer.from(fullBytes).toString('base64'));
+}
+
+let orderChimeAudio = null;
+try {
+  orderChimeAudio = new Audio(buildCustomerOrderChimeWavUri());
+  orderChimeAudio.setAttribute('playsinline', '');
+  orderChimeAudio.setAttribute('webkit-playsinline', '');
+} catch (e) {}
+
+function getAppAudioContext() {
+  if (!appAudioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) appAudioCtx = new AudioContextClass();
+  }
+  if (appAudioCtx && appAudioCtx.state === 'suspended') {
+    appAudioCtx.resume().catch(() => {});
+  }
+  return appAudioCtx;
+}
+
+function unlockAppAudio() {
+  setAppPlaybackAudioSession();
+  const ctx = getAppAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+  if (orderChimeAudio) {
+    try {
+      orderChimeAudio.load();
+    } catch (e) {}
+  }
+  isAppAudioUnlocked = true;
+}
+
+['click', 'touchstart', 'pointerdown'].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (!isAppAudioUnlocked) unlockAppAudio();
+  }, { passive: true, once: true });
+});
+
+function playOrderSuccessChime() {
+  setAppPlaybackAudioSession();
+
+  // 1. Primary: High-priority HTML5 Audio element over Bluetooth
+  if (orderChimeAudio) {
+    try {
+      orderChimeAudio.pause();
+      orderChimeAudio.currentTime = 0;
+      orderChimeAudio.volume = 1.0;
+      const p = orderChimeAudio.play();
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+  }
+
+  // 2. Secondary: Web Audio API synthesizer
+  try {
+    const ctx = getAppAudioContext();
+    if (ctx) {
+      const now = ctx.currentTime;
+      [587.33, 880.00, 1174.66].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const t = now + (idx * 0.14);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.70, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.75);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.75);
+      });
+    }
+  } catch (e) {}
+}
 
 // ====================================================================
 // DOM REFERENCES
@@ -1150,6 +1295,8 @@ function renderCartModal() {
 // ====================================================================
 async function submitOrder() {
   if (state.cart.length === 0) return;
+  // Pre-prime audio session synchronously within the user tap gesture
+  unlockAppAudio();
 
   const kitchen = getKitchenOperatingStatus();
   if (!kitchen.isOpen) {
@@ -1229,7 +1376,7 @@ async function submitOrder() {
     orderSuccessModal.classList.add('is-open');
     orderSuccessModal.classList.add('open');
 
-    try { chimeAudio.play(); } catch (e) {}
+    playOrderSuccessChime();
     showToast(`Order ${displayNum} placed! Kitchen alerted.`);
   } catch (err) {
     console.error(err);
@@ -1310,7 +1457,7 @@ async function initWebSocket() {
           if (state.activeOrder && state.activeOrder.id === updated.id) {
             state.activeOrder.status = updated.status;
             updateLiveTrackerUI(updated.status);
-            try { chimeAudio.play(); } catch (e) {}
+            playOrderSuccessChime();
             showToast(`Kitchen status: ${updated.status}`);
           }
         })
@@ -1368,7 +1515,7 @@ function handleSocketMessage(msg) {
     if (state.activeOrder && state.activeOrder.id === orderId) {
       state.activeOrder.status = status;
       updateLiveTrackerUI(status);
-      try { chimeAudio.play(); } catch (e) {}
+      playOrderSuccessChime();
       showToast(`Kitchen status: ${status}`);
     }
   } else if (msg.type === 'STOCK_UPDATE') {

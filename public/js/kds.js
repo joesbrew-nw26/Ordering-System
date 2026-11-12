@@ -15,19 +15,154 @@ let adminMenuSearchQuery = '';
 let pendingDeleteItemId = null;
 
 // ==========================================
-// ROBUST KDS AUDIO ENGINE (Web Audio API + HTML5 Fallback)
-// Zero-latency, works offline, 100% immune to CDN / CORS failures
+// HIGH-PRIORITY BLUETOOTH-DUCKING KDS AUDIO ENGINE
+// Plays over background media (Spotify/Apple Music) on iPad via Bluetooth speaker
+// Dual-pipeline: High-penetration offline PCM WAV Audio + Web Audio API synthesizer
 // ==========================================
 let audioCtx = null;
 let isAudioUnlocked = false;
 
-// HTML5 audio elements (as secondary fallback)
-let alertChime = null;
-let runnerChime = null;
+// Audio Session Priority setup for iOS WebKit (Safari / WebClip / PWA)
+function setPlaybackAudioSessionType() {
+  if ('audioSession' in navigator) {
+    try {
+      navigator.audioSession.type = 'playback';
+    } catch (e) {}
+  }
+}
+setPlaybackAudioSessionType();
+
+// Generate high-priority, resonant acoustic bell WAV in memory
+function buildKitchenChimeWavUri(isTerrace = false) {
+  const sampleRate = 22050;
+  const duration = isTerrace ? 1.6 : 1.3;
+  const totalSamples = Math.floor(sampleRate * duration);
+  const buffer = new Int16Array(totalSamples);
+
+  function addStroke(startSec, baseFreq, decaySec, amp) {
+    const startSample = Math.floor(startSec * sampleRate);
+    const strokeSamples = Math.floor(decaySec * sampleRate);
+    for (let i = 0; i < strokeSamples && (startSample + i) < totalSamples; i++) {
+      const t = i / sampleRate;
+      const env = Math.exp(-t * (4.2 / decaySec)) * Math.min(1.0, i / (sampleRate * 0.008));
+      const s1 = Math.sin(2 * Math.PI * baseFreq * t) * 0.60;
+      const s2 = Math.sin(2 * Math.PI * (baseFreq * 2.4) * t) * 0.25;
+      const s3 = Math.sin(2 * Math.PI * (baseFreq * 3.8) * t) * 0.15;
+      const sampleVal = (s1 + s2 + s3) * env * amp;
+      const idx = startSample + i;
+      buffer[idx] = Math.max(-32768, Math.min(32767, buffer[idx] + Math.floor(sampleVal * 30000)));
+    }
+  }
+
+  // Multi-harmonic acoustic chime tuned to penetrate background music
+  addStroke(0, 587.33, 0.9, 0.95);      // D5 (bell fundamental)
+  addStroke(0.15, 880.00, 1.1, 1.0);    // A5 (bright chime)
+  addStroke(0.30, 1174.66, 1.3, 1.0);   // D6 (high resonant ring)
+  if (isTerrace) {
+    addStroke(0.45, 1479.98, 1.5, 1.0); // F#6 (urgent terrace ping)
+  }
+
+  const byteLength = totalSamples * 2;
+  const header = new ArrayBuffer(44);
+  const view = new DataView(header);
+  view.setUint32(0, 0x52494646, false); // 'RIFF'
+  view.setUint32(4, 36 + byteLength, true);
+  view.setUint8(8, 0x57); view.setUint8(9, 0x41); view.setUint8(10, 0x56); view.setUint8(11, 0x45); // 'WAVE'
+  view.setUint8(12, 0x66); view.setUint8(13, 0x6d); view.setUint8(14, 0x74); view.setUint8(15, 0x20); // 'fmt '
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // Mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  view.setUint8(36, 0x64); view.setUint8(37, 0x61); view.setUint8(38, 0x74); view.setUint8(39, 0x61); // 'data'
+  view.setUint32(40, byteLength, true);
+
+  const fullBytes = new Uint8Array(44 + byteLength);
+  fullBytes.set(new Uint8Array(header), 0);
+  fullBytes.set(new Uint8Array(buffer.buffer), 44);
+
+  let binary = '';
+  const len = fullBytes.byteLength;
+  for (let i = 0; i < len; i += 8192) {
+    const chunk = fullBytes.subarray(i, Math.min(i + 8192, len));
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return 'data:audio/wav;base64,' + (typeof btoa !== 'undefined' ? btoa(binary) : Buffer.from(fullBytes).toString('base64'));
+}
+
+function buildRunnerChimeWavUri() {
+  const sampleRate = 22050;
+  const duration = 0.55;
+  const totalSamples = Math.floor(sampleRate * duration);
+  const buffer = new Int16Array(totalSamples);
+
+  function addBeep(startSec, freq, durSec) {
+    const startSample = Math.floor(startSec * sampleRate);
+    const count = Math.floor(durSec * sampleRate);
+    for (let i = 0; i < count && (startSample + i) < totalSamples; i++) {
+      const t = i / sampleRate;
+      const env = Math.sin(Math.PI * (i / count));
+      const val = Math.sin(2 * Math.PI * freq * t) * env;
+      const idx = startSample + i;
+      buffer[idx] = Math.max(-32768, Math.min(32767, buffer[idx] + Math.floor(val * 28000)));
+    }
+  }
+
+  addBeep(0, 783.99, 0.18);
+  addBeep(0.16, 1046.50, 0.32);
+
+  const byteLength = totalSamples * 2;
+  const header = new ArrayBuffer(44);
+  const view = new DataView(header);
+  view.setUint32(0, 0x52494646, false);
+  view.setUint32(4, 36 + byteLength, true);
+  view.setUint8(8, 0x57); view.setUint8(9, 0x41); view.setUint8(10, 0x56); view.setUint8(11, 0x45);
+  view.setUint8(12, 0x66); view.setUint8(13, 0x6d); view.setUint8(14, 0x74); view.setUint8(15, 0x20);
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  view.setUint8(36, 0x64); view.setUint8(37, 0x61); view.setUint8(38, 0x74); view.setUint8(39, 0x61);
+  view.setUint32(40, byteLength, true);
+
+  const fullBytes = new Uint8Array(44 + byteLength);
+  fullBytes.set(new Uint8Array(header), 0);
+  fullBytes.set(new Uint8Array(buffer.buffer), 44);
+
+  let binary = '';
+  const len = fullBytes.byteLength;
+  for (let i = 0; i < len; i += 8192) {
+    const chunk = fullBytes.subarray(i, Math.min(i + 8192, len));
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return 'data:audio/wav;base64,' + (typeof btoa !== 'undefined' ? btoa(binary) : Buffer.from(fullBytes).toString('base64'));
+}
+
+// Pre-synthesize offline WAV audio elements
+let kdsGroundAudio = null;
+let kdsTerraceAudio = null;
+let kdsRunnerAudio = null;
+
 try {
-  alertChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-  runnerChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3');
-} catch (e) {}
+  kdsGroundAudio = new Audio(buildKitchenChimeWavUri(false));
+  kdsGroundAudio.setAttribute('playsinline', '');
+  kdsGroundAudio.setAttribute('webkit-playsinline', '');
+
+  kdsTerraceAudio = new Audio(buildKitchenChimeWavUri(true));
+  kdsTerraceAudio.setAttribute('playsinline', '');
+  kdsTerraceAudio.setAttribute('webkit-playsinline', '');
+
+  kdsRunnerAudio = new Audio(buildRunnerChimeWavUri());
+  kdsRunnerAudio.setAttribute('playsinline', '');
+  kdsRunnerAudio.setAttribute('webkit-playsinline', '');
+} catch (e) {
+  console.warn('[KDS Audio] Failed to instantiate pre-warmed audio elements:', e);
+}
 
 function getAudioContext() {
   if (!audioCtx) {
@@ -43,40 +178,47 @@ function getAudioContext() {
 }
 
 function unlockKdsAudio() {
+  setPlaybackAudioSessionType();
   const ctx = getAudioContext();
-  if (ctx) {
-    if (ctx.state === 'suspended') {
-      ctx.resume().then(() => {
-        isAudioUnlocked = true;
-        updateSoundStatusUI();
-      }).catch(() => {});
-    } else if (ctx.state === 'running') {
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().then(() => {
       isAudioUnlocked = true;
       updateSoundStatusUI();
-    }
+    }).catch(() => {});
   } else {
     isAudioUnlocked = true;
     updateSoundStatusUI();
   }
 
-  // Hide the unlock banner if visible
+  // Pre-prime HTML5 audio elements for immediate iOS playback
+  [kdsGroundAudio, kdsTerraceAudio, kdsRunnerAudio].forEach(el => {
+    if (el) {
+      try {
+        el.load();
+      } catch (e) {}
+    }
+  });
+
   const banner = document.getElementById('kdsAudioUnlockBanner');
   if (banner) banner.style.display = 'none';
-
-  // Pre-warm HTML5 audio element
-  try {
-    if (alertChime) alertChime.load();
-    if (runnerChime) runnerChime.load();
-  } catch (e) {}
 }
 
-// Global user interaction triggers to automatically unlock audio
+// Global user interaction triggers to automatically unlock and keep audio primed
 ['click', 'touchstart', 'pointerdown', 'keydown'].forEach(evt => {
   document.addEventListener(evt, () => {
     if (!isAudioUnlocked || (audioCtx && audioCtx.state === 'suspended')) {
       unlockKdsAudio();
     }
   }, { passive: true });
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    setPlaybackAudioSessionType();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  }
 });
 
 function playSynthesizedKitchenBell(isTerrace = false) {
@@ -128,14 +270,14 @@ function playSynthesizedKitchenBell(isTerrace = false) {
 
     // Melodic Kitchen Chime:
     // Stroke 1: D5 (587.33 Hz)
-    playBellStroke(0, 587.33, 0.9, 0.85);
+    playBellStroke(0, 587.33, 0.9, 0.95);
 
     // Stroke 2: A5 (880.00 Hz) - crisp ascending chime
-    playBellStroke(0.16, 880.00, 1.3, 0.95);
+    playBellStroke(0.15, 880.00, 1.1, 1.0);
 
     // If Terrace order or Waiter alert, add a high 3rd ping: D6 (1174.66 Hz)
     if (isTerrace) {
-      playBellStroke(0.32, 1174.66, 1.6, 1.0);
+      playBellStroke(0.30, 1174.66, 1.4, 1.0);
     }
 
     return true;
@@ -176,24 +318,28 @@ function playSynthesizedRunnerChime() {
 
 function playKdsOrderNotificationChime(isTerrace = false) {
   console.log(`🔔 Triggering KDS Order Chime (Terrace: ${isTerrace})`);
+  setPlaybackAudioSessionType();
 
-  // 1. Primary: High-fidelity Web Audio API restaurant bell
-  const playedWebAudio = playSynthesizedKitchenBell(isTerrace);
-
-  // 2. Secondary fallback: HTML5 Audio element
-  if (!playedWebAudio && alertChime) {
+  // 1. Primary: High-priority HTML5 Audio element (routes directly over Bluetooth speaker even during song playback)
+  const audioEl = isTerrace ? kdsTerraceAudio : kdsGroundAudio;
+  if (audioEl) {
     try {
-      alertChime.currentTime = 0;
-      const p = alertChime.play();
+      audioEl.pause();
+      audioEl.currentTime = 0;
+      audioEl.volume = 1.0;
+      const p = audioEl.play();
       if (p && p.catch) {
         p.catch(err => {
-          console.warn('[KDS Audio] HTML5 audio also blocked by browser policy:', err);
+          console.warn('[KDS HTML5 Audio] Playback prevented:', err);
           const banner = document.getElementById('kdsAudioUnlockBanner');
           if (banner) banner.style.display = 'block';
         });
       }
     } catch (e) {}
   }
+
+  // 2. Simultaneous Web Audio API synthesizer (dual-strike redundancy)
+  playSynthesizedKitchenBell(isTerrace);
 
   // 3. Desktop/Tablet System Notification (if permitted)
   try {
@@ -207,14 +353,17 @@ function playKdsOrderNotificationChime(isTerrace = false) {
 }
 
 function playKdsRunnerChime() {
-  const played = playSynthesizedRunnerChime();
-  if (!played && runnerChime) {
+  setPlaybackAudioSessionType();
+  if (kdsRunnerAudio) {
     try {
-      runnerChime.currentTime = 0;
-      const p = runnerChime.play();
+      kdsRunnerAudio.pause();
+      kdsRunnerAudio.currentTime = 0;
+      kdsRunnerAudio.volume = 1.0;
+      const p = kdsRunnerAudio.play();
       if (p && p.catch) p.catch(() => {});
     } catch (e) {}
   }
+  playSynthesizedRunnerChime();
 }
 
 function updateSoundStatusUI() {
@@ -256,6 +405,7 @@ function testOrToggleKdsAudio() {
   }
 }
 window.testOrToggleKdsAudio = testOrToggleKdsAudio;
+
 
 // Active Order ID tracking for new order detection & background polling
 const knownOrderIds = new Set();
