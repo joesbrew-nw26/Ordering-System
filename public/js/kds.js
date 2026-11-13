@@ -320,6 +320,20 @@ function playKdsOrderNotificationChime(isTerrace = false) {
   console.log(`🔔 Triggering KDS Order Chime (Terrace: ${isTerrace})`);
   setPlaybackAudioSessionType();
 
+  // 0. Native Android APK Bridge: Play at full hardware alarm volume (immune to background WebView ducking)
+  try {
+    if (window.AndroidAudioBridge && typeof window.AndroidAudioBridge.playNotification === 'function') {
+      const alertTitle = isTerrace ? '⚡ Terrace Table Alert!' : '🔔 New Kitchen Order!';
+      const alertBody = isTerrace
+        ? 'Customer order or urgent waiter call from Terrace seating'
+        : 'New table order received in Kitchen Display';
+      window.AndroidAudioBridge.playNotification(Boolean(isTerrace), alertTitle, alertBody);
+      console.log('✅ Triggered native AndroidAudioBridge playNotification with ALARM attributes');
+    }
+  } catch (bridgeErr) {
+    console.warn('[KDS Native Bridge] Error triggering Android audio bridge:', bridgeErr);
+  }
+
   // 1. Primary: High-priority HTML5 Audio element (routes directly over Bluetooth speaker even during song playback)
   const audioEl = isTerrace ? kdsTerraceAudio : kdsGroundAudio;
   if (audioEl) {
@@ -354,6 +368,12 @@ function playKdsOrderNotificationChime(isTerrace = false) {
 
 function playKdsRunnerChime() {
   setPlaybackAudioSessionType();
+  try {
+    if (window.AndroidAudioBridge && typeof window.AndroidAudioBridge.playRunnerAlert === 'function') {
+      window.AndroidAudioBridge.playRunnerAlert();
+    }
+  } catch (e) {}
+
   if (kdsRunnerAudio) {
     try {
       kdsRunnerAudio.pause();
@@ -532,15 +552,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Restore iPad Side Panel and View Mode preferences
-  if (localStorage.getItem('jb_kds_hide_side_panel') === '1') {
+  // Tablet & Mobile default: On viewports < 1200px, default side panel to collapsed so Kanban columns are wide and roomy
+  const storedSidePref = localStorage.getItem('jb_kds_hide_side_panel');
+  const shouldHideSide = storedSidePref === '1' || (storedSidePref === null && window.innerWidth < 1200);
+  if (shouldHideSide) {
     const grid = document.querySelector('.kds-main-grid');
     if (grid) grid.classList.add('side-panel-hidden');
     const icon = document.getElementById('kdsSidePanelToggleIcon');
     const text = document.getElementById('kdsSidePanelToggleText');
     if (icon && text) {
       icon.textContent = '👁️‍🗨️';
-      text.textContent = 'Show Panel';
+      text.textContent = 'Side Panel';
     }
   }
   updateKdsViewModeButtons();
@@ -671,7 +693,7 @@ function toggleKdsSidePanel() {
   localStorage.setItem('jb_kds_hide_side_panel', isHidden ? '1' : '0');
   if (icon && text) {
     icon.textContent = isHidden ? '👁️‍🗨️' : '👁️';
-    text.textContent = isHidden ? 'Show Panel' : 'Side Panel';
+    text.textContent = isHidden ? 'Side Panel' : 'Hide Panel';
   }
 }
 
